@@ -95,20 +95,37 @@ HTTP 405  错误– 方法不被允许(Method not allowed).
 只要调用父类(HttpServlet)中的doGet，doPost方法，就会 405
 `所以，只要想办法不让tomcat调用HttpServlet的doGet，doPost方法，就避免了405问题`
 
+## Servlet接口定义
 
-## 如何使用Servlet完成服务器端编程
+javax.servlet.Servlet 接口定义了 Servlet 必须实现的 5 个方法：
 
-- 定义一个Java类，继承GenericServlet
-- 重写service()方法，两个参数
-	+ servletRequest 用于向Servlet提供客户端请求信息，由servlet容器创建，并自动传入service方法中
-	+ servletResponse 用于帮助servlet向客户端发送响应信息，由servlet容器创建，并自动传入service方法中
-- 编译
-	+ 导jar包 set classpath=
-	+ 编译 javac -d . xxxServlet.java
-- 在web.xml中配置servlet信息和servlet-mapping信息
-- 部署项目，启动tomcat，访问之
+destroy ：Servlet 容器卸载 Servlet 时调用此方法释放 Servlet 占用的资源；
+getServletConfig ：返回 Servlet 配置信息，如初始化和启动参数等；
+getServletInfo ：返回 Servlet 信息，如作者、版本等；
+init ：Servlet 容器调用此方法初始化 Servlet；
+service ：Servlet 容器调用此方法处理客户端请求。
 
+## 如何使用Servlet完成服务器端编程(Servlet 实现)
 
+可以通过继承 javax.servlet.GenericServlet 或者 javax.servlet.http.HttpServlet 来实现自己的 Servlet 程序。
+
+GenericServlet 抽象类实现了 Servlet 和 ServletConfig 接口，定义了生命周期的 init 方法和 destroy 方法，与应用层协议无关。继承 GenericServlet 类型后，只需要实现 service 方法即可。
+
+HttpServlet 抽象类继承了 GenericServlet 类型，在 service 方法中把标准 HTTP 请求分发到相应的 doXXX 方法进行处理。HttpServlet 的子类必须覆盖 doGet、doPost、doPut、doDelete、init、destroy 或者 getServletInfo 方法中的一个或多个。
+
+由于 Servlet 通常运行在多线程的容器中，因此在 Servlet 中处理客户端请求时必须考虑共享资源的同步互斥问题。
+
+## Servlet 与 Tomcat 的交互
+
+Servlet 的生命周期由 Tomcat 负责管理。在 Tomcat 启动时，读取 web.xml 中配置的 Servlet 配置生成 ServletConfig 对象，然后加载 Servlet 的实现类，创建 Servlet 的实例，再调用 init 方法传入 ServletConfig 对象完成初始化。Servlet 的 init 方法在整个生命周期中只被调用一次。
+
+Tomcat 调用 Servlet 处理 http 请求的过程可以用下图表示。每次 Tomcat 接收到一个 Servlet 请求时，会产生一个新的线程，创建 HttpServletRequest 实例 request 和 HttpServletResponse 实例 response，然后调用 service 方法并传入 request、response 实例来处理客户端请求。
+
+在 service 方法中，Servlet 能够读取 request 中的请求参数，处理完后把相应的返回内容设置到 response 中。service 方法返回后，Tomcat 再根据 response 的内容，返回给客户端。
+
+![servlet_in_tomcat](servlet_in_tomcat.jpg)
+
+当 Tomcat 关闭或重启时，需要卸载 Servlet，这时调用 Servlet 的 destroy 方法，释放 Servlet 占用的资源，然后退出。destroy 方法只能调用一次，调用之后 Servlet 对象就可以被 GC 回收。
 
 ## 单例模式
 
