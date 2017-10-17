@@ -2715,3 +2715,43 @@ T1 创建线程的时间
 ### mod函数
 mod函数是一个求余函数,其格式为: mod(nExp1,nExp2),即是两个数值表达式作除法运算后的余数
 
+## Java NIO
+三个核心概念 通道，缓冲区，选择器
+            Channel，Buffer，Selector
+![java_nio.png](./java_nio.png)
+
+### Channel
+基本上，所有的 IO 在NIO 中都从一个Channel 开始。Channel 有点象流。 数据可以从Channel读到Buffer中，也可以从Buffer 写到Channel中。
+
+JAVA NIO中的一些主要Channel的实现：
+FileChannel(从文件中读写数据)
+DatagramChannel(通过UDP读写网络中的数据)
+SocketChannel(通过TCP读写网络中的数据)
+ServerSocketChannel(可以监听新进来的TCP连接，像Web服务器那样。对每一个新进来的连接都会创建一个SocketChannel)
+这些通道涵盖了UDP和TCP网络IO，以及文件IO。
+
+### Buffer
+缓冲区本质上是一块可以写入数据，然后可以从中读取数据的内存。这块内存被包装成NIO Buffer对象，并提供了一组方法，用来方便的访问该块内存
+
+- Buffer的基本用法
+使用Buffer读写数据一般遵循以下四个步骤：
+
+1) 写入数据到Buffer
+2) 调用flip()方法
+3) 从Buffer中读取数据
+4) 调用clear()方法或者compact()方法
+
+- Buffer中三个重要参数 position limit capacity
+position和limit的含义取决于Buffer处在读模式还是写模式。不管Buffer处在什么模式，capacity的含义总是一样的。
+
+### Selector
+Selector允许单线程处理多个Channel。如果你的应用打开了多个连接（通道），但每个连接的流量都很低，使用Selector就会很方便(需要再次分析学习)。
+```java
+要使用Selector，得向Selector注册Channel，然后调用它的select()方法。这个方法会一直阻塞到某个注册的通道有事件就绪。
+一旦这个方法返回，线程就可以处理这些事件，事件的例子有如新连接进来，数据接收等。
+```
+
+Selector的创建（open()）
+向Selector注册通道（register（））
+通过Selector选择通道（select()）
+Selector唤醒（wakeUp()）
