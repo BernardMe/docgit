@@ -200,7 +200,7 @@ select sum(sal), avg(sal), count(empno) from emp;
 
 ## SQL中group by的用法
 
-###概述
+### 概述
 “Group By”从字面意义上理解就是根据“By”指定的规则对数据进行分组，所谓的分组就是将一个“数据集”划分成若干个“小区域”，然后针对若干个“小区域”进行数据处理。
 
 ### group by中的易错点
