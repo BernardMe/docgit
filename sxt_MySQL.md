@@ -94,7 +94,7 @@ MySQL还支持选择在该类型关键字后面的括号内指定整数值的显
 
 int(8) 在磁盘上都是占用 4 btyes 的存储空间。
 
-##查询MySQL字符集相关参数
+## 查询MySQL字符集相关参数
 show variables like '%character%';
 
 ## MySQL字符序
