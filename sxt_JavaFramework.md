@@ -1713,5 +1713,26 @@ Jedis是一个Redis的客户端工具jar
 crm客户关系管理系统
 
 
+# JPA
+
+## JPA概念
+JPA是Java Persistence API的简称，中文名Java持久层API，是JDK 5.0注解或XML描述对象－关系表的映射关系，并将运行期的实体对象持久化到数据库中。
+
+## JPA实现
+![JPA_imp_Hibernate](./JPA_imp_Hibernate.jpg)
+Hibernate, TopLink, 其他的ORM框架
+
+# Hibernate
+
+## Hibernate与Jpa的关系
+
+直到我现在在新公司，做项目要用到Hibernate。
+我想抛开jpa，直接使用hibernate的注解来定义Model，很快发现了几个问题：
+- jpa中有Entity, Table，hibernate中也有，但是内容不同
+- jpa中有Column,OneToMany等，Hibernate中没有，也没有替代品
+我原以为hibernate对jpa的支持，是另提供了一套专用于jpa的注解，但现在看起来似乎不是。一些重要的注解如Column, OneToMany等，hibernate没有提供，这说明jpa的注解已经是hibernate的核心，hibernate只提供了一些补充，而不是两 套注解。要是这样，hibernate对jpa的支持还真够足量，我们要使用hibernate注解就必定要使用jpa。
+
+第一个是问如果想用hibernate注解，是不是一定会用到jpa的。网友的回答：“是。如果hibernate认为jpa的注解够用，就直接用。否则会弄一个自己的出来作为补充”
+第二个是问，jpa和hibernate都提供了Entity，我们应该用哪个，还是说可以两个一起用？网友回答说“Hibernate的Entity是继承了jpa的，所以如果觉得jpa的不够用，直接使用hibernate的即可”。
 
 
