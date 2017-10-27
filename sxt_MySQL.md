@@ -22,6 +22,47 @@
   + 性能降低(多表查询比单表查询速度慢)
 
 
+
+## MySQL解压版如何安装
+
+### 配置
+
+2.1 下载下来的zip后缀的程序包，解压出来，然后自定义名称放在相应的位置上，我是在服务器的D盘根目录下，命名为：mysql-5.6，即D:\mysql-5.6\ ，该目录下包含bin、data、docs、lib等目录及文件；
+ 
+2.2 配置环境变量，在系统变量path的末尾加入：;D:\mysql-5.6\bin (注意是追加，不是覆盖)
+ 
+2.3 配置my.ini
+复制程序目录下的文件my-default.ini 为my.ini，并且编辑里面的内容为：
+basedir = D:\mysql-5.6
+datadir = D:\mysql-5.6\data
+port = 3306
+ 
+### 安装
+以管理员身份运行开始－运行－输入cmd，进入DOS窗口后，首先切换到MYSQL的程序目录：
+
+`mysqld -install`（mysqld -remove 表示删除mysql）
+
+Service successfully installed.(说明安装成功了)
+ 
+D:\mysql-5.6\bin>net start mysql
+MySQL 服务正在启动 ..
+MySQL 服务已经启动成功。（说明服务启动成功了）
+ 
+### 登录验证
+
+D:\mysql-5.6\bin>mysql -uroot -p
+Enter password: （默认是空密码，直接回车登录即可）
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 3
+Server version: 5.6.23 MySQL Community Server (GPL)
+Copyright (c) 2000, 2015, Oracle and/or its affiliates. All rights reserved.
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+mysql>
+
+
 ## MySQL创建用户
 
 
