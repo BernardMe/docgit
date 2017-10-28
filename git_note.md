@@ -30,7 +30,7 @@ Day 002
 安装 Git
 是时候动手尝试下 Git 了，不过得先安装好它。有许多种安装方式，主要分为两种，一种是通过编译源代码来安装；另一种是使用为特定平台预编译好的安装包。
 
-#在 Linux 上安装
+# 在 Linux 上安装
 如果要在 Linux 上安装预编译好的 Git 二进制安装包，可以直接用系统提供的包管理工具。在 Fedora 上用 yum 安装：
 
 $ yum install git-core
@@ -168,4 +168,64 @@ git rm --cached 文件名
 git update-index --assume-unchanged 文件名
 
 ## git reset revert回退回滚取消提交返回上一版本
+总有一天你会遇到下面的问题.
+改完代码匆忙提交，上线发现有问题，怎么办？赶紧回滚
+改完代码测试也没有问题，但是上线发现你的修改影响了之前运行正常的代码报错，必须回滚
+这些开发中很常见的问题，所以git的取消提交，回退甚至返回上一版本都是特别重要的。
+
+大致分为下面2种情况：
+1 没有push
+这种情况发生在你的本地代码仓库，可能你add，commit以后发现代码有点问题，准备取消提交，用到下面命令
+```shell
+git reset [--soft | --mixed | --hard]
+```
+上面常见三种类型
+--mixed
+会保留源码，只是将git commit和index信息退回到了某个版本
+```shell
+git reset --mixed 等价于 git reset
+```
+--soft
+保留源码，只回退到commit 信息到某个版本，不涉及index的回退，如果还需要提交，直接commit即可。
+
+--hard
+源码也会回退到某个版本，commit和index都会回退到某个版本。（注意，这种方式是改变本地代码仓库源码）
+
+当然有人在push代码以后，也使用reset --hard <commit...>回退代码到某个版本之前，但是这样会有一个问题，你线上的代码没有变，线上commit，index都没有变，当你把本地代码修改完提交的时候你会发现全是冲突...
+
+所以这个时候，你要使用下面的方式
+
+2 已经push
+对于已经把代码push到线上仓库，你回退本地代码其实也想同时回退线上代码，回滚到某个指定的版本，线上，线下代码保持一致，你要用到下面的命令
+
+revert
+git revert用于反转提交，执行revert命令时要求工作树必须是干净的。
+git revert用一个新提交来消除一个历史提交多做点任何修改。
+
+revert之后你的本地代码会回滚到指定的历史版本，这时候你再git push既可以把线上的代码更新。（这里不会像reset造成冲突的问题）
+
+revert的使用，需要先找到你想回滚版本唯一的commit标识代码，可以用git log或者在adgit搭建的web环境历史提交记录里查看。
+```shell
+git revert c011eb3234990234ab080c9cdfe
+```
+通常，前几位即可
+```shell
+git revert c011eb3
+```
+
+git revert是用一次新的commit来回滚之前的commit，git reset是直接删除指定的commit
+
+看似达到的效果是一样的,其实完全不同.
+
+第一:
+
+上面我们说的如果你已经push到线上代码库, reset 删除指定commit以后,你git push可能导致一大堆冲突.但是revert 并不会.
+
+第二:
+
+如果在日后现有分支和历史分支需要合并的时候,reset 恢复部分的代码依然会出现在历史分支里.但是revert 方向提交的commit 并不会出现在历史分支里.
+
+第三:
+
+reset 是在正常的commit历史中,删除了指定的commit,这时 HEAD 是向后移动了,而 revert 是在正常的commit历史中再commit一次,只不过是反向提交,他的 HEAD 是一直向前的.
 
