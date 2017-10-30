@@ -135,6 +135,24 @@ MySQL还支持选择在该类型关键字后面的括号内指定整数值的显
 
 int(8) 在磁盘上都是占用 4 btyes 的存储空间。
 
+
+## MySQL数值类型
+SMALLINT: 2个字节
+INT：4个字节
+INTEGER：INT的同义词
+BIGINT：8个字节
+
+FLOAT：4个字节
+DOUBLE：8个字节
+
+## MySQL字符串(字符)类型
+CHAR：固定长度字符串 sex char(2)
+VARCHAR: 可变长度字符串 name varchar(20)
+VARCHARA使用起来较为灵活，CHAR处理速度更快
+
+TEXT：非二进制大对象(字符)
+BLOB：二进制大对象(非字符)
+
 ## 查询MySQL字符集相关参数
 show variables like '%character%';
 

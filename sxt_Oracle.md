@@ -634,7 +634,7 @@ rownum>2，没有查询到任何记录。
 另外还要注意：rownum不能以任何基表的名称作为前缀
 
 ## 分页
-```
+```sql
 --分页查询  另外还要注意：rownum不能以任何基表的名称作为前缀
 SELECT b.* FROM (
     SELECT ROWNUM rn, a.* FROM (
@@ -751,47 +751,11 @@ conn.commit();
 ## CallableStatement
 调用存储过程
 
-# MySQL
-## MySQL数值类型
-SMALLINT: 2个字节
-INT：4个字节
-INTEGER：INT的同义词
-BIGINT：8个字节
 
-FLOAT：4个字节
-DOUBLE：8个字节
-
-## MySQL字符串(字符)类型
-CHAR：固定长度字符串 sex char(2)
-VARCHAR: 可变长度字符串 name varchar(20)
-VARCHARA使用起来较为灵活，CHAR处理速度更快
-
-TEXT：非二进制大对象(字符)
-BLOB：二进制大对象(非字符)
-
-##查询MySQL字符集相关参数
-show variables like '%character%';
-
-##MySQL字符序
-show variables like '%collation%';
-mysql的collation大致的意思就是字符序。首先字符本来是不分大小的，那么对字符的>, = , < 操作就需要有个字符序的规则。collation做的就是这个事情，你可以对表进行字符序的设置，也可以单独对某个字段进行字符序的设置。一个字符类型，它的字符序有多个
 
 ##连接字符串是否设置了编码，如
-jdbc:mysql://192.168.1.211:3306/xxx?useUnicode=true&characterEncoding=utf-8
+jdbc:oracle:thin:@10.4.72.117:1521/ORCL
 
-## MySQL汉字乱码问题
-新产品开发，有时候需要迁移历史数据，而且往往还是异构系统的数据。
-这时候常常会遇到乱码的问题，原因主要是因为字符集不匹配引起的。
-对于MySQL而言，存在`客户端字符集、服务器字符集、数据库字符集以及连接字符集`等变量，
 
-如果你不希望服务器做任何的结果转换，那么可以把character_set_results设置为NULL:
-```
-SET character_set_results = NULL;
-SET character_set_client = utf8;
-SET character_set_server = utf8;
-SET character_set_database = utf8;
-SET character_set_connection = utf8;
-```
-(如上)
 
 
