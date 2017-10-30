@@ -1746,6 +1746,111 @@ Hibernate, TopLink, 其他的ORM框架
 第一个是问如果想用hibernate注解，是不是一定会用到jpa的。网友的回答：“是。如果hibernate认为jpa的注解够用，就直接用。否则会弄一个自己的出来作为补充”
 第二个是问，jpa和hibernate都提供了Entity，我们应该用哪个，还是说可以两个一起用？网友回答说“Hibernate的Entity是继承了jpa的，所以如果觉得jpa的不够用，直接使用hibernate的即可”。
 
+## Hibernate注解主键生成策略
+
+### @GeneratedValue --> JPA通用策略生成器 。
+JPA提供的四种标准用法为TABLE,SEQUENCE,IDENTITY,AUTO. 
+
+TABLE：使用一个特定的数据库表格来保存主键。 
+
+SEQUENCE：根据底层数据库的序列来生成主键，条件是数据库支持序列。 
+```java
+@Id  
+@GeneratedValue(strategy = GenerationType.SEQUENCE,generator="payablemoney_seq")  
+@SequenceGenerator(name="payablemoney_seq", sequenceName="seq_payment")  
+```
+
+IDENTITY：主键由数据库自动生成（主要是自动增长型） 
+```java
+@Id  
+@GeneratedValue(strategy = GenerationType.IDENTITY)  
+```
+
+AUTO：主键由程序控制。 　
+```java
+@Id  
+@GeneratedValue(strategy = GenerationType.AUTO) 
+```
+
+###　@GenericGenerator --> Hibernate主键策略生成器 
+@GenericGenerator注解配合@GeneratedValue一起使用，@GeneratedValue注解中的"generator"属性要与@GenericGenerator注解中name属性一致,strategy属性表示hibernate的主键生成策略 
+```java
+@Id
+@GeneratedValue(generator="increment")
+@GenericGenerator(name="increment", strategy = "increment")
+```
+
+native: 对于 oracle 采用 Sequence 方式，对于MySQL 和 SQL Server 采用identity（自增主键生成机制），native就是将主键的生成工作交由数据库完成，hibernate不管（很常用）。 
+```java
+@GeneratedValue(generator = "xxx")    
+@GenericGenerator(name = "xxx", strategy = "native")   
+```
+
+uuid: 采用128位的uuid算法生成主键，uuid被编码为一个32位16进制数字的字符串。占用空间大（字符串类型）。 
+```java
+@GeneratedValue(generator = "xxx")    
+@GenericGenerator(name = "xxx", strategy = "uuid")
+```
+
+hilo: 使用hilo生成策略，要在数据库中建立一张额外的表，默认表名为hibernate_unique_key,默认字段为integer类型，名称是next_hi（比较少用）。 
+```java
+@GeneratedValue(generator = "xxx")    
+@GenericGenerator(name = "xxx", strategy = "hilo")   
+```
+
+assigned: 在插入数据的时候主键由程序处理（很常用），这是 `<generator>`元素没有指定时的默认生成策略。等同于JPA中的AUTO。 
+```java
+@GeneratedValue(generator = "xxx")    
+@GenericGenerator(name = "xxx", strategy = "assigned ")   
+```
+
+identity: 使用SQL Server 和 MySQL 的自增字段，这个方法不能放到 Oracle 中，Oracle 不支持自增字段，要设定sequence（MySQL 和 SQL Server 中很常用）; 等同于JPA中的INDENTITY。 
+```java
+@GeneratedValue(generator = "xxx")    
+@GenericGenerator(name = "xxx", strategy = "identity ") 
+```
+
+sequence: 调用底层数据库的序列来生成主键，要设定序列名，不然hibernate无法找到。 
+```java
+@GeneratedValue(generator = "xxx")
+@GenericGenerator(name = "xxx", strategy = "sequence", parameters = { @Parameter(name = "sequence", value = "底层数据库sequenceName") }) 
+```
+
+increment: 插入数据的时候hibernate会给主键添加一个自增的主键，但是一个hibernate实例就维护一个计数器，所以在多个实例运行的时候不能使用这个方法。 
+
+```java
+@GeneratedValue(generator = "xxx")    
+@GenericGenerator(name = "xxx", strategy = "increment")   
+```
+
+guid: 采用数据库底层的guid算法机制，对应MYSQL的uuid()函数，SQL Server的newid()函数，ORACLE的rawtohex(sys_guid())函数等。 
+```java
+@GeneratedValue(generator = "xxx")    
+@GenericGenerator(name = "xxx", strategy = "guid")   
+```
+
+uuid.hex: 看uuid，建议用uuid替换。 
+```java
+@GeneratedValue(generator = "xxx")    
+@GenericGenerator(name = "xxx", strategy = "uuid.hex")   
+```
+
+## Hibernate entity使用sequence方式时，id增量50且与sequence值不一致的问题
+```java
+@Table(name = "t_user")  
+@SequenceGenerator(name="userid_seq",sequenceName="SEQ_userid")
+public class Content {
+    @Id
+    @GeneratedValue(strategy=GenerationType.SEQUENCE,generator="userid_seq")
+    private int userid;
+}
+```
+
+1，这是其中一个实体类，我使用的Oracle的数据库，主键采用oracle的序列，但是问题来了，我发现我的id增长不是以1递增，而是以50递增的，当时我就很纳闷了，后面我就上网查，原来也有人遇到了这个问题，原来是少了`allocationSize=1` 这个，原来JPA默认的递增大小是50。同时initialValue默认为0，一般都是设置为initialValue=1 修改后的如下所示：
+`@SequenceGenerator(name="userid_seq",allocationSize=1,initialValue=1, sequenceName="SEQ_userid")`
+
+
+2，还有一个要注意问题：注解到底是写在 get方法上，还是写在属性上，这个一定要统一，千万不能混淆使用，我`推荐写在getter方法上`。
 
 # Struts2
 Struts2 本质就是xwork2.3版本

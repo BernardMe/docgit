@@ -731,7 +731,7 @@ rs.getInt(参数从1开始)
 
 ## Batch
 批处理
-```
+```java
 //关闭自动提交
 conn.setAutoCommit(false);
 
