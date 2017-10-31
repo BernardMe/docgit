@@ -1856,6 +1856,71 @@ public class Content {
 Struts2 本质就是xwork2.3版本
 Strut 和 Struts2 完全没有继承关系，底层原理也不同
 
-## 
+## Struts2使用JSON实现前后台交互
+
+配置注意点：
+
+在原有Struts2框架jar包的引入下，需要额外多加一个Json的插件包（struts2-json-plugin-2.3.7.jar）
+在struts.xml配置文件中，包需要继承json-default,然后把result的类型改为json
+`<package name="xxx" extends="json-default">`
+`<result name="success" type="json"></result>`
+
+
+因为页面发送了一个参数名为name的参数，在这边我们用属性注入的方式，给成员变量一个setter方法赋值，返回提供了一个getter方法作为回调函数的返回值。
+
+Struts2的Json插件，
+`默认将值栈(root)的顶端对象返回（所有getter方法），在没有实现模型驱动类ModelDriven的前提下，值栈的顶端对象为Action（也就是返回Action里所有的getter方法，若有各别方法不想返回，只需要在该方法的上面添加一个@JSON(serialize=false)注解即可）`
+如：
+```java
+public class RegistAction extends ActionSupport {
+
+	private User user;
+	private String uname;
+	
+	private XbwResult result;
+
+	@JSON(serialize=false)
+	public User getUser() {
+		//this.user.setUpwd("xxx");
+		return user;
+	}
+
+	public String getUname() {
+		return user.getUname();
+	}
+
+	public XbwResult getResult() {
+		return result;
+	}
+
+	@Override
+	public String execute() throws Exception {
+		result = new XbwResult();
+		int index = 0;
+		
+		···
+	}
+}
+```
+
+
+### 配置文件struts.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+    "http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>    
+        <constant name="struts.i18n.encoding" value="UTF-8"/>
+        <constant name="struts.devMode" value="true" />
+        <package name="strutsjson" extends="json-default" namespace="/">
+            <action name="test1" class="com.lcw.struts.json.TestAction">
+                <result name="success" type="json">/index.jsp</result>
+            </action>
+        </package>
+</struts>
+```
 
 
