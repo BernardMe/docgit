@@ -58,31 +58,49 @@ swap一般建议为物理内存的2倍大小
 
 输入账号root
 再输入安装过程中设置的密码，登录到系统
-vi  /etc/sysconfig/network-scripts/ifcfg-eth0   #编辑配置文件,添加修改以下内容
+`vi  /etc/sysconfig/network-scripts/ifcfg-eth0   #编辑配置文件,添加修改以下内容`
+
+```shell
 BOOTPROTO=static   #启用静态IP地址
 ONBOOT=yes  #开启自动启用网络连接
 IPADDR=192.168.21.128    #设置IP地址
 NETMASK=255.255.255.0  #设置子网掩码
 GATEWAY=192.168.21.2    #设置网关
 :wq!  #保存退出
-vi /etc/resolv.conf   #编辑配置文件，添加修改以下内容
+```
+
+`vi /etc/resolv.conf   #编辑配置文件，添加修改以下内容`
+
+```shell
 nameserver 8.8.8.8  #设置主DNS
 nameserver 8.8.4.4  #设置备用DNS
 :wq!  #保存退出
-service network restart  #重启网络服务
+```
+
+`service network restart  #重启网络服务`
 
 
 
 # 设置主机名
 
 hostname  www  #设置主机名为www
-vi /etc/sysconfig/network  #编辑配置文件
+
+`vi /etc/sysconfig/network  #编辑配置文件`
+
+```shell
 HOSTNAME=www  #修改localhost.localdomain为www
-:wq!  #保存退出
-vi /etc/hosts #编辑配置文件
+:wq!  #
+```
+
+`vi /etc/hosts #编辑配置文件`
+
+```shell
 127.0.0.1  www localhost  #修改localhost.localdomain为www
 :wq!  #保存退出
-shutdown –r now  #重启系统
+```
+
+`shutdown –r now  #重启系统`
+
 至此，CentOS 5.5系统安装完成。
 
 
