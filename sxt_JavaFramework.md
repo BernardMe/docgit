@@ -1523,6 +1523,29 @@ SupermeMng使用
 - 继承关系
 - 聚合关系
 
+### Maven私服使用办法
+
+前提:已经配置JDK环境变量
+
+1. 把压缩包解压到任意非中文目录中
+
+2. 根据自己的系统选择对应的版本
+D:\nexus\soft\nexus-2.12.0-01\bin\jsw
+
+3. 运行install-nexus.bat 在系统中注册服务
+
+4. 注册后可以通过start-nexus.bat/stop-nexus.bat 开启服务和关闭服务
+也可以在系统服务中开启关闭服务
+
+	4.1 uninstall-nexus.bat 表示卸载服务
+
+5. 在浏览器输入   http://localhost:8081/nexus 进入主界面
+
+6. 在主界面右上角log in 进行登录,默认用户名和密码是 
+	用户名:admin
+	密码:admin123
+
+
 ### POM.xml
 
 #### 资源拷贝插件
