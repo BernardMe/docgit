@@ -29,10 +29,10 @@
 
 ### 开发环境
 JDK 1.7
-Tomcat 8.0.44
+Tomcat 8.0.
 
 
-### 整体框架SSH
+#t## 整体框架SSH
 
 Struts2+Spring4+Hibernate4+Oracle+HTML5+CSS3+jQuery1.7
 
