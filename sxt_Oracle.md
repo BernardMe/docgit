@@ -35,6 +35,17 @@ sys/change_on_install
 system/manager
 scott/tiger
 
+## Oracle客户端字符集设置
+
+### 检查编码
+```sql
+-- 检查数据库服务器编码
+select * from nls_database_parameters where parameter ='NLS_CHARACTERSET';
+-- 检查oracle客户端编码
+select * from nls_instance_parameters where parameter='NLS_LANGUAGE';
+```
+oracle客户端在获取字符集设置信息时的优先级顺序依次为：session、环境变量、注册表、参数文件，因此可以通过设置这些位置实现客户端字符集设置的目的，因此本文采用设置session的方法，设置NLS_LANG变量值，从而覆盖所有设置值
+
 # SQL
 
 ## SQL语言的分类
