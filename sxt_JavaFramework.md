@@ -1872,8 +1872,12 @@ public class Content {
 1，这是其中一个实体类，我使用的Oracle的数据库，主键采用oracle的序列，但是问题来了，我发现我的id增长不是以1递增，而是以50递增的，当时我就很纳闷了，后面我就上网查，原来也有人遇到了这个问题，原来是少了`allocationSize=1` 这个，原来JPA默认的递增大小是50。同时initialValue默认为0，一般都是设置为initialValue=1 修改后的如下所示：
 `@SequenceGenerator(name="userid_seq",allocationSize=1,initialValue=1, sequenceName="SEQ_userid")`
 
-
 2，还有一个要注意问题：注解到底是写在 get方法上，还是写在属性上，这个一定要统一，千万不能混淆使用，我`推荐写在getter方法上`。
+
+## HibernateTemplate
+HibernateTemplate是Spring提供的一个就Hibernate访问持久层技术而言、支持Dao组件的一个工具。HibernateTemplate提供持久层访问模板，应用HibernateTemplate无须实现特定的接口，它只需要提供一个sessionFactory的引用就可以执行持久化操作。
+
+
 
 # Struts2
 Struts2 本质就是xwork2.3版本

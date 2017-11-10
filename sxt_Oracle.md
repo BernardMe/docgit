@@ -8,6 +8,11 @@ G:\SXTOracle
 ## 服务名
 通常是全局数据库名
 
+## Oracle实例是什么
+(内存结构+一系列进程结构)
+安装好oracle后，需要配置一个数据库，数据库是静态的，具体就是存储在硬盘的一系列文件；启动数据库即启动一个实例，就是运行起来的一系列管理数据库的后台进程和内存区域
+![oracle_instance](./oracle_instance.jpg)
+
 ## ERROR
 
 ### ORA-12560 TNS服务未启动
@@ -39,6 +44,8 @@ scott/tiger
 
 ### 检查编码
 ```sql
+-- Oracle 版本查看
+select * from v$version;
 -- 检查数据库服务器编码
 select * from nls_database_parameters where parameter ='NLS_CHARACTERSET';
 -- 检查oracle客户端编码
@@ -664,8 +671,12 @@ SELECT b.* FROM (
 
 ## 导入导出dmp文件
 
+装了oracle客户端(instantclient_11_2 须下载)后，
 使用exp导出数据
-使用imp导入数据  
+使用imp导入数据 
+```sql
+exp wxcedb/wxcedb@10.0.12.31:1521/testlis file=d:\daochu.dmp full=y
+```
 
 
 ## 三大范式
