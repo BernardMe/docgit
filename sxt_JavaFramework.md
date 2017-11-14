@@ -1020,6 +1020,15 @@ service中注解
 
 
 
+### Spring 配置中<context:annotation-config/> 的作用
+
+<context:component-scan base-package=”XX.XX”/> 
+    该配置项其实也包含了自动注入上述processor的功能，因此当使用 <context:component-scan/> 后，就可以将 <context:annotation-config/> 移除了。
+
+<context:annotation-config> 是用于激活那些已经在spring容器里注册过的bean（无论是通过xml的方式还是通过package sanning的方式）上面的注解。
+
+<context:component-scan>除了具有<context:annotation-config>的功能之外，<context:component-scan>还可以在指定的package下扫描以及注册javabean 。
+
 
 <bean autowire="">   autowire 设置在`被注入的对象bean`
 default  走全局设置;  如果全局没有设置，则等同于no
