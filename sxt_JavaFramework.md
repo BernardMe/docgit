@@ -1892,8 +1892,20 @@ HibernateTemplate是Spring提供的一个就Hibernate访问持久层技术而言
 Struts2 本质就是xwork2.3版本
 Strut 和 Struts2 完全没有继承关系，底层原理也不同
 
-## 
+## Struts1和Struts2区别
 
+Struts1基于Servlet
+Struts2基于拦截器
+
+## 为什么Struts2的Action要做成多实例的？有必要吗？
+>当Dispatcher送请求到拦截器的时候，不是请求参数都放到ActionContext里面了吗？所以Action里面可以不用写任何实例变量，方法里面需要的话，直接从线程本地变量ActionContext里面读数据不就行了！为什么要Action做成多实例的呢？单例就可以啦。
+难道是我遇到的业务要求太简单了，所以不需要在Action里面配实例变量？ 我觉得可以放到Action里面的变量，也可以放到ActionContext里面。
+
+- Strut2的Action不是Servlet，如果某个变量，在多个方法中使用，在并发环境下，则可能产生数据问题。
+所以多例还是有必须的
+- 	干这么多事只有一个目的，增强开发的方便性。
+按楼主说的就是想struts1一样，写一堆赋值代码取值代码什么的。
+而struts2的这种设计配合其拦截器真的可有大大的提高开发的方便性。
 
 
 # RESTful架构风格
