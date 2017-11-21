@@ -676,6 +676,8 @@ SELECT b.* FROM (
 使用imp导入数据 
 ```sql
 exp wxcedb/wxcedb@10.0.12.31:1521/testlis file=d:\daochu.dmp full=y
+
+imp home/xb101406@10.243.5.101:1521/xe  file=f:\daochu.dmp full=y
 ```
 
 
