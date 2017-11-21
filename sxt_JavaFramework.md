@@ -990,7 +990,7 @@ Proxy.newProxyInstance(Foo.class.getClassLoader, new Class[]{Foo.class}, handler
 - 真实对象必须实现接口
 - 利用反射机制，效率不高  
 
-### cjlib动态代理
+### cglib动态代理
 
 重点：`基于字节码，生成真实对象的子类`
 
@@ -1039,6 +1039,65 @@ constructor
 
 
 ### 加载properties文件
+
+#### Spring使用property文件作为配置源
+工程中难免出现一些需要每次部署都需要配置的参数，如数据源连接参数等，测试环境跟实际运行环境是不一样的。
+使用spring框架的话，`这些参数可能独立分布在不同的springContex配置文件里面`。
+可以考虑将这些参数独立到一个配置文件并可以让spring方便加载注入。可选的一个方案是使用java的property文件，将所有的配置参数都写到property文件里面，使用${key}来在spring配置文件里面得到这个参数。
+
+例子：
+property文件global-config-file.properties：
+```shell
+#FOR dataSource
+jdbc.dataSource.url=jdbc:postgresql://192.168.1.118:5432/DB_name
+jdbc.dataSource.username=postgres
+jdbc.dataSource.password=123
+```
+
+示例配置的是数据源参数。
+ 
+之后在springContext的配置文件中，加入下面代码，：
+```xml
+<!-- 在spring配置文件中 引入xmlns:context命名空间 -->
+<beans xmlns:aop="http://www.springframework.org/schema/aop"  xmlns:context="http://www.springframework.org/schema/context">
+
+	<bean id="propertyConfigurer"  
+	       class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">  
+	     <property name="ignoreUnresolvablePlaceholders" value="true" />
+	     <property name="location" value="classpath:global-config-file.properties"/>  
+	 </bean>
+
+	<!-- 或者如下 -->
+	<bean id="propertyConfig"
+		class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>/WEB-INF/classes/dbConection.properties</value>
+				<value>/WEB-INF/classes/wifidogcode.properties</value>
+	 				<!--<value>classpath:jdbc.properties</value> -->
+	 				<!--<value>classpath:config.properties</value> -->
+			</list>
+		</property>
+	</bean>
+</beans>
+ ```
+即引入PropertyPlaceholderConfigurer来读取property配置文件，spring框架会从其那里获取到需要的配置参数。
+之后再用${key}的格式取代你数据源配置参数：
+```xml
+<bean id="myBatisDataSource" class="org.apache.commons.dbcp.BasicDataSource">
+	<property name="driverClassName" value="org.postgresql.Driver">
+	</property>
+	<property name="url"
+		value="${jdbc.dataSource.url}">   
+	</property>
+	<property name="username" value="${jdbc.dataSource.username}"></property>
+	<property name="password" value="${jdbc.dataSource.password}"></property>
+</bean>
+```
+例如：${jdbc.dataSourcurl}：框架会将global-config-file.properties读到jdbc.dataSource.url的值“jdbc:postgresql://192.168.1.118:5432/DB_name”填入${jdbc.dataSource.url}所在的位置。
+
+
+
 - 在src下新建xxx.properties文件
 - 在spring配置文件中 引入xmlns:context命名空间
 - <bean > 自动注入 注意点
