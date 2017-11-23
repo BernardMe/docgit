@@ -2082,6 +2082,22 @@ Struts2基于拦截器
 按楼主说的就是想struts1一样，写一堆赋值代码取值代码什么的。
 而struts2的这种设计配合其拦截器真的可有大大的提高开发的方便性。
 
+## Struts2 的action类中属性驱动和模型驱动的区别
+
+### 属性驱动
+在Action类中，属性××通过`get××()和set××()`方法，把参数在整个生命周期内进行传递，这就是属性驱动
+//首先类RegisterAction 必须继承ActionSupport 
+
+//重写execute() 方法执行Action动作
+
+//重写addFieldError()方法来进行错误处理
+
+### Struts2的模型驱动
+
+把用户请求参数封装到一个javabean中，Action中使用一个独立的modle实例来封装用户的请求参数和处理结果，action完成业务逻辑调度，使用2个类来分解action任务，这就是模型驱动。
+
+注意：使用模型驱动时，在继承ActionSupport类或者实现action接口时，必须实现一个ModelDriver接口，该接口的作用建立一个Model对象来代替Action本身把数据存入ValueStack
+
 
 # RESTful架构风格
 
