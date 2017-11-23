@@ -23,7 +23,7 @@
 
 
 
-## MySQL解压版如何安装
+## MySQL(windows)解压版如何安装
 
 ### 配置
 
@@ -322,7 +322,40 @@ ISOLATION_SERIALIZABLE 这是花费最高代价但是最可靠的事务隔离级
 3.8 NESTED:必须在事务状态下执行.如果没有事务,新建事务,如果当前有事务,创建一个嵌套事务
 
 
+### service层的事务的传播行为
+如果你在你的Service层的这个方法中，除了调用了Dao层的方法之外，还调用了本类的其他的Service方法，那么在调用其他的Service方法的时候，这个事务是怎么规定的呢，我必须保证我在我方法里掉用的这个方法与我本身的方法处在同一个事务中，否则如果保证事物的一致性
 
+PROPGATION_REQUIRED：这个配置项的意思是说当我调用service层的方法的时候开启一个事务(具体调用那一层的方法开始创建事务，要看你的aop的配置),那么在调用这个service层里面的其他的方法的时候,如果当前方法产生了事务就用当前方法产生的事务，否则就创建一个新的事务
+
+```java
+//********************sample***********************
+ServiceA {   
+       
+       
+     void methodA() {   
+         ServiceB.methodB();   
+     }   
+  
+}   
+  
+ServiceB {   
+       
+         
+     void methodB() {   
+     }   
+       
+}      
+//*************************************************
+```
+我们这里一个个分析吧:
+
+1： PROPAGATION_REQUIRED 
+加入当前正要执行的事务不在另外一个事务里，那么就起一个新的事务
+比如说，ServiceB.methodB的事务级别定义为PROPAGATION_REQUIRED, 那么由于执行ServiceA.methodA的时候，
+         ServiceA.methodA已经起了事务，这时调用ServiceB.methodB，ServiceB.methodB看到自己已经运行在ServiceA.methodA
+的事务内部，就不再起新的事务。而假如ServiceA.methodA运行的时候发现自己没有在事务中，他就会为自己分配一个事务。
+这样，在ServiceA.methodA或者在ServiceB.methodB内的任何地方出现异常，事务都会被回滚。即使ServiceB.methodB的事务已经被
+提交，但是ServiceA.methodA在接下来fail要回滚，ServiceB.methodB也要回滚
 
 
 
