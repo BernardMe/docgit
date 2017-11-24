@@ -2072,6 +2072,14 @@ Strut 和 Struts2 完全没有继承关系，底层原理也不同
 Struts1基于Servlet
 Struts2基于拦截器
 
+## struts2中的路径问题 
+注意：在jsp中`/表示tomcat服务器的根目录`，在struts.xml配置文件中`/表示webapp的根路径`，即 web项目中的WebRoot路径。 
+总结： 
+`struts2中的路径问题是根据action的路径而不是jsp路径来确定，所以尽量不要使用相对路径 `。 
+虽然可以用redirect方式解决，但redirect方式并非必要。 
+解决办法非常简单，统一使用绝对路径。 （在jsp中用request.getContextRoot方式来拿到webapp的路径） 
+或者 指定basePath。
+
 ## 为什么Struts2的Action要做成多实例的？有必要吗？
 >当Dispatcher送请求到拦截器的时候，不是请求参数都放到ActionContext里面了吗？所以Action里面可以不用写任何实例变量，方法里面需要的话，直接从线程本地变量ActionContext里面读数据不就行了！为什么要Action做成多实例的呢？单例就可以啦。
 难道是我遇到的业务要求太简单了，所以不需要在Action里面配实例变量？ 我觉得可以放到Action里面的变量，也可以放到ActionContext里面。
