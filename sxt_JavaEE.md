@@ -240,10 +240,18 @@ Servlet默认是懒汉单例模式，
     + 客户端丢失JSESSIONID, 关浏览器
     + 服务器关闭
     + 超过最大不活动时间
-        1 默认是30分钟，在tomcat的web.xml中有设置
-        2 可以在本项目的web.xml中自定义时间(分钟)
-        3 可以通过session.setMaxInactiveInterval(seconds)
+        1 默认是30分钟，在Tomcat/conf/web.xml中有设置
+        2 可以在本项目/web.xml中自定义时间(分钟)
+        3 可以通过Servlet中API设置session.setMaxInactiveInterval(seconds)
     + 手动session.invalidate()
+
+### Session超时设置说明
+ 1.优先级：Servlet中API设置 > 程序/web.xml设置 > Tomcat/conf/web.xml设置
+ 2.若访问服务器session超时（本次访问与上次访问时间间隔大于session最大的不活动的间隔时间）了，即上次会话结束，但服务器与客户端会产生一个新的会话，之前的session里的属性值全部丢失，产生新的sesssionId
+ 3.客户端与服务器一次有效会话（session没有超时），每次访问sessionId相同，若代码中设置了session.setMaxInactiveInterval()值，那么这个session的最大不活动间隔时间将被修改，并被应用为新值。
+ 4.Session的销毁（代表会话周期的结束）：在某个请求周期内调用了Session.invalidate()方法，此请求周期结束后，session被销毁；或者是session超时后自动销毁；或者客户端关掉浏览器
+ 5.对于JSP，如果指定了<%@ page session="false"%>，则在JSP中无法直接访问内置的session变量，同时也不会主动创建session，因为此时JSP未自动执行request.getSession()操作获取session。
+
 
 ### HttpSession的跟踪机制
 通过Cookie来管理，在Cookie中通过JSessionID来表示客户端
