@@ -1592,6 +1592,15 @@ SupermeMng使用
 - 继承关系
 - 聚合关系
 
+### maven用法
+3.3 web工程
+创建一个简单的web项目，只需要修 -DarchetypeArtifactId为maven-archetype-webapp即可，如下命令
+
+```sehll
+mvn archetype:generate -DgroupId=com.bernard -DartifactId=MemoSSH -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false
+```
+
+
 ### Maven私服使用办法
 
 前提:已经配置JDK环境变量
@@ -1613,6 +1622,21 @@ D:\nexus\soft\nexus-2.12.0-01\bin\jsw
 6. 在主界面右上角log in 进行登录,默认用户名和密码是 
 	用户名:admin
 	密码:admin123
+
+### Nexus仓库分类
+hosted 宿主仓库
+主要用于部署无法从公共仓库获取的构件(如Oracl的JDBC驱动)以及自己或第三方的项目构件，是私有仓库的一部分，私有仓库还包括从代理仓库下载过来的构件
+proxy 代理仓库
+代理公共的远程仓库
+virtual 虚拟仓库
+用于适配Maven1
+group 仓库组
+Nexus通过仓库组的概念统一管理多个仓库，这样我们在项目中就直接请求仓库组即可请求到仓库组管理的多个仓库
+
+### Maven3中ojdbc驱动问题
+由于Oracle授权问题，Maven3不提供Oracle JDBC driver，为了在Maven项目中应用Oracle JDBC driver,必须手动添加到本地仓库。
+
+此文档用的是Oracle 11g.
 
 
 ### POM.xml
