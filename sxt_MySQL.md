@@ -84,10 +84,15 @@ VARCHARA使用起来较为灵活，CHAR处理速度更快
 TEXT：非二进制大对象(字符)
 BLOB：二进制大对象(非字符)
 
+## 创建数据库
+```sql
+CREATE DATABASE  IF NOT EXISTS `db_library` DEFAULT CHARACTER SET utf8 ;
+```
+
 ## mysql中int、bigint、smallint 和 tinyint的区别与长度
 1、在mysql 命令行创建如下表
 
-
+```sql
 CREATE TABLE `test_int_1` (
   `int_id` int NOT NULL,
   `bigint_id` bigint DEFAULT NULL,
@@ -99,6 +104,7 @@ CREATE TABLE `test_int_1` (
   `tinyint_id` tinyint DEFAULT NULL,
   PRIMARY KEY (`int_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+```
 
 2、desc
 
