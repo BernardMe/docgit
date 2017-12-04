@@ -213,7 +213,7 @@ select sum(sal), avg(sal), count(empno) from emp;
 `SELECT  avg(sal), max(sal) from emp ;`
 
 --统计每个部门的总工资，总人数，平均工资 排除 部门10
--- **where 子句要写在 group by之前  先过滤在分组
+-- where 子句要写在 group by之前  先过滤再分组
 `select deptno, sum(sal), count(*), avg(sal) from emp where deptno<>10 group by deptno order by deptno;`
 
 ## SQL中group by的用法
@@ -233,7 +233,7 @@ min(列名) 最小值 　　　　
 avg(列名) 平均值 　　　　
 first(列名) 第一条记录 仅Access支持
 last(列名)  最后一条记录  仅Access支持
-count(列名) 统计记录数 注意和count(*)的区别
+count(列名) 统计记录数 注意和count(`*`)的区别
 示例5：求各组平均值
 `select 类别, avg(数量) AS 平均值 from A group by 类别;`
 
