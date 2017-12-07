@@ -264,6 +264,56 @@ tomcat jdbc pool 是 tomcat 的一个模块
 
 ## log4j
 
+### 配置文件
+
+1.1 配置文件
+Log4j可以通过java程序动态设置，该方式明显缺点是：如果需要修改日志输出级别等信息，则必须修改java文件，然后重新编译，很是麻烦；
+log4j也可以通过配置文件的方式进行设置，目前支持两种格式的配置文件：
+•xml文件
+•properties文件（推荐）
+下面是一个log4j配置文件的完整内容：
+复制代码 代码如下:
+```PROPERTIES
+log4j.rootCategory=INFO, stdout
+log4j.rootLogger=info, stdout
+
+### stdout ###
+log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+log4j.appender.stdout.Target=System.out
+log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+log4j.appender.stdout.layout.ConversionPattern=%d{ABSOLUTE} %5p - %m%n
+
+### set package ###
+log4j.logger.org.springframework=info
+log4j.logger.org.apache.catalina=info
+log4j.logger.org.apache.commons.digester.Digester=info
+log4j.logger.org.apache.catalina.startup.TldConfig=info
+log4j.logger.chb.test=debug
+```
+
+1.2 配置根Logger
+根logger主要定义log4j支持的日志级别及输出目的地，其语法为：
+log4j.rootLogger = [ level ] , appenderName, appenderName, …
+其中，level 是日志记录的优先级，分为OFF、FATAL、ERROR、WARN、INFO、DEBUG、ALL或者自定义的级别。
+建议只使用四个级别，优先级从高到低分别是ERROR、WARN、INFO、DEBUG。
+appenderName指定日志信息输出到哪个地方，可同时指定多个输出目的地。
+
+1.3 配置输出目的地Appender
+Appender主要定义日志信息输出在什么位置，主要语法为：
+复制代码 代码如下:
+```PROPERTIES
+log4j.appender.appenderName = classInfo
+log4j.appender.appenderName.option1 = value1
+
+log4j.appender.appenderName.optionN = valueN
+```
+
+Log4j提供的appender有以下几种：
+•org.apache.log4j.ConsoleAppender（控制台）， 
+•org.apache.log4j.FileAppender（文件）， 
+•org.apache.log4j.DailyRollingFileAppender（每天产生一个日志文件），
+•org.apache.log4j.RollingFileAppender（文件大小到达指定尺寸的时候产生一个新的文件） 
+•org.apache.log4j.WriterAppender（将日志信息以流格式发送到任意指定的地方）
 
 ### 使用步骤:
 - 导入log4j-xxx.jar
@@ -2095,6 +2145,31 @@ Strut 和 Struts2 完全没有继承关系，底层原理也不同
 
 Struts1基于Servlet
 Struts2基于拦截器
+
+## Struts2配置
+
+### namespace
+1 在struts1中是没有命名空间这个概念的，通过命名空间我们可以将所有的action配置划分为一个个逻辑单元，每个单元都有它自己的标识前缀。命名控件可以避免action命名的冲突。每个命名空间下有可以有一个叫做”help”的action，并且有着各自不同的实现，当然在同一个命名空间下最好是不要出现两个名字一样的action。当命名空间的前缀出现在浏览器的URI中时，标签会意识到命名空间，因此我们不必将命名空间嵌套在表单和链接中。
+2 默认的命名空间是空字符串””，也就是不设置namespace属性时候的命名空间。我们在匹配一个action的时候，先到它指定的命名空间中去找，如果没有再到这个默认的命名空间中去找。Struts2还支持根命名空间(“/”)，当一个request直接请求context path下面的资源时，struts2会首先到跟命名空间下去寻找匹配的action，例如请求是http://server/myapp/bar.action，那么我们首先会去”/”命名空间下去寻找这个action，
+
+### URI映射规则
+关于如何从URI映射到一个action中我做了一些测试，发现可以遵循如下的一条规则：
+1．获得请求路径的URI，例如url是：http://server/myapp/path1/path2/path3/test.action
+2．首先寻找namespace为/path1/path2/path3的package，如果存在这个package，则在  
+   这个package中寻找名字为test的action，若找到则执行，否则报错；如果不存在这
+   个package则转步骤3；
+3．寻找namespace为/path1/path2的package，如果存在这个package，则在这个package  
+   中寻找名字为test的action，若找到则执行，否则报错；如果不存在这个package
+   则转步骤4；
+4．寻找namespace为/path1的package，如果存在这个package，则在这个package中寻
+   找名字为test的action，若找到则执行，否则报错；如果仍然不存在这个package，
+   就去namaspace为空字符串的package下面去找名字为test的action，如果还是找不
+   到，页面提示找不到action。
+这里有几点特殊的情况要说明一下，如下所示：
+1．如果匹配到了多个package，比如上述流程中有多个namespace为/path1/path2/path3
+的package，此时按照package出现的顺序从后向前的顺序查找action，直至找完为止。
+2．如果在一个package中有多个name属性相同的action，那么执行追有一个action。比如上述流程中，有一个namespace为/path1/path2/path3的package，它里面含有多个名字为test的action，那么选择最后一个执行。
+
 
 ## struts2中的路径问题 
 注意：在jsp中`/表示tomcat服务器的根目录`，在struts.xml配置文件中`/表示webapp的根路径`，即 web项目中的WebRoot路径。 
