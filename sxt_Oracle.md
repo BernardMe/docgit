@@ -172,7 +172,8 @@ TIMESTAMP: 保存 年 月 日 时 分 秒 纳秒
 ## 转换函数
 
 
-## NVL函数
+## 控制流函数
+### NVL函数
 NVL函数　Oracle/PLSQL中的一个函数。
 格式为：
 `NVL( string1, replace_with)`
