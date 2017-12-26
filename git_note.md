@@ -121,7 +121,7 @@ git commit -am "init" 提交并且加注释
 这样会使远程修改丢失，一般是不可取的，尤其是多人协作开发的时候。
 
 2.push前先将远程repository修改pull下来
-```
+```shell
 $ git pull origin master
 
 $ git push -u origin master
@@ -133,10 +133,10 @@ $ git push -u origin master
 
 克隆仓库的命令格式为 git clone [url]。比如，要克隆 Ruby 语言的 Git 代码仓库 Grit，可以用下面的命令：
 
-$ git clone git://github.com/schacon/grit.git
+`$ git clone git://github.com/schacon/grit.git`
 这会在当前目录下创建一个名为grit的目录，其中包含一个 .git 的目录，用于保存下载下来的所有版本记录，然后从中取出最新版本的文件拷贝。如果进入这个新建的 grit 目录，你会看到项目中的所有文件已经在里边了，准备好后续的开发和使用。如果希望在克隆的时候，自己定义要新建的项目目录名称，可以在上面的命令末尾指定新的名字：
 
-$ git clone git://github.com/schacon/grit.git mygrit
+`$ git clone git://github.com/schacon/grit.git mygrit`
 唯一的差别就是，现在新建的目录成了 mygrit，其他的都和上边的一样。
 
 Git 支持许多数据传输协议。之前的例子使用的是 git:// 协议，不过你也可以用 http(s):// 或者 user@server:/path.git 表示的 SSH 传输协议。我们会在第四章详细介绍所有这些协议在服务器端该如何配置使用，以及各种方式之间的利弊。

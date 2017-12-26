@@ -782,5 +782,13 @@ conn.commit();
 jdbc:oracle:thin:@10.4.72.117:1521/ORCL
 
 
+## Keywords
+
+Dec 22, 2017()
+`oracle中没有value关键字，只有values关键字`
+
+
+reserved keyword 保留字
+
 
 

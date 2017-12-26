@@ -1188,6 +1188,14 @@ global session 在一个全局的HTTP Session 中，一个bean定义对应一个
 	+ NEVER 必须在非事务下执行，有事务就报错
 	+ NESTED 必须在事务中执行
 
+
+声明式事务:这里所说的声明，就是指在配置文件中申明。用在Spring配置文件中声明式的处理事务来代替代码式的处理事务。
+### 声明式事务的好处
+1 事务管理不侵入开发的组件，具体来说，业务逻辑对象就不会意识到正在事务管理之中，事实上也应该如此，因为事务管理是属于系统层面的服务，而不是业务逻辑的一部分，如果想要改变事务管理策划的话，也只需要在定义文件中重新配置即可;
+2 在不需要事务管理的时候，只要在设定文件上修改一下，即可移去事务管理服务，无需改变代码重新编译，这样维护起来极其方便。
+
+
+
 ## Spring中常用注解
 
 @Component 创建类对象
@@ -2019,6 +2027,11 @@ public class Content {
 
 ## HibernateTemplate
 HibernateTemplate是Spring提供的一个就Hibernate访问持久层技术而言、支持Dao组件的一个工具。HibernateTemplate提供持久层访问模板，应用HibernateTemplate无须实现特定的接口，它只需要提供一个sessionFactory的引用就可以执行持久化操作。
+
+### getHibernateTemplate().save(o)和getSession.save(o)的区别
+你是在spring的配置文件中配置了事务，而getHibernateTemplate()是Spring的方法，支持声明式事务管理，所以如果你配置了事务，它会自动调用事务并在操作完毕后自动关闭session;
+而单独的getSession()却与spring没有关系，它是由hibernate控制的，并不支持声明式事务管理，所以你必须调用session.flush()或transaction.commit()才可以成功保存;
+
 
 ## Hibernate的clear(),flush(),evict()方法详解
 1.Clear 方法
