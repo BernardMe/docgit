@@ -79,8 +79,8 @@ exception
 listener
 
 ### 注释
-- 类/方法 文档注释 /** */
-- 在方法里面 //  或/* */
+- 类/方法 文档注释 `/** */`
+- 在方法里面 `//  或/* */`
 
 ### 类
 大驼峰
@@ -589,6 +589,7 @@ MyBatis中默认SqlSession缓存开启
 
 ### resutlMap标签
 使用resutlMap标签  <select> 中不再使用resultType 属性
+resultMap – 是最复杂也是最强大的元素，用来描述如何从数据库结果集中来加载对象。
 
 #### 单表resutlMap写法
 <resutlMap>
@@ -685,7 +686,7 @@ resultMap  查询关联集合对象 (联合查询方式)
 
 要求查询出的列名和属性名相同
 
-别名`对象.属性名`使用 ``包裹  (集合.属性名)无法使用auto Mapping
+别名`对象.属性名`使用 ''包裹  (集合.属性名)无法使用auto Mapping
 
 
 ## MyBatis 注解
