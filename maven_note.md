@@ -143,7 +143,7 @@ group（仓库组）：仓库的一种组合策略，并不存在实在意义的
 2.加速Maven构件：如果项目配置了很多外部远程仓库的时候，构建速度就会大大降低
 3.部署第三方构件：有些构件无法从外部仓库获得的时候，我们可以把这些构件部署到内部仓库(私服)中，供内部maven项目使用
 
-### Maven私服使用办法
+##### Maven私服使用办法
 
 前提:已经配置JDK环境变量
 
@@ -164,6 +164,9 @@ D:\nexus\soft\nexus-2.12.0-01\bin\jsw
 6. 在主界面右上角log in 进行登录,默认用户名和密码是 
 	用户名:admin
 	密码:admin123
+
+修改nexus端口
+`nexus.properties文件中# Jetty section application-port=8091`
 
 #### 远程仓库配置
 配置远程仓库将引入新的配置元素：`<repositories>`     `<repository>`
