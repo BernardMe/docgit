@@ -169,6 +169,22 @@ Oracle 中有两种主要日期与时间类型，DATE 以及 TIMESTAMP。
 DATE: 仅存 年 月 日
 TIMESTAMP: 保存 年 月 日 时 分 秒 纳秒
 
+### 毫秒与日期的相互转换示例
+毫秒转换为日期
+```sql
+SELECT TO_CHAR(1406538765000 / (1000 * 60 * 60 * 24) + 
+TO_DATE('1970-01-01 08:00:00', 'YYYY-MM-DD HH:MI:SS'), 'YYYY-MM-DD HH24:MI:SS') AS CDATE 
+FROM DUAL;
+```
+
+日期转换毫秒
+```sql
+SELECT TO_NUMBER(TO_DATE('2014-07-28 17:12:45', 'YYYY-MM-DD HH24:MI:SS') - 
+TO_DATE('1970-01-01 8:0:0', 'YYYY-MM-DD HH24:MI:SS')) * 24 * 60 * 60 * 1000 
+FROM DUAL;
+```
+注意：毫秒转换为日期 格式化的时间可以是12小时制和24小时制。
+
 ## 转换函数
 
 

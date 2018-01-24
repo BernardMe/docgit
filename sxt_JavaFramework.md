@@ -2219,6 +2219,75 @@ Struts2基于拦截器
 
 注意：使用模型驱动时，在继承ActionSupport类或者实现action接口时，必须实现一个ModelDriver接口，该接口的作用建立一个Model对象来代替Action本身把数据存入ValueStack
 
+#### Struts2中json plugin可以实现struts2和json的完美结合
+
+我在struts.xml中有如下action定义：
+```xml
+<!--在当前package中定义result-type，将json给加进去-->
+<package name="nationsky" extends="struts-default" namespace="/">
+    <!--在当前package中定义result-type，将json给加进去-->
+    <result-types>
+        <result-type name="json" class="org.apache.struts2.json.JSONResult"/>
+    </result-types>
+
+    <action name="*_*" class="{1}Action" method="{2}">
+        <result name="success">${result}</result>
+        <result name="redirect" type="redirectAction">${result}</result>
+        <result name="chain" type="chain">${result}</result>
+        <result name="input">${result}</result>
+        <result name="strErr" type="json">${result}</result>
+    </action> 
+</package>
+```
+
+通过java代码在底层向上抛出异常，在Action层捕获，通过struts2json将响应结果对象(MiniResult对象)以json格式返回给浏览器
+必须有返回消息对象(MiniResult对象)的getter方法
+```java
+private MiniResult mr;
+
+public MiniResult getMr() {
+    return mr;
+}
+
+public String uploadExcel() throws IOException {
+    
+    //track4OrderList
+    List<Track4Order> track4OrderList = new ArrayList<Track4Order>();
+    try {
+        //解析Excel
+        ExcelExecute.parseExcel(excelPath, track4OrderList);
+    } catch (Exception e) {
+        e.printStackTrace();
+        PrintErr.printErr(e, log);
+        mr.setStatus(500);
+        mr.setMsg(e.getMessage());
+        return "strErr";
+    }
+    //...
+}
+```
+
+前端通过ajax的success函数，接收http响应数据
+```js
+//发送
+$.ajax({
+    type:'post',
+    url:'supplierOrder_uploadExcel',
+    data:formFile,
+    contentType: false, //必须
+    cache: false,//上传文件无需缓存
+    processData: false,//用于对data参数进行序列化处理 这里必须false
+    success:function(data){
+        if (data.mr.status == 500){
+            alert(data.mr.msg);
+            document.forms[0].excel.value = "";
+        } else if (data.mr.status == 200){
+            alert(data.mr.msg);
+            $(window).attr("location", "supplierOrder_querySupplierOrderPage");
+        }
+    }
+});
+```
 
 # RESTful架构风格
 
