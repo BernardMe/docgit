@@ -220,7 +220,7 @@ select sum(sal), avg(sal), count(empno) from emp;
 `select count(ename) from emp;`
 `select max(ename), min(hiredate) from emp`
 
---多行函数不能和普通字段同时查询
+### 多行函数不能和普通字段同时查询
 `SELECT  deptno, sum(sal), avg(sal), max(sal) from emp where deptno=10;`
 报错 ORA-00937: 不是单组分组函数
 很好理解：你既然指定了分组函数，又同时制定了其他列，还想不按照指定的列来分组，你到底想让oracle怎么做呢？这根本就得不出结果。就像你需要统计班上男女生的人数，但是又不能分组，只能在一条数据里表示出来，怎么能办得到呢？
@@ -337,6 +337,32 @@ WHERE	table1.column = table2.column(+);
 SELECT	table.column, table.column
 FROM		table1, table2
 WHERE	table1.column(+) = table2.column;
+
+例如：
+```sql
+SELECT t.orderid,
+       t.giftname,
+       t.consignee,
+       t.phone,
+       t.receiptaddress,
+       t.createtime,
+       t.flag,
+       t.trackingnum,
+       t.trackcompany,
+       t.trackcompanycode
+FROM kmh_order t
+ RIGHT JOIN (SELECT providerid, giftid
+               FROM kmh_provider_gift o
+              WHERE 1=1
+                AND o.providerid = '1') pro_gift
+    ON pro_gift.giftid = t.giftid
+WHERE t.createtime > 1493049600000
+AND t.giftname LIKE '%%'
+AND (t.consignee LIKE '%%' OR t.phone LIKE '%%' OR t.orderid LIKE '%%')
+```
+1 根据providerId查询中间表获取供应商id和giftid的对应临时表，
+2 将礼品表右外链接临时表，礼品表中不符合关联条件(pro_gift.giftid = t.giftid)的礼品表中记录行就被丢弃了
+
 
 ## 自连接
 将一个表当两个表使用
@@ -463,8 +489,8 @@ WHERE sal>ALL(SELECT sal FROM emp WHERE job='SALESMAN')
 ```
 
 ## 模糊查询
-like ‘%ALL%’ 包含字符ALL
-like '_A%' 第二个字符是A
+`like '%ALL%'` 包含字符ALL
+`like '_A%'` 第二个字符是A
 
 ## 表约束
 
