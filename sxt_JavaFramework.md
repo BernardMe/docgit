@@ -754,6 +754,14 @@ DefaultSqlSesion
 
 # Spring框架
 
+Spring最根本的使命：`简化Java开发`。
+为了降低Java开发的复杂性，Spring采取以下4种关键策略：
+
+基于POJO的轻量级和最小侵入性编程
+通过依赖注入和面向接口实现松耦合
+基于切面和惯例进行声明式编程
+通过切面和模版减少样板示代码
+
 ## Spring Core Container
 Spring 核心容器
 Spring运行必要的最基本环境
@@ -768,6 +776,10 @@ web项目使用
 Spring可以使用 普通java项目，也可以适用web项目
 
 ## Ioc(Inversion of Control)
+
+>A类中引用了个B类，一般直接在B类中new B()，使用A类的时候new A()初始化的时候就会new B()，如果使用spring那就是直接get(“A”)，而B会自动注入到A对象中
+这就是“控制反转”：将创建对象的权利，反转给IOC容器。
+
 控制反转  -----> 就是一个管理对象的事情
 
 完成的事情，原先由程序员主动通过new实例化对象事情，转交给Spring负责
@@ -780,6 +792,9 @@ Spring可以使用 普通java项目，也可以适用web项目
 
 `IoC从学习开始到工作，都必须牢记`
 
+### 使用spring-ioc难道就没有什么弊端吗？
+
+原来在使用spring2.0的时候采用xml配置方式的时候，spring配置文件太多，太繁琐，但是这个问题在使用了注解方式之后就完全不存在了。
 
 ### ApplicationContext Spring中最大的容器
 

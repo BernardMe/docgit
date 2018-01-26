@@ -194,6 +194,40 @@ Servlet默认是懒汉单例模式，
 ### 获取其他信息
 - getxxx
 
+### 基于request.getAttribute与request.getParameter的区别详解
+`HttpServletRequest接口`既有getAttribute()方法，也有getParameter()方法，这两个方法有以下区别：
+1、`HttpServletRequest接口`有setAttribute()方法，而没有setParameter()方法；
+
+2、当两个Web组件之间为`链接关系`时，被链接的组件通过getParameter()方法来获得请求参数；
+例如，假定welcome.jsp和authenticate.jsp之间为链接关系，welcome.jsp中有以下代码：
+```html
+<a href="authenticate.jsp?username=qianyunlai.com">authenticate.jsp </a>  
+ //或者:  
+ <form name="form1" method="post" action="authenticate.jsp">  
+     请输入用户姓名:<input type="text" name="username">  
+     <input type="submit" name="Submit" value="提交">  
+ </form> 
+ ```
+在authenticate.jsp中通过request.getParameter(“username”)方法来获得请求参数username:
+`<% String username=request.getParameter("username"); %>`
+
+3、当两个Web组件之间为`转发关系`时，转发目标组件通过getAttribute()方法来和转发源组件共享request范围内的数据。
+假定authenticate.jsp和hello.jsp之间为转发关系。authenticate.jsp希望向hello.jsp传递当前的用户名字，如何传递这一数据呢？先在authenticate.jsp中调用setAttribute()方法：
+```html
+<%  
+    String username=request.getParameter("username");  
+    request.setAttribute("username",username);  
+%>  
+ <jsp:forward page="hello.jsp" /> 
+```
+在hello.jsp中通过getAttribute()方法获得用户名字：
+```html
+<% String username=(String)request.getAttribute("username"); %>  
+ Hello: <%=username %> 
+```
+
+4、request.getAttribute 返回的是Object，request.getParameter 返回的是String。
+
 ## 接口HttpServletResponse
 - 继承了ServletResponse接口
 - 帮助Servlet给客户端发送响应，由服务器创建后，作为参数传递给service方法
