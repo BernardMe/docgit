@@ -25,6 +25,22 @@ Java HotSpot(TM) 64-Bit Server VM (build 25.45-b02, mixed mode)
 `原因是 JAVA_HOME 环境变量指定的是1.7的 JDK, 但是在安装1.8的 JDK 时顺便安装的 JRE 会覆盖原来的注册表。这样很容易出问题，比如会使用 1.8 的 javac 可以正常编译出 class 文件，但是使用 java 命令时实际用的是1.7版本的，很容易出现问题。`
 
 
+### Linux安装压缩版JDK
+
+解压完压缩文件
+*.tar.gz和*.tgz 用 tar –xzf 解压
+`tar –xzf jdk-8u161-linux-x64.tar.gz`
+
+
+配置环境变量的方法
+1. 修改/etc/profile文件 
+如果你的计算机仅仅作为开发使用时推荐使用这种方法，因为所有用户的shell都有权使用这些环境变量，可能会给系统带来安全性问题。 
+·用文本编辑器打开/etc/profile 
+·在profile文件末尾加入： 
+export JAVA_HOME=/usr/local/jdk8
+export PATH=$JAVA_HOME/bin:$PATH  
+export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar 
+
 
 
 ## Java版本
