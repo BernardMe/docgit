@@ -58,6 +58,15 @@ D:\mysql-5.6\bin>net start mysql
 MySQL 服务正在启动 ..
 MySQL 服务已经启动成功。（说明服务启动成功了）
  
+### Linux下服务未启动问题Unit mysqld.service not loaded
+检查mysql服务状态
+`/etc/init.d/mysql status`
+返回`ERROR! MySQL is not running, but PID file exists`,可见服务没启动
+
+启动mysql服务
+`/etc/init.d/mysql start`
+返回`Starting MySQL SUCCESS! `服务启动了
+
 ### 登录验证
 
 D:\mysql-5.6\bin>mysql -uroot -p
