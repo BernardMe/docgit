@@ -1,8 +1,102 @@
-﻿
+﻿[TOC]
+
 # 写在前面的话
 
 Tip 5: 为何 拷贝(Copy)/粘贴(Paste)功能不能用了? 
 不怕大家笑话，我有几次使用 UltraEdit 的过程中发现拷贝与粘贴的内容是不匹配的．不知所以然，干脆重新启动了笔记本.今天翻看手册才恍然大悟:UltraEdit有10个剪切板(clipboard),分别用Ctrl+0 - Ctrl+9　切换． Ctrl+0 是　Windows 的，其他则为用户自定义的．我在使用的过程中错调用了 CTRL+n, 结果内容就有问题了．你遇到过没? 
+
+
+# React部分
+
+## 项目运行
+
+### 关于npm run dev和build
+
+`npm run build:dll`
+
+`npm run XXX`是执行配置在package.json中的脚本，比如：
+
+```js
+"scripts": {
+    "dev": "node build/dev-server.js",
+    "build": "node build/build.js",
+    "unit": "karma start test/unit/karma.conf.js --single-run",
+    "e2e": "node test/e2e/runner.js",
+    "test": "npm run unit && npm run e2e",
+    "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs"
+  },
+ ```
+只有这里配置了，你才能run，所以不是所有的项目都能npm run dev/build。
+要了解这些命令做了什么，就要去scripts中看具体执行的是什么代码。
+这里就像是一些命令的快捷方式，免去每次都要输入很长的的命令（比如unit那行）。
+
+为什么会出现ERROR，就是因为在跑这些对应的脚本文件的时候，可能是某些依赖没有被加载等的。
+
+一般项目都会有build, dev, unit等，从名字上基本能看出来是干什么的。比如上面配置的unit，就是开启karma去跑单元测试，具体测试内容，要去看karma.conf.js；e2e就是end to end的端到端测试；而test则会将单元测试和端到端测试都执行。
+
+有些项目中根据需要，还会配置其他命令，例如自动生成文档，比如这里：
+`"build:doc": "node ./scripts/build-doc.js"`,
+如果你去build-doc.js中看的话，会发现，这个脚本在遍历所有源文件，解析注释和其他内容，自动生成API文档
+
+## 源码阅读理解
+
+### State和 Props
+`state是状态机`
+
+应该包括：
+那些可能被组件的事件处理器改变并触发用户界面更新的数据，(譬如需要对用户输入,服务器请求或者时间变化等作出响应。)
+
+不应该包括：
+计算所得数据、React组件（在render()里使用props和state来创建它）、基于props的重复数据（尽可能保持用props来做作为唯一的数据来源，把props保存到state中的有效的场景是需要知道它以前的值得时候,因为未来的props可能会变化）。
+
+
+`props： 父级向子级传递数据的方式。`
+
+
+
+### 有状态组件和无状态组件（纯函数组件）
+
+#### 有状态组件
+
+通过React.createClass或者es6的class继承React.Component创建的组件。
+特性：具备完整的生命周期及实例化过程、支持this及ref指向。
+
+
+
+## webpack.config.js配置文件
+```js
+module.exports={
+devtool:'eval-source-map',
+/__dirname 获取nodejs的详细路径/
+/入口文件/
+entry:dirname+'/app/app.js',
+/输出文件/
+output:{
+/输出路径/
+path:dirname+'/build',
+/输出文件名/
+filename:'bundle.js'
+},
+module: {
+/es6转换es5的配置文件/
+loaders: [
+{
+test:/.json$/,
+loader:'json-loader'
+},
+{
+test:/.js$/,
+exclude:'node_modules',
+loader:'babel-loader',
+query:{
+presets:['es2015','react']
+}
+},
+]
+}
+}
+
+```
 
 
 
@@ -63,13 +157,40 @@ arr[3](); //3
 
 ## 变量常量声明const
 
-（1）const 声明的是常量，一旦声明，值将是不可变的
+（1）const 声明的是常量，一旦声明，值将是不可变的,const 声明的变量必须设置初始值，且不能重复赋值
 ```js
 const PI = 3.1415;
 PI = 3;// 抛出异常：Assignment to constant variable.不能给一个常量再赋值；
 console.log(PI) //3.1415
 ```
-
+(2) const 也具有块级作用域
+```js
+if (true) {
+  const a = 5;
+}
+console.log(a);// a is not defined;
+```
+(3) const声明的常量没有声明提前的效果，也不能被重复声明；
+```js
+    var a = 5;
+    function b(){
+       console.log(a);
+       var a = 5;
+    }
+    b();//undefind 这里得到的undefined就是因为函数内部有var声明提前造成的；这个例子是题外话，一个比较常见的陷阱
+    
+    if(true){
+       console.log(PI);// 抛出一个错误PI is not defined
+       const PI = 3.14
+    }
+    if(true){
+       console.log(PI);// 不会报错只会打印出undefined,说明他已经声明了只是没有赋值
+       var PI = 3.14 
+    }
+    //重复声明
+    var message = "Hello";
+    const message = "Goodbye!"; //会报错  Identifier 'message' has already been declared
+```
 
 # JavaScript部分
 
@@ -91,6 +212,18 @@ Location 对象存储在 Window 对象的 Location 属性中，表示那个窗�
 Location 对象表示的却是浏览器当前显示的文档的 URL（或位置）。但是 Location 对象所能做的远远不止这些，它还能控制浏览器显示的文档的位置。
 `如果把一个含有 URL 的字符串赋予 Location 对象或它的 href 属性，浏览器就会把新的 URL 所指的文档装载进来，并显示出来。`
 
+### 我们来看看DOM和BOM到底是什么呢？
+
+DOM（Document Object Model）是HTML和XML的应用程序接口(API)，W3C的标准即事为它而制定。
+
+BOM（Browser Object Model）是提供与浏览器进行交互的方法和接口，由于不同的浏览器实现方法不同，从而表现也可能不同。
+
+且BOM的核心是window对象，而window又是一个全局对象，这就意味着网页中定义的任何对象、变量、函数都是以window作为全局对象的。
+
+### 为什么BOM是包含了DOM
+
+因为DOM是通过document来访问、检索、修改网页内容与结构的，但BOM中的window又包含了这个document属性。
+![BOM&DOM.png](./BOM&DOM.png)
 
 ## JavaScript对象可分为三类：
 - Window对象
