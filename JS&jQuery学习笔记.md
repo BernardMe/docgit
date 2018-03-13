@@ -6,6 +6,7 @@ Tip 5: 为何 拷贝(Copy)/粘贴(Paste)功能不能用了?
 不怕大家笑话，我有几次使用 UltraEdit 的过程中发现拷贝与粘贴的内容是不匹配的．不知所以然，干脆重新启动了笔记本.今天翻看手册才恍然大悟:UltraEdit有10个剪切板(clipboard),分别用Ctrl+0 - Ctrl+9　切换． Ctrl+0 是　Windows 的，其他则为用户自定义的．我在使用的过程中错调用了 CTRL+n, 结果内容就有问题了．你遇到过没? 
 
 
+
 # React部分
 
 ## 项目运行
@@ -97,6 +98,41 @@ presets:['es2015','react']
 }
 
 ```
+
+
+
+# Redux部分
+
+## 为什么需要Redux
+前后端分离的思潮越来越浓烈以及单页应用开发日趋复杂，前端JavaScript 需要管理越来越多的应用状态(state)。
+
+这里的应用状态可能包括： 
+－Ajax请求 
+－服务器响应 
+－数据缓存 
+－本地生成但是尚未持久化到服务器的数据 
+－UI 状态
+
+## Redux的三大原则
+
+单一数据源
+
+State 是只读的
+
+使用纯函数来执行修改
+
+
+## 三大核心概念
+![Redux的单向数据流.png](./Redux的单向数据流.png)
+
+### Action和Action Creator
+Action是一个对象，用来代表所有会引起状态（state）变化的行为
+
+### Reducer
+Reducer是一个函数
+
+### Store
+而Store则是Actions和Reducers连接在一起的对象
 
 
 
