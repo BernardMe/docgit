@@ -103,6 +103,19 @@ presets:['es2015','react']
 
 # Redux部分
 
+## reducer实际上就是一个函数:(previousState, action)=>newState。用来执行根据指定action来更新state的逻辑。reducer不存储state，reducer函数逻辑中不应该直接改变state对象，而是返回新的state对象
+
+store是一个单一对象，redux中只有唯一一个store实例。主要作用：
+管理应用的state
+通过store.getState()可以获取state
+通过store.dispatch(action)来触发state更新
+通过store.subscribe(listener)来注册state变化监听器
+![初始化store--reducer.png](./初始化store--reducer.png)
+
+
+
+
+
 ## 为什么需要Redux
 前后端分离的思潮越来越浓烈以及单页应用开发日趋复杂，前端JavaScript 需要管理越来越多的应用状态(state)。
 
@@ -136,7 +149,131 @@ Reducer是一个函数
 
 
 
+
+# dva部分
+
+## dva是啥
+dva是基於redux最佳实践实现的framework，简化使用redux，redux-saga时很多繁杂的操作
+
+## 爲啥需要dva
+使用redux需要拆分action和reducer，实现一个异步流程略繁琐
+
+dva将action和reducer封装到model当中，异步流程采用Generator处理，总体来说简化了不少
+
+
+## 数据流向
+数据的改变发生通常是通过用户交互行为或者浏览器行为（如路由跳转等）触发的，当此类行为会改变数据的时候可以通过 dispatch 发起一个action，
+
+如果是同步行为会直接通过 Reducers 改变 State 
+如果是异步行为（副作用）会先触发 Effects 然后流向 Reducers 最终改变 State，所以在dva中，数据流向非常清晰。
+
+				connect	<- - -  - -   -   State  <-   -   -  -  -		
+				  	|											|
+URL  ->  Route Component   ->   dispatch  ->  Action   -->   Model[Reducer Effect Subscription]   <->  Server
+			/     \								^									 |
+			c      c 							|-	-	-		-		-  -  -   -  -
+
+## Module
+
+### Subscription
+
+
+### Effect
+
+
+### Reducer
+
+
+### State
+
+
+### Action
+
+
+
+
+## RouteComponents
+在组件设计方法中，我们提到过Container Components，在 dva 中我们通常将其约束为 Route Components，因为在 dva 中我们通常以页面维度来设计 Container Components。
+
+所以在 dva 中，通常需要 connect Model的组件都是 Route Components，组织在/routes/目录下
+而/components/目录下则是纯组件（Presentational Components）。
+
+
+
+
 # ECMAScript6
+
+## 异步
+所谓"异步"，简单说就是一个任务分成两段，先执行第一段，然后转而执行其他任务，等做好了准备，再回过头执行第二段。
+
+比如，有一个任务是读取文件进行处理，任务的第一段是向操作系统发出请求，要求读取文件。然后，程序执行其他任务，等到操作系统返回文件，再接着执行任务的第二段（处理文件）。这种不连续的执行，就叫做异步。
+
+相应地，连续的执行就叫做同步。由于是连续执行，不能插入其他任务，所以操作系统从硬盘读取文件的这段时间，程序只能干等着。
+
+## 回调函数
+JavaScript语言对异步编程的实现，就是回调函数。所谓回调函数，就是把任务的第二段单独写在一个函数里面，等到重新执行这个任务的时候，就直接调用这个函数。它的英语名字callback，直译过来就是"重新调用"。
+
+## yield关键字
+
+### 协程
+传统的编程语言，早有异步编程的解决方案（其实是多任务的解决方案）。其中有一种叫做"协程"（coroutine），意思是`多个线程互相协作，完成异步任务`。
+
+协程有点像函数，又有点像线程。它的运行流程大致如下。
+
+第一步，协程A开始执行。
+第二步，协程A执行到一半，进入暂停，执行权转移到协程B。
+第三步，（一段时间后）协程B交还执行权。
+第四步，协程A恢复执行。
+上面流程的协程A，就是异步任务，因为它分成两段（或多段）执行。
+
+举例来说，读取文件的协程写法如下。
+
+function asnycJob() {
+  // ...其他代码
+  var f = yield readFile(fileA);
+  // ...其他代码
+}
+ 
+
+协程遇到 yield 命令就暂停，等到执行权返回，再从暂停的地方继续往后执行。它的最大优点，就是代码的写法非常像同步操作，如果去除yield命令，简直一模一样。
+
+
+
+
+
+## 箭头函数
+箭头函数用 => 符号来定义。
+
+箭头函数相当于匿名函数，所以采用函数表达式的写法。
+
+左边是传入函数的参数，右边是函数中执行的语句。
+`var sum = (x, y) => {return x+y;}`
+相当于
+```js
+var sum = function(x, y) {
+	return x+y;
+}
+```
+上面是完整的写法，左边小括号，右边大括号，而下面的情况可以简写：
+（1）当要执行的代码块只有一条return语句时，可省略大括号和return关键字：
+`var sum = (x, y) => x+y；`
+（2）当传入的参数只有一个时，可以省略小括号：
+`var sum = x => x*x;`
+相当于
+```js
+var sum = function(x){
+	return x*x;
+}
+```
+（3）当不需要参数时，使用空的圆括号：
+`var one = () => 1;`
+相当于
+```js
+var one = function () {
+	return 1;
+}
+```
+
 
 ## 变量声明 var
 众所周知在es6之前js的变量没有块级，只存在函数内外访问之分；
@@ -1064,7 +1201,7 @@ columns:[[
 	
 
 ## 谈谈easyui datagrid  左右两个Grid的数据  互相编辑  的[过滤操作函数]
-```
+```js
 	/**
 	 * 右侧datagrid被过滤
 	 * @param pdata.records[].id 部门数据
@@ -1121,17 +1258,19 @@ columns:[[
 
 ## datagrid加载JSON数据
 获取的数据源，比如JSON对象， 这个标准数据对象必须包含类似如下
+```js
 {"total": n,
 "rows": [{}...]}
-或者
+//或者
 {"total": n,
 "rows": [{}...], 
 "footer": []}
 
-例如：
+
+//例如：
 var obj = eval('(' + data + ')');  //转换为JSON对象
 $('#datagrid').datagrid('loadData', {total: obj.count, rows: obj.records});
-
+```
 
 	
 二次加载问题
@@ -1145,10 +1284,10 @@ class注册方式一般是为了初始化属性，javascript方式则属性和�
 
 
 ## loadDataGrid方法  加载表格
-```
+```js
 function loadDataGrid() {
 
-		_data = _getAutoObject($(form));
+	_data = _getAutoObject($(form));
     _data["RID"] = RID;
     _url = 'jf/SbjlxxCtrl/getListInfoByParams';
     
@@ -1167,8 +1306,7 @@ function loadDataGrid() {
         onLoadSuccess: function (data) {},
         onLoadError:function(){},
         columns: ,
-        onClickRow: function () {);
-        }
+        onClickRow: function () {}
     });
 }
 ```
@@ -1231,8 +1369,8 @@ HTTP1.1版本：客户机向服务器请求时，不会马上端口连接，会�
 再次了解我们使用ajax技术宏观上有两种方式，一种使用原生的ajax，另外一种使用jquery封装的ajax，在.net项目当中我们使用的是后者，但是在ssh学习时遇到了原生的ajax算是了解，在公司里对于原生ajax也得会写
 
 比较而言，原生ajax写起来5个步骤，代码行相比而言会多一些，而jquery封装ajax的仅仅按照格式书写就ok了。没有jquery的话，ajax的使用就得用原生的javascript去写，比较麻烦。
-```
-一个抽象的ajax请求：
+```js
+//一个抽象的ajax请求：
 $.ajax({
 	type: 
 	url: 
@@ -1245,7 +1383,7 @@ $.ajax({
 ```
 
 以jquery封装的ajax方法做示例，ajax标准写法：
-```
+```js
 $.ajax({
 	async: true,		//请求是否异步，默认为异步，这也是ajax重要特性
 	type: "GET",		//请求方式

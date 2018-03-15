@@ -33,31 +33,38 @@
 三范式就是要消除传递依赖，方便理解，可以看做是“消除冗余”。消除冗余应该比较好理解一些，就是各种信息只在一个地方存储，不出现在多张表中。
 
 
-## MySQL(windows)解压版如何安装
+## MySQL5.7(windows)解压版如何安装
 
 ### 配置
 
-2.1 下载下来的zip后缀的程序包，解压出来，然后自定义名称放在相应的位置上，我是在服务器的D盘根目录下，命名为：mysql-5.6，即D:\mysql-5.6\ ，该目录下包含bin、data、docs、lib等目录及文件；
+2.1 下载下来的zip后缀的程序包，解压出来，然后自定义名称放在相应的位置上，我是在服务器的D盘根目录下，命名为：mysql-5.7，即D:\mysql-5.7\ ，该目录下包含bin、data、docs、lib等目录及文件；
  
-2.2 配置环境变量，在系统变量path的末尾加入：;D:\mysql-5.6\bin (注意是追加，不是覆盖)
+2.2 配置环境变量，在系统变量path的末尾加入：;D:\mysql-5.7\bin (注意是追加，不是覆盖)
  
 2.3 配置my.ini
 复制程序目录下的文件my-default.ini 为my.ini，并且编辑里面的内容为：
-basedir = D:\mysql-5.6
-datadir = D:\mysql-5.6\data
+basedir = D:\mysql-5.7
+datadir = D:\mysql-5.7\data
 port = 3306
  
-### 安装
+### 5.7安装
 以管理员身份运行开始－运行－输入cmd，进入DOS窗口后，首先切换到MYSQL的程序目录：
 
-`mysqld -install`（mysqld -remove 表示删除mysql）
+`mysqld --initialize`（mysqld -remove 表示删除mysql）
 
 Service successfully installed.(说明安装成功了)
  
-D:\mysql-5.6\bin>net start mysql
+D:\mysql-5.7\bin>net start mysql
 MySQL 服务正在启动 ..
 MySQL 服务已经启动成功。（说明服务启动成功了）
- 
+
+### 5.7初始化创建用户
+在初始化时如果加上 `--initial-insecure`，则会创建空密码的 root@localhost 账号,
+否则会创建带密码的root@localhost账户，密码直接写在log-error日志文件中；
+新用户登录后必须立刻更改密码，否则无法继续后续的工作。
+
+
+
 ### Linux下服务未启动问题Unit mysqld.service not loaded
 检查mysql服务状态
 `/etc/init.d/mysql status`
@@ -67,20 +74,10 @@ MySQL 服务已经启动成功。（说明服务启动成功了）
 `/etc/init.d/mysql start`
 返回`Starting MySQL SUCCESS! `服务启动了
 
-### 登录验证
 
-D:\mysql-5.6\bin>mysql -uroot -p
-Enter password: （默认是空密码，直接回车登录即可）
-Welcome to the MySQL monitor.  Commands end with ; or \g.
-Your MySQL connection id is 3
-Server version: 5.6.23 MySQL Community Server (GPL)
-Copyright (c) 2000, 2015, Oracle and/or its affiliates. All rights reserved.
-Oracle is a registered trademark of Oracle Corporation and/or its
-affiliates. Other names may be trademarks of their respective
-owners.
-Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
-mysql>
-
+### 远程连接mysql错误代码1130的解决方法
+`grant all on *.* to root@'%' identified by '123456';`
+本質上會在mysql實例中user表中插入相應的授权记录
 
 ## MySQL创建用户
 
