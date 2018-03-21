@@ -504,6 +504,93 @@ List<Flight> selByParam(int fstart, int fend);
 id=#{id} 目的防止<set>中没有内容 导致的生成SQL语句有语法错误
 
 ### <trim>
+trim元素的主要功能是可以在自己包含的内容前加上某些前缀，也可以在其后加上某些后缀，与之对应的属性是prefix和suffix；
+
+可以把包含内容的首部某些内容覆盖，即忽略，也可以把尾部的某些内容覆盖，对应的属性是prefixOverrides和suffixOverrides；
+
+正因为trim有这样的功能，所以我们也可以非常简单的利用trim来代替where元素的功能。
+
+例1：
+
+```xml
+<select id="selectUsersTrim" resultMap="resultListUsers" parameterType="Users">
+  select * from users
+  <trim prefix="where" prefixOverrides="and">
+      <if test="name!=null">
+          name=#{name}
+      </if>
+      <if test="address!=null">
+           and address=#{address}
+      </if>
+  </trim>    
+</select>
+```
+可以看到后台打印的sql:
+`select * from users where name=? and address=?`
+
+例2：
+
+```xml
+<select id="selectUsersTrim" resultMap="resultListUsers" parameterType="Users">
+    select * from users
+    <trim prefix="where" prefixOverrides="and">
+        <if test="name!=null">
+            or name=#{name}
+        </if>
+        <if test="address!=null">
+             and address=#{address}
+        </if>
+    </trim>    
+</select>
+```
+后台报错：
+```shell
+select * from users where or name=? and address=?
+Exception in thread "main" org.apache.ibatis.exception.PersistenceException:
+### Error querying database.
+
+```
+trim标签的java方法调用栈轨迹：（只写出关键的几个）
+
+org.apache.ibatis.scripting.xmltags.TrimSqlNode.apply()
+org.apache.ibatis.scripting.xmltags.TrimSqlNode.FilteredDynamicContext.applyAll()
+org.apache.ibatis.scripting.xmltags.TrimSqlNode.FilteredDynamicContext.applyPrefix()
+
+applyPrefix()的源代码：
+
+代码块1：
+```java
+private void applyPrefix(StringBuilder sql, String trimmedUppercaseSql) {
+ if (!prefixApplied) {
+   prefixApplied = true;
+   if (prefixesToOverride != null) {
+     for (String toRemove : prefixesToOverride) {
+       if (trimmedUppercaseSql.startsWith(toRemove)) {
+         sql.delete(0, toRemove.trim().length());
+         break;
+       }
+     }
+   }
+   if (prefix != null) {
+     sql.insert(0, " ");
+     sql.insert(0, prefix);
+   }
+ }
+}
+```
+现在我们在回看代码块1，会发现整个方法的大致意思：
+当trim标签prefixOverrides属性不为空时，遍历prefixOverrides集合的值，并且用trim标签里第一个子标签（比如if标签）的sql的语句头去匹配prefixOverrides集合的元素值，一旦匹配成功，则将第一个子标签的sql语句匹配的元素删掉，继续向下运行，判断prefix属性是否有值，若有值，在将prefix的值放到第一个子标签的sql语句开头。
+
+所以，例2，将prefixOverrides的值改为 `or`  或者 `and|or` 就行了。 
+
+
+总结：
+trim标签的prefixOverrides和prefix分两步骤：
+
+1.如果prefixOverrides有元素，拿元素去匹配 第一个子标签sql语句，若匹配上，就删掉sql语句的匹配部分，跳到2
+
+2.如果prefix有值，就在  第一个子标签sql语句 的最前面加上 prefix的值。
+
 
 ### <bind>
 给参数重新赋值
