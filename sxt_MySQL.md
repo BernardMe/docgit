@@ -271,6 +271,52 @@ INSERT INTO employee VALUES (currval('seq_employee_num1'), '李四', 24, 1200.00
 
 ```
 
+## MySQL存储过程
+
+### 什么是mysql存储例程? 
+存储例程是存储在数据库服务器中的一组sql语句，通过在查询中调用一个指定的名称来执行这些sql语句命令.
+
+### 为什么要使用mysql存储过程？ 
+我们都知道应用程序分为两种，一种是基于web，一种是基于桌面，他们都和数据库进行交互来完成数据的存取工作。假设现在有一种应用程序包含了这两 种，现在要修改其中的一个查询sql语句，那么我们可能要同时修改他们中对应的查询sql语句，当我们的应用程序很庞大很复杂的时候问题就出现这，不易维 护！另外把sql查询语句放在我们的web程序或桌面中很容易遭到sql注入的破坏。而存储例程正好可以帮我们解决这些问题。 
+存储过程(stored procedure)、存储例程(store routine)、存储函数区别 
+Mysql存储例程实际包含了存储过程和存储函数，它们被统称为存储例程。 
+其中存储过程主要完成在获取记录或插入记录或更新记录或删除记录，即完成select insert delete update等的工作。而存储函数只完成查询的工作，可接受输入参数并返回一个结果。
+
+### 创建存储过程,存储函数
+`create procedure 存储过程名(参数) `
+存储过程体 
+`create function 存储函数名(参数)`
+
+在`命令列界面`，使用create关键字创建存储过程
+注意：
+（1）这里需要注意的是DELIMITER//和DELIMITER;两句，DELIMITER是分割符的意思，因为MySQL默认以”;”为分隔 符，如果我们没有声明分割符，那么编译器会把存储过程当成SQL语句进行处理，则存储过程的编译过程会报错，所以要事先用DELIMITER关键字申明当 前段分隔符，这样MySQL才会将”;”当做存储过程中的代码，不会执行这些代码，用完了之后要把分隔符还原
+（2）存储过程根据需要可能会有输入、输出、输入输出参数，这里有一个输出参数s，类型是int型，如果有多个参数用”,”分割开。 
+（3）过程体的开始与结束使用BEGIN与END进行标识。
+```shell
+mysql> delimiter //
+mysql> CREATE PROCEDURE mytest()
+    -> BEGIN
+    -> declare i int; 
+    -> DECLARE j int;
+    -> set i = 2;
+    -> while i < 11 do
+    -> SET j=CONVERT(CONCAT('2',i), SIGNED); 
+    -> INSERT INTO DEVICE_COMPARISION_INFO(`ID`, `DEVICE_ID`, `ALGORITHM_VERSION`, `MEMO`) 
+    -> VALUES (i, j, NULL, NULL);
+    -> set i=i+1;
+    -> end while;
+    -> end
+    -> //
+Query OK, 0 rows affected
+
+mysql> delimiter;
+```
+在SQL查询界面使用call关键字调用该存储过程
+```sql
+call mytest();  -- 调用进程
+```
+
+
 ## 创建表技巧
 
 ### 存在则删除
