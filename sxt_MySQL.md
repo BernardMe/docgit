@@ -316,6 +316,33 @@ mysql> delimiter;
 call mytest();  -- 调用进程
 ```
 
+存储过程中，声明varchar类型变量要带上(长度)
+```shell
+mysql> DELIMITER //
+mysql> CREATE PROCEDURE mytest2()
+    -> BEGIN
+    -> declare i int;
+    -> DECLARE j VARCHAR(20);
+    -> DECLARE n VARCHAR(50);
+    -> DECLARE p VARCHAR(20);
+    -> DECLARE m VARCHAR(100);
+    -> set i = 11;
+    -> while i < 100 do
+    -> SET j=CONCAT('考勤机22',i);
+    -> SET n=CONCAT('8119617030',i);
+    -> SET p=CONCAT('192.168.123.',i);
+    -> SET m=CONCAT('00:11:7F:A6:E2:',i);
+    -> INSERT INTO DEVICE_BASIC_INFO(`ID`,`LOCATION_ID`,`NAME`,`SN_CODE`,`UPDATE_TIME`,`CONNECTION_TIME`,`IS_USED`,`FIRMWARE`,`DEVICE_TYPE`,`CONNECTION_STATE`,`IP_ADDRESS`,`PORT`,`PWD`,`USED_AMOUNT`,`TOTAL_AMOUNT`,`USED_RECORD_AMOUNT`,`TOTAL_RECORD_AMOUNT`,`IS_USED_NORMAL`,`IS_RECORD_NORMAL`,`MAC_ADDRESS`,`MEMO`,`DEPARTMENT_ID`,`FACTORY`,`TYPE`,`USE_FOR`,`DOMAIN_ID`,`POSITION`)
+    -> VALUES (null, 123, j, n,  '2018-03-05 10:24:14', '2018-03-05 10:27:14', 1, '2.340.260', 1, 0, p, null, null, 6, 1000,  35,  150000, null, null, m, null, 289, null, null, '11,12,13',  162, '320');
+    -> set i=i+1;
+    -> end while;
+    -> end
+    -> //
+Query OK, 0 rows affected
+
+mysql> delimiter;
+```
+
 
 ## 创建表技巧
 
