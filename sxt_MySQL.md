@@ -351,6 +351,18 @@ mysql> delimiter;
 DROP TABLE IF EXISTS demo1;
 ```
 
+## MySQL命令行导入导出
+
+### 导出单个数据库
+在cmd命令行窗口下:
+`mysqldump -h 192.168.134.253 -uroot -p efacetest > f:\a.sql`
+(如果没有错误，会提示你输入密码)
+
+### 导入数据
+也是直接在cmd命令行输入命令即可
+`mysql -h 127.0.0.1 -uroot -p123456 efacetest < f:\a.sql`
+
+
 ## MySQL中的分区
 MySQL从5.1开始支持分区功能。分区一句话就是：把一张表按照某种规则（range/list/hash/key等）分成多个区域（页/文件）保存。对mysql应用开发来说，分区与不分区是没区别的（即对应用是透明的）。如同突围战中的“化整为零”。MySQL支持大部分的存储引擎（如：MyISAM、InnoDB、Memory等）创建分区，不支持MERGE和CSV来创建分区。同一个分区表中的所有分区必须是同一个存储引擎。
 
