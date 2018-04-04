@@ -84,6 +84,14 @@ build节点：编译打包生成相关配置
 mvn archetype:generate -DgroupId=com.bernard -DartifactId=MemoSSH -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false
 ```
 
+#### maven打包命令
+打包时跳过测试
+```sehll
+mvn package -DskipTests
+```
+
+
+
 ### Maven仓库的分类
 
 #### Maven本地仓库
@@ -221,3 +229,50 @@ D:\nexus\soft\nexus-2.12.0-01\bin\jsw
     </resource>
 </resources>
 ```
+
+
+#### war包构建时pom中build元素中配置拷贝webapp目录下内容
+```xml
+  <build>
+      <finalName>manage</finalName>
+
+      <plugins>
+          <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <version>2.3.2</version>
+              <configuration>
+                  <source>1.7</source>
+                  <target>1.7</target>
+              </configuration>
+          </plugin>
+          <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-war-plugin</artifactId>
+              <version>3.1.0</version>
+              <configuration>
+                  <webResources>
+                      <resource>
+                          <directory>src/main/webapp</directory>
+                          <!--<targetPath>WEB-INF/lib</targetPath>-->
+                          <includes>
+                              <include>**/*.jar</include>
+                          </includes>
+                      </resource>
+                  </webResources>
+              </configuration>
+          </plugin>
+          <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-eclipse-plugin</artifactId>
+              <inherited>true</inherited>
+          </plugin>
+      </plugins>
+  </build>
+
+```
+
+
+
+
+
