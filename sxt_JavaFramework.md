@@ -766,6 +766,11 @@ resultMap  查询关联集合对象 (联合查询方式)
 </select>
 
 
+#### 手写SQL执行关联查询
+
+通用Mapper只能单表查询吧
+多表自己写sql
+
 
 ### Auto Mapping 结合别名实现 多表查询
 
