@@ -54,5 +54,20 @@ server {
 
 ```
 
+其中：
+listen       8082; 代表监听8082端口
+```xml
+location /manage/ {
+    proxy_pass        http://127.0.0.1:8080/manage/;
+    proxy_set_header  Host $http_host;
+    proxy_set_header  X-Real-IP        $remote_addr;
+    proxy_http_version 1.1;
+}
+```
+表示
+在8082端口访问`/manage/`URL资源时，真实访问的是`http://127.0.0.1:8080/manage/`
+
+
+
 
 
