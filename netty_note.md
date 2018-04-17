@@ -35,3 +35,40 @@ Netty本身知识提供一种方便网络编程(特别是NIO)的框架(jar包),�
 Netty位于OSI协议栈的会话层、表示层、应用层都有涉及，这样你可以方便的扩展实现，处理会话层以上的协议和业务；
 Netty封装了javanio的api，使之成为一个非常方便使用框架；
 提供了提供处理IO的线程池，最重要的一点保证了一个socket处理在一个线程中完成，一个线程可以同时处理多个socket，
+
+
+
+### Netty的一些重要概念
+
+#### Channel
+Channel, 表示一个连接，可以理解为每一个请求，就是一个Channel。
+ChannelHandler，核心处理业务就在这里，用于处理业务请求。
+ChannelHandlerContext，用于传输业务数据
+ChannelPipeline，用于保存处理过程需要用到的ChannelHandler和ChannelHandlerContext
+
+#### ByteBuf
+ByteBuf是一个存储字节的容器，最大特点就是使用方便，它既有自己的读索引和写索引，方便你对整段字节缓存进行读写，也支持get/set，方便你对其中每一个字节进行读写，
+
+
+####　Codec
+Netty中的编码/解码器，通过他你能完成字节与pojo，pojo与pojo的相互转换，从而达到自定义协议的目的
+在Netty里面最有名的就是HttpRequestDecoder和HttpResponseEncoder了。
+
+
+### Netty实战
+
+#### 用netty实现一个长连接
+
+首先，我们需要用一个JavaBean来封装通信的协议内容，比如下面三个数据：
+
+type: byte, 表示消息的类型，有心跳类型和内容类型
+
+length：int，表示消息的长度
+
+content：String， 表示消息的内容(心跳包在这里没有内容)
+
+
+
+
+
+
