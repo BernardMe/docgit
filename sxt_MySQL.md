@@ -75,9 +75,11 @@ MySQL 服务已经启动成功。（说明服务启动成功了）
 返回`Starting MySQL SUCCESS! `服务启动了
 
 
-### 远程连接mysql错误代码1130的解决方法
+### 授权指定用户通过用户名密码远程连接数据库
 `grant all on *.* to root@'%' identified by '123456';`
-本質上會在mysql實例中user表中插入相應的授权记录
+
+`grant all on eface0420.* to smartlink@'%' identified by 'slink'`
+本質上會在mysql實例中db表中插入相應的授权记录
 
 ## MySQL创建用户
 
