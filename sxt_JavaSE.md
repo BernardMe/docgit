@@ -2544,6 +2544,14 @@ String getRef()获取此URL的锚点(也称为“引用”)
 
 InputStream openStream()打开到此URL的连接并返回一个用于从该连接读入的InputStream
 
+
+### 常见异常
+
+`java.net.SocketException：Connection reset`
+该异常在客户端和服务器端均有可能发生，引起该异常的原因有两个，第一个就是如果一端的Socket被关闭（或主动关闭或者因为异常退出而引起的关闭），另一端仍发送数据，发送的第一个数据包引发该异常(Connect reset by peer)。另一个是一端退出，但退出时并未关闭该连接，另一端如果在从连接中读数据则抛出该异常（Connection reset）。简单的说就是在连接断开后的读和写操作引起的。
+
+
+
 ###使用URL+IO流完成对网页的拷贝
 目标页: www.bjsxt.com/index.html
 
@@ -2561,21 +2569,21 @@ PrintStream ps = new PrintStream(String fileName, String charset)
 关闭流
 ```
 
-##类 ServerSocket
+## 类 ServerSocket
 此类实现服务器套接字。
-*服务器套接字等待请求通过网络传入。
+`服务器套接字等待请求通过网络传入。`
 它基于该请求执行某些操作，然后可能向请求者返回结果。
 
-###常用方法
+### 常用方法
 ServerSocket(int port) 创建绑定到特定端口的服务器套接字。
 
-##对Socket的思考
+## 对Socket的思考
 对于UDP，基本上没有Server，Client的区分
 对于TCP编程，可靠的长链接，才区分Server和Client
 Server先读输入，再写输出
 Client先写输出，在读输入
 
-##类 InvalidClassException
+## 类 InvalidClassException
 public class InvalidClassException extends   ObjectStreamException
 当 Serialization 运行时检测到某个类具有以下问题之一时，抛出此异常。 
 

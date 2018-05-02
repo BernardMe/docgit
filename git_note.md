@@ -204,12 +204,30 @@ Git的版本库里存了很多东西，其中最重要的就是称为stage(或�
 是用git commit提交更改，实际上就是把暂存区的所有内容提交到当前分支。
 因为我们创建版本库时，Git自动为我们创建了唯一一个master分支，所以，现在git commit就是往master分支上提交更改。  
 
-## git bash清楚命令历史记录
+
+
+
+## git高频用法
+
+### 搜索
+git grep
+在当前working directory下搜索含有某个字符串的文件，要显示行号可以使用-n参数。
+`git grep -n socket`
+
+只显示包含的文件和其包含的个数可以使用--count参数。
+`git grep --count socket`
+JS&jQuery学习笔记.md:1
+TCP协议.md:2
+git_note.md:1
+netty_note.md:5
+
+
+### git bash清楚命令历史记录
 所有命令历史记录都存储在`~/.bash_history`文件中，所以可以直接vi编辑该文件，删除记录就可以
 另外，`HISTSIZE=10`可以设置方向键查询历史命令条数
 
 
-## git取消对文件的跟踪
+### git取消对文件的跟踪
 - 对git未跟踪的文件不跟踪
 将该文件加入.gitignore文件即可
 - 停止对git已跟踪的文件跟踪，但保留之前该文件的跟踪状态
@@ -217,7 +235,7 @@ git rm --cached 文件名
 - 暂时让git忽略已跟踪的文件
 git update-index --assume-unchanged 文件名
 
-## git reset revert回退回滚取消提交返回上一版本
+### git reset revert回退回滚取消提交返回上一版本
 总有一天你会遇到下面的问题.
 改完代码匆忙提交，上线发现有问题，怎么办？赶紧回滚
 改完代码测试也没有问题，但是上线发现你的修改影响了之前运行正常的代码报错，必须回滚
@@ -264,18 +282,14 @@ git revert c011eb3
 ```
 
 git revert是用一次新的commit来回滚之前的commit，git reset是直接删除指定的commit
-
 看似达到的效果是一样的,其实完全不同.
 
 第一:
-
 上面我们说的如果你已经push到线上代码库, reset 删除指定commit以后,你git push可能导致一大堆冲突.但是revert 并不会.
 
 第二:
-
 如果在日后现有分支和历史分支需要合并的时候,reset 恢复部分的代码依然会出现在历史分支里.但是revert 方向提交的commit 并不会出现在历史分支里.
 
 第三:
-
 reset 是在正常的commit历史中,删除了指定的commit,这时 HEAD 是向后移动了,而 revert 是在正常的commit历史中再commit一次,只不过是反向提交,他的 HEAD 是一直向前的.
 
