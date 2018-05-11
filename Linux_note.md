@@ -378,6 +378,20 @@ linux重定向
 `tail -f  F:\X_Deployment\tomcat8_8080\logs\first.log >> E:\output.txt`
 
 
+tree 命令
+以图形显示驱动器或路径的文件夹结构
+
+C:\Users\Administrator>tree /?  
+以图形显示驱动器或路径的文件夹结构。  
+  
+`TREE [drive:][path] [/F] [/A]  `
+  
+   /F   显示每个文件夹中文件的名称。  
+   /A   使用 ASCII 字符，而不使用扩展字符。  
+
+`tree . /f > ./tree.txt`
+
+
 RedHat
 开关机
 只要按”Ctrl+C”键就可以中断关机的命令.

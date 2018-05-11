@@ -1279,6 +1279,21 @@ java oop.static1.TestStatic
 ```
 
 
+### 命令行编译运行Java程序时，加载指定目录中的Jar包
+
+命令行编译运行Java程序时，加载指定目录中的Jar包：
+添加`-Djava.ext.dirs`参数
+
+解决方案：
+
+编译：
+`javac -Djava.ext.dirs=./lib Test.java  或  javac -Djava.ext.dirs=D:/javacode/lib`
+
+运行：
+`java -Djava.ext.dirs=./lib Test  `
+
+
+
 ## 方法重写override
 到父类中copy要重写的方法签名到子类中，避免字母输入错误
 只有非private方法才可以被覆盖
