@@ -152,8 +152,48 @@ MongoDB在没有参数的情况下默认会使用/data/db目录，并监听27017
 
 
 
+## MongoDB脚本
+
+### 常用命令
+```js
+/*查询id为5afb988c0db9852c36c4bbdb的 车禁相机抓拍照片*/
+db.getCollection('fs.files').find({"_id" :ObjectId("5afb988c0db9852c36c4bbdb")})
+```
+
+、切换/创建数据库
+`use yourDB;` 当创建一个集合(table)的时候会自动创建当前数据库
+
+查询所有数据库
+`show dbs;`
+
+删除当前使用数据库
+`db.dropDatabase();`
 
 
+查看当前使用的数据库
+`db.getName();`
+
+`db`和`db.getName()`方法是一样的效果，都可以查询当前使用的数据库
+
+显示当前db状态
+`db.stats();`
+
+当前db版本
+`db.version();`
+
+查看当前db的链接机器地址
+`db.getMongo();`
+
+### 用户相关
+
+1、添加一个用户
+`db.addUser("name");`
+ 添加用户、设置密码、是否只读
+`db.addUser("userName", "pwd123", true); `
 
 
+2、显示当前所有用户
+`show users;`
 
+3、删除用户
+`db.removeUser("userName");`
