@@ -1293,6 +1293,35 @@ java oop.static1.TestStatic
 `java -Djava.ext.dirs=./lib Test  `
 
 
+### 打jar包
+`jar -cvf [jar包的名字] [需要打包的文件]`
+
+`jar -cvf Local_TCPTest.jar ./com ./t19`
+
+#### MANIFEST.MF文件
+```
+Manifest-Version: 1.0
+Created-By: 1.8.0_102 (Oracle Corporation)
+Main-Class: t19.performance.TestTCPer 
+Class-Path: ./lib/FaceId-1.0.jar ./lib/log4j-1.2.17.jar ./lib/mybatis-3.2.8.jar ./lib/mysql-connector-java-5.1.40.jar 
+
+```
+以下是需要注意的各个要点： 
+
+0. 最后一样一定要回车，空一行，不然无法识别最后一行的配置。
+
+1. Manifest-Version、Main-Class和Class-Path后面跟着一个英文的冒号，冒号后面必须跟着一个空格，然后才是版本号、类和ClassPath。 
+
+2. Class-Path中的各项应使用空格分隔，不是逗号或分号。 
+
+3. Class-Path中如果有很多项，写成一行打包的时候会报错line too long，这时需要把Class-Path分多行写。注意：从第二行开始，必须以两个空格开头，三个以上我没试过，不过不用空格开头和一个空格开头都是不行的，我已经试过了。 
+
+4. Class-Path写完之后最后一定要有一个空行。 
+
+5. jar包内有些配置文件想放在jar包外面，比如文件config.properties：如果这个文件是以路径方式载入的，比如new file("./config/config.properties")，那么将config.properties放在jar包相同目录下的config目录下即可，也就是说`./`路径等价于`jar包所在目录`；如果这个文件是以ClassPath下的文件这种方式载入的，比如在Spring中载入classpath:config.properties，则在MF文件的配置文件的ClassPath中添加“./”，然后将这个配置文件与jar包放在同一个目录即可，当然也可以在MF文件的配置文件的ClassPath中添加“./config/”，然后把配置文件都放在jar包相同目录下的config目录下。
+
+#### 运行jar包
+`java -jar UDPTest.jar 262 10`
 
 ## 方法重写override
 到父类中copy要重写的方法签名到子类中，避免字母输入错误
