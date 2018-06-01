@@ -47,24 +47,6 @@ MongoDB的操作主要靠终端的JavaScript Shell完成
 不能含有保留字符$
 
 
-## 数据库角色
-
-针对Mongodb数据库中的各种角色进行说明
-
-### 数据库访问
-
-角色名称	拥有权限
-read	允许读取指定数据库的角色
-readWrite	允许读写指定数据库的角色
-
-### 数据库管理
-
-角色名称	拥有权限
-dbAdmin	允许用户在指定数据库中执行管理函数，如索引创建、删除，查看统计或访问system.profile
-userAdmin	允许管理当前数据库的用户，如创建用户、为用户授权
-dbOwner	数据库拥有者(最高)，集合了dbAdmin/userAdmin/readWrite角色权限
-
-
 
 ## MongoDB的安装及配置 
 
@@ -215,22 +197,3 @@ db.getCollection('fs.files').find({"_id" :ObjectId("5afb988c0db9852c36c4bbdb")})
 
 3、删除用户
 `db.removeUser("userName");`
-
-
-### 验证方式SCRAM-SHA-1调整为MONGODB-CR
-首先关闭认证，修改system.version文档里面的authSchema版本为3，初始安装时候应该是5，命令行如下： 
-```js
-use admin;
-
-var schema = db.system.version.findOne({"_id":"authSchema"})
-schema.currentVersion = 3 
-
-db.system.version.save(schema)
-
-db.system.users.remove({}) //删除所有用户
-```
-Now restart the mongod and create new user then it should work fine.
-然后重新创建普通用户 smalink
-
-重新连接即可
-
