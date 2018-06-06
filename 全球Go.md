@@ -11,7 +11,7 @@ B卡
 4152023532[未注册]
 
 注册网址
-https://www.lycamobile.us/join?returnUrl=https%3A%2F%2Fwww.lycamobile.us%2F
+https://www.lycamobile.us/join
 
 
 
