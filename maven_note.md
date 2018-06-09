@@ -90,6 +90,11 @@ mvn archetype:generate -DgroupId=com.bernard -DartifactId=MemoSSH -DarchetypeArt
 mvn package -DskipTests
 ```
 
+#### maven安装jar包到本地仓库
+`mvn install:install-file -DgroupId=com.hanvon -DartifactId=FaceId -Dversion=1.0 -Dpackaging=jar -Dfile=FaceId-1.0.jar`
+-Dversion 为了符合Maven的规定，需要给FaceId.jar一个版本号，故将FaceId.jar改名为FaceId-1.0.jar
+-Dfile选项应给出需要安装jar文件的路径
+
 
 
 ### Maven仓库的分类
