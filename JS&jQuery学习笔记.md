@@ -848,6 +848,53 @@ $("select[name='fstart']").click(function () {
 });
 ```
 
+## 定时刷新
+
+### setTimeout（只一次）和setInterval（间隔相同时间）的使用
+
+#### 区别
+setTimeout(表达式,延时时间)在执行时,是在载入后延迟指定时间后,去执行一次表达式,
+仅仅执行是一次；
+setInterval(表达式,交互时间)则不一样,它从载入后,每隔指定的时间就执行一次表达式；
+所以,两者完全是不一样的
+
+```js
+//每60秒执行myFunction()一次 
+setInterval("myFunction()",60000); 
+
+funcition myFunction(){ alert(’myFunction()’); } //每60秒执行一次myFunction() 
+setTimeout("myFunction()",60000);    //需要函数触发 //如 放置在 body 的 onload事件里面
+```
+
+虽然表面上看来setTimeout只能应用在on-off方式的动作上，不过可以通过创建一个函数循环重复调用setTimeout，以实现重复的操作：
+
+```js
+//File: settimeout_setinterval.js
+showTime();
+
+function showTime()
+{
+    var today = new Date();
+    alert("The time is: " + today.toString());
+    setTimeout("showTime()", 5000);
+}
+```
+一旦调用了这个函数，那么就会每隔5秒钟就显示一次时间。如果使用setInterval，则相应的代码如下所示：
+
+```js
+//File: settimeout_setinterval2.js
+setInterval("showTime()", 5000);
+
+function showTime()
+{
+    var today = new Date();
+    alert("The time is: " + today.toString());
+}
+```
+
+这两种方法可能看起来非常像，而且显示的结果也会很相似，不过两者的最大区别就是，setTimeout方法不会每隔5秒钟就执行一次showTime函数，它是在每次调用setTimeout后过5秒钟再去执行showTime函数。这意味着如果showTime函数的主体部分需要2秒钟执行完，那么整个函数则要每7秒钟才执行一次。而setInterval却没有被自己所调用的函数所束缚，它只是简单地每隔一定时间就重复执行一次那个函数。
+
+
 
 ## jQuery事件
 
