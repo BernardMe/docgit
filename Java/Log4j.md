@@ -9,17 +9,17 @@ log4j也可以通过配置文件的方式进行设置，目前支持两种格式
 •properties文件（推荐）
 下面是一个log4j配置文件的完整内容：
 复制代码 代码如下:
-```PROPERTIES
+```shell
 log4j.rootCategory=INFO, stdout
 log4j.rootLogger=info, stdout
 
-### stdout ###
+### stdout
 log4j.appender.stdout=org.apache.log4j.ConsoleAppender
 log4j.appender.stdout.Target=System.out
 log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
 log4j.appender.stdout.layout.ConversionPattern=%d{ABSOLUTE} %5p - %m%n
 
-### set package ###
+### set package
 log4j.logger.org.springframework=info
 log4j.logger.org.apache.catalina=info
 log4j.logger.org.apache.commons.digester.Digester=info
@@ -37,11 +37,11 @@ appenderName指定日志信息输出到哪个地方，可同时指定多个输�
 1.3 配置输出目的地Appender
 Appender主要定义日志信息输出在什么位置，主要语法为：
 复制代码 代码如下:
-```PROPERTIES
-log4j.appender.appenderName = classInfo
-log4j.appender.appenderName.option1 = value1
+```shell
+log4j.appender.appenderName=classInfo
+log4j.appender.appenderName.option1=value1
 
-log4j.appender.appenderName.optionN = valueN
+log4j.appender.appenderName.optionN=valueN
 ```
 
 Log4j提供的appender有以下几种：
