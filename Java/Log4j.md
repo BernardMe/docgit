@@ -1,0 +1,80 @@
+## log4j
+
+### 配置文件
+
+1.1 配置文件
+Log4j可以通过java程序动态设置，该方式明显缺点是：如果需要修改日志输出级别等信息，则必须修改java文件，然后重新编译，很是麻烦；
+log4j也可以通过配置文件的方式进行设置，目前支持两种格式的配置文件：
+•xml文件
+•properties文件（推荐）
+下面是一个log4j配置文件的完整内容：
+复制代码 代码如下:
+```PROPERTIES
+log4j.rootCategory=INFO, stdout
+log4j.rootLogger=info, stdout
+
+### stdout ###
+log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+log4j.appender.stdout.Target=System.out
+log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+log4j.appender.stdout.layout.ConversionPattern=%d{ABSOLUTE} %5p - %m%n
+
+### set package ###
+log4j.logger.org.springframework=info
+log4j.logger.org.apache.catalina=info
+log4j.logger.org.apache.commons.digester.Digester=info
+log4j.logger.org.apache.catalina.startup.TldConfig=info
+log4j.logger.chb.test=debug
+```
+
+1.2 配置根Logger
+根logger主要定义log4j支持的日志级别及输出目的地，其语法为：
+log4j.rootLogger = [ level ] , appenderName, appenderName, …
+其中，level 是日志记录的优先级，分为OFF、FATAL、ERROR、WARN、INFO、DEBUG、ALL或者自定义的级别。
+建议只使用四个级别，优先级从高到低分别是ERROR、WARN、INFO、DEBUG。
+appenderName指定日志信息输出到哪个地方，可同时指定多个输出目的地。
+
+1.3 配置输出目的地Appender
+Appender主要定义日志信息输出在什么位置，主要语法为：
+复制代码 代码如下:
+```PROPERTIES
+log4j.appender.appenderName = classInfo
+log4j.appender.appenderName.option1 = value1
+
+log4j.appender.appenderName.optionN = valueN
+```
+
+Log4j提供的appender有以下几种：
+•org.apache.log4j.ConsoleAppender（控制台）， 
+•org.apache.log4j.FileAppender（文件）， 
+•org.apache.log4j.DailyRollingFileAppender（每天产生一个日志文件），
+•org.apache.log4j.RollingFileAppender（文件大小到达指定尺寸的时候产生一个新的文件） 
+•org.apache.log4j.WriterAppender（将日志信息以流格式发送到任意指定的地方）
+
+### 使用步骤:
+- 导入log4j-xxx.jar
+- 在src下新建log4j.properties(路径和名称都不允许改变)
+	+ ConversionPattern :写表达式
+	+ log4j.appender.LOGFILE.File 文件位置及名称(日志文件扩展名.log)
+
+
+### 输出级别, 目的地 (Line 1)
+- fatal 致命错误，无法解决
+- error 错误
+- warn 警告
+- info 消息在粗粒度级别上突出强调应用程序的运行过程。打印一些你感兴趣的或者重要的信息，这个可以用于生产环境中输出程序运行的一些重要信息，但是不能滥用，避免打印过多的日志。
+- debug 指出细粒度信息事件对调试应用程序是非常有帮助的，主要用于开发过程中打印一些运行信息。
+- 
+ fatal(致命错误)  > error (错误) > warn (警告) > info(普通信息) > debug(调试信息)
+ 在log4j.properties的第一行中控制输出级别
+
+### log4j输出目的地
+5.1 在一行控制输出目的地
+
+
+### pattern中常用几个表达式
+6.1 %C   包名+类名
+6.2%d{YYYY-MM-dd HH:mm:ss}		时间
+6.3%L		行号
+6.4%m   信息
+6.5%n		换行
