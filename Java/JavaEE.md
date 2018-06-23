@@ -1,6 +1,24 @@
 
 # Tomcat
 
+## 【Tomcat】JVM，Tomcat，Servlet，Tomcat中的应用。彻底弄懂这些概念之间的联系
+
+tomcat和tomcat中的应用（即webapps下的war包）是运行在同一个JVM中的，只是分工不同
+`tomcat的角色是“调度员”，而你的应用的角色是“工作者”，`
+tomcat处理一个请求的大致过程如下：
+1. 假设tomcat监听8080端口，当一个http请求从主机的8080端口发送过来时，tomcat最先获知。
+2. tomcat将此请求作为任务加入一个队列中，jvm中有若干工作者线程会从这个队列中获取任务。
+3. 假设工作线程A取到了这个任务，那么线程A通过分析请求的url，检查已加载的web.xml配置，来判断此请求应该交给应用的哪个servlet处理(假设应用是用Servlet实现的)
+4. 工作线程A调用对应的Serlvet的方法(service/get/post等)，把请求封装成request对象传给servlet
+5. 此时应用开始干活(实际上干活的还是工作线程，只不过执行的是应用中编写的业务逻辑)，解析请求参数，处理业务流程，生成response
+6. 工作线程A把response回送给请求的发送端
+
+`servlet规范就是规范了应用和容器的通信`
+简单地说，比如你用SpringMVC写了一个web应用，springMVC是遵守servlet规范的，所以，它可以跑在任何遵循servlet规范的容器上，tomcat就是一个遵循servlet规范的容器，当然也可以跑在jetty上
+
+tomcat是用java语言开发的，所以，tomcat就是一个java应用，需要跑在jvm上
+
+
 ## 目录结构
 
 - bin 可执行命令
