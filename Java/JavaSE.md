@@ -1200,6 +1200,70 @@ JDK1.6之前，必须class文件的最上层包的父目录位于classpath下
 提供 相应的get/set方法来访问相关属性，这些方法通常是public，从而提供对属性的读取操作。(boolean变量的get方法也可以以isXxx命名)
 希望其他类调用的方法用public   
 
+## Java bean规范
+首先，一个java bean 其实就是一个普通的java 类， 但我们对这个类有些要求：
++ 这个类需要是public 的， 然后需要有个无参数的构造函数
++ 这个类的属性应该是private的，通过setXXX()和getXXX()来访问
++ 这个类需要能支持“事件”，例如addXXXXListener(XXXEvent e),  事件可以是Click事件，Keyboard事件等等， 当然咱们也支持自定义的事件。 
++ 我们得提供一个所谓的自省/反射机制， 这样能在运行时查看java bean 的各种信息“
++ 这个类应该是可以序列化的， 即可以把bean的状态保存的硬盘上， 以便以后来恢复。 
+
+### Java代码不写getter/setter, 转化为public, 有什么弊端?
+一个字段被认为是私有的, 那么外部就不能访问它( 最多提供getter )
+如果一个私有的字段提供了getter和setter, 那么它就被认为是公开的, 那就前后矛盾了, 应该使用 public
+目的是什么?
+
+相关代码
+```java
+public class Bicycle {
+        
+    private int cadence;
+    private int gear;
+    // 比如speed被认为是公开的
+    // 所以改成 public 的
+    // 然后移除对应的 getter setter
+    private int speed;
+        
+    public Bicycle(int startCadence, int startSpeed, int startGear) {
+        gear = startGear;
+        cadence = startCadence;
+        speed = startSpeed;
+    }
+        
+    public int getCadence() {
+        return cadence;
+    }
+        
+    public void setCadence(int newValue) {
+        cadence = newValue;
+    }
+        
+    public int getGear() {
+        return gear;
+    }
+        
+    public void setGear(int newValue) {
+        gear = newValue;
+    }
+        
+    public int getSpeed() {
+        return speed;
+    }
+        
+    public void applyBrake(int decrement) {
+        speed -= decrement;
+    }
+        
+    public void speedUp(int increment) {
+        speed += increment;
+    }
+}
+```
+回答：
+`每种语言的哲学不一样。Java 讲的是完全的面向对象，在编码时提倡代码高度的灵活性与可扩展性
+在Java中你还是应该遵守规范为javabean定义get/set方法，因为你遵守规范才能享受规范给你带来的好处，比如你接入第三方库的时候，要是用reflect的方式来操作javabean时他们大多数都是采用get/set方法来实现的。如果你的javabean此时没有get/set方法那显然你是无法使用该库的。
+`
+
 
 ## 对象成员的权限修饰符
 public default protected private
