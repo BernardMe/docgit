@@ -1,6 +1,37 @@
 
 
 
+## java的spi机制
+SPI全称为(Service Provider Interface) ,是JDK内置的一种服务提供发现机制。 目前有不少框架用它来做服务的扩展发现， 简单来说，它就是一种动态替换发现的机制， 举个例子来说， 有个接口，想运行时动态的给它添加实现，你只需要添加一个实现，而后，把新加的实现，描述给JDK知道就行啦
+
+SPI的全名为Service Provider Interface.普通开发人员可能不熟悉，因为这个是针对厂商或者插件的。在java.util.ServiceLoader的文档里有比较详细的介绍。究其思想，其实是和"Callback"差不多。“Callback”的思想是在我们调用API的时候，我们可以自己写一段逻辑代码，传入到API里面，API内部在合适的时候会调用它，从而实现某种程度的“定制”。
+
+SPI也是JDK的一种标准
+
+Java SPI
++ 需要一个目录
+  - META/service
+  - 放到ClassPath下面
++ 目录下面放置一个配置文件
+  - 文件名是要扩展的接口全名
+  - 文件内部为要实现的接口实现类
+  - 文件必须为UTF-8编码
++ 如何使用
+  - ServiceLoad.load(xx.class)
+  - ServiceLoad<HelloInterface> loads = ServiceLoad.load(HelloInterface.class)
+而后，把新加的实现，描述给JDK知道就行了(通过改一个文本文件即可)，
+目前Dubbo框架就基于SPI机制提供扩展功能。
+
+
+典型的是Collections.sort（List<T> list,Comparator<? super T> c）
+这个方法，它的第二个参数是一个实现Comparator接口的实例。我们可以根据自己的排序规则写一个类，实现此接口，传入此方法，那么这个方法就会根据我们的规则对list进行排序。
+
+
+
+
+
+
+
 
 ## zookeeper在Dubbo中扮演了一个什么角色，起到了什么作用啊？
 是dubbo推荐的注册中心。

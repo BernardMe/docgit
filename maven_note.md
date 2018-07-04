@@ -76,6 +76,25 @@ build节点：编译打包生成相关配置
 - 继承关系
 - 聚合关系
 
+#### maven子项目如何使用父项目的jar包
+```xml
+如果父pom中使用的是
+
+<dependencies>....</dependencies>
+方式，
+则子pom会自动使用pom中的jar包
+
+
+如果父pom使用
+
+<dependencyManagement>
+  <dependencies>....
+  </dependencies>
+</dependencyManagement>
+
+方式，则子pom不会自动使用父pom中的jar包，这时如果子pom想使用的话，就要给出groupId和artifactId，无需给出version
+```
+
 ### maven用法
 3.3 web工程
 创建一个简单的web项目，只需要修 -DarchetypeArtifactId为maven-archetype-webapp即可，如下命令
