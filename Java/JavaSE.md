@@ -1598,6 +1598,31 @@ final变量可以安全的在多线程环境下进行共享，而不需要额外
 面试题
     final 和 finally finallize 的异同点？
 
+### [STAR]关于final的重要知识点
+final关键字可以用于成员变量、本地变量、方法以及类。
+final成员变量必须在声明的时候初始化或者在构造器中初始化，否则就会报编译错误。
+你不能够对final变量再次赋值。
+本地变量必须在声明时赋值。
+在匿名类中所有变量都必须是final变量。
+final方法不能被重写。
+final类不能被继承。
+final关键字不同于finally关键字，后者用于异常处理。
+final关键字容易与finalize()方法搞混，后者是在Object类中定义的方法，是在垃圾回收之前被JVM调用的方法。
+接口中声明的所有变量本身是final的。
+final和abstract这两个关键字是反相关的，final类就不可能是abstract的。
+final方法在编译阶段绑定，称为静态绑定(static binding)。
+没有在声明时初始化final变量的称为空白final变量(blank final variable)，它们必须在构造器中初始化，或者调用this()初始化。不这么做的话，编译器会报错“final变量(变量名)需要进行初始化”。
+将类、方法、变量声明为final能够提高性能，这样JVM就有机会进行估计，然后优化。
+按照Java代码惯例，final变量就是常量，而且通常常量名要大写：
+`private final int COUNT = 10;`
+对于集合对象声明为final指的是引用不能被更改，但是你可以向其中增加，删除或者改变内容。譬如：
+```java
+private final List Loans = new ArrayList();
+list.add(“home loan”);  //valid
+list.add("personal loan"); //valid
+loans = new Vector();  //not valid
+```
+
 ## 抽象类
 
 在了解抽象类之前，先来了解一下抽象方法。抽象方法是一种特殊的方法：它只有声明，而没有具体的实现。抽象方法的声明格式为：
