@@ -1540,20 +1540,60 @@ overload override
 
 
 ## final 关键字
-1 终结器
- 
+
+### final变量 
  final的变量的值不能够被改变
+`final变量经常和static关键字一起使用，作为常量`
  final long ID = 1234556667L;
  Math.PI  Math.E
- 
- 父类的final方法不能被子类重写，但是可以在本类中重载
+```java
+public static final String LOAN = "loan";
+LOAN = new String("loan"); //invalid compilation error
+```
 
- 被final修饰的类，不能被继承/不能派生子类(被阉割的类)
- Math，String等类不能派生子类，但是他们有父类
+### final方法
+ 父类的final方法不能被子类重写，但是可以在本类中重载
+`final方法比非final方法要快，因为在编译的时候已经静态绑定了，不需要在运行时再动态绑定`
+```java
+class PersonalLoan{
+    public final String getName(){
+        return "personal loan";
+    }
+}
  
+class CheapPersonalLoan extends PersonalLoan{
+    @Override
+    public final String getName(){
+        return "cheap personal loan"; //compilation error: overridden method is final
+    }
+}
+```
+
+### final类
+ 被final修饰的类
+`final类通常功能是完整的，它们不能被继承`
+ Math，String等类不能派生子类，但是他们有父类
+```java
+final class PersonalLoan{
+
+}
+ 
+class CheapPersonalLoan extends PersonalLoan{  //compilation error: cannot inherit from final class
+ 
+}
+```
+
  被final修饰的对象引用，不能再指向新的对象(引用地址值不能改变)，但是对象的成员属性值可以改变，
  
  final修饰 变量，方法，类，对象，产生不同的读写限制
+
+### final关键字的好处
+final关键字提高了性能。JVM和Java应用都会缓存final变量。
+final变量可以安全的在多线程环境下进行共享，而不需要额外的同步开销。
+使用final关键字，JVM会对方法、变量及类进行优化。
+
+### 不可变类
+创建不可变类要使用final关键字。不可变类是指它的对象一旦被创建了就不能被更改了。String是不可变类的代表。不可变类有很多好处，譬如它们的对象是只读的，可以在多线程环境下安全的共享，不用额外的同步开销等等
  
 面试题
     final 和 finally finallize 的异同点？
@@ -2381,6 +2421,20 @@ private native int read0() throws IOException;
 
 `Java code --> |JNI| --> C/C++ code`
 
+### JNA
+
+#### java使用JNA(Java Native Access)调用dll的方法
+JNA(Java Native Access)：建立在JNI之上的Java开源框架，SUN主导开发，用来调用C，C++代码，尤其是底层库文件(windows中叫dll文件，Linux中叫so[shared object]文件)
+JNI是Java调用原生函数的唯一机制，JNA就是建立在JNI之上，JNA简化了Java调用原生函数的过程。
+JNA提供了一个动态的C语言编写的转发器(实际上也是一个动态链接库，在Linuxi386中文件名是：libjnidispatch.so)可以自动实现Jva与C之间数据类型的映射。从性能上会比JNI技术调用动态链接库要低
+开发人员只要在一个Java接口中描述目标native library的函数和结构，JNA将自动实现Java接口到native function的映射
+
+#### JNA特性
+1 dll和so是C函数的集合和容器，这与Java中的接口概念吻合，所以JNA把dll文件和so文件看成一个个接口。在JNA中定义一个接口就是相当于了定义一个DLL/SO文件的描述文件，该接口代表了动态链接库中发布的所有函数。而且，对于程序不需要的函数，可以不在接口中声明。
+
+2 JNA定义的接口一般继承com.sun.jna.Library接口，如果dll文件中的函数是以stdcall方式输出函数，那么，该接口就应该继承com.sun.jna.win32.StdCallLibrary接口。
+
+3 Jna难点：编程语言之间的数据类型不一致。
 
 ##处理流
 这根管道包了另外一根管道
