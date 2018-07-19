@@ -3008,19 +3008,16 @@ Java反射技术应用领域很广，如软件测试，EJB，JavaBean等
 程序人员希望在源代码中看到程序的逻辑，反射等绕过了源代码的技术，因而会带来维护问题。反射代码比相应的直接代码更复杂。
 
 ## 考试
-/**
- * 填空 15(5)
- * 选择 22(3)
- * 判断 16(.5*4)
- * 简答 20(5) 分点
- * 编码 15(5)
- * 
+
+  填空 15(5)
+  选择 22(3)
+  判断 16(.5*4)
+  简答 20(5) 分点
+  编码 15(5)
+
 线程  集合  IO流
 
 
- * @author Joe
- *
- */
 
 ClassNotFoundException检查时异常
 ClassCastException运行时异常
@@ -3032,19 +3029,38 @@ ClassCastException运行时异常
 字节序列<--序列化 Java对象
 ```
 
+## JAVA 中正则表达式
 
-## 设计模式
+java.util.regex 是一个用正则表达式所订制的模式来对字符串进行匹配工作的类库包。
 
-### 单例模式
+它包括两个类： Pattern和 Matcher
 
-- 私有静态变量
-- 私有化构造器
-- 获取本类实例唯一全局访问点
+Pattern 一个 Pattern 是一个正则表达式经编译后的表现模式。
+Matcher 一个 Matcher 对象是一个状态机器，它依据 Pattern 对象做为匹配模式对字符串展开匹配检查。
 
-### 简单工厂模式
+首先一个 Pattern 实例订制了一个所用语法与 PERL 的类似的正则表达式经编译后的模式，然后一个 Matcher 实例在这个给定的 Pattern 实例的模式控制下进行字符串的匹配工作。
+
+### Pattern 类 
+Pattern 的方法如下：
+static Pattern  compile(String regex) 将给定的正则表达式编译并赋予给Pattern类
+
+static Pattern  compile(String regex, int flags)  同上，但增加 flag 参数的指定，可选的 flag 参数包括：CASE INSENSITIVE,MULTILINE,DOTALL,UNICODE CASE， CANON EQ
+
+Matcher         matcher(CharSequence input) 生成一个给定命名的Matcher对象
+
+static boolean  matches(String regex, CharSequence input) 编译给定的正则表达式并且对输入的字串以该正则表达式为模开展匹配，该方法适合于该正则表达式只会使用一次的情况，也就是只进行一次匹配工作，因为这种情况下并不需要生成一个Matcher实例。
+
+String          pattern() 返回该Pattern对象所编译的正则表达式。
+
+String[]        split(CharSequence input)  将目标字符串按照 Pattern 里所包含的正则表达式为模进行分割。
+
+### Matcher 类
+Matcher 方法如下：
+boolean         matches() 尝试对整个目标字符展开匹配检测，也就是只有整个目标字符串完全匹配时才返回真值。
 
 
-### 线程池
+
+## 线程池
 注意区别`数据库连接池`
 
 ### 线程池的技术背景

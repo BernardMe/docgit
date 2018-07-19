@@ -61,7 +61,7 @@ class HelloGril{
 //相当于这个礼仪公司(代理类)
 public class StaticProxy{
 	//持有了迎宾小姐的资源
-	private HelloGril hellolGirl;
+	private HelloGril helloGirl;
 
 	public StaticProxy(){
 		helloGirl = new HelloGril();
