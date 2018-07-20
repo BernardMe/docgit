@@ -118,6 +118,31 @@ db.fs.files.remove({_id:ObjectId("5b17654c03b6c2233029dcc4")})
 不能含有保留字符$
 
 
+### 关于 ObjectID组成
+前面说了： `_id` 是mongodb ObjectID类型的，它由12位结构组成，包括timestamp, machined, processid, counter 等。
+
+
+TimeStamp
+前 4字节是一个unix的时间戳，是一个int类别，我们将上面的例子中的objectid的前4位进行提取“4df2dcec”，然后再将他们安装十六进制 专为十进制：“1307761900”，这个数字就是一个时间戳，为了让效果更佳明显，我们将这个时间戳转换成我们习惯的时间格式
+
+`$ date -d ‘1970-01-01 UTC 1307761900  sec’  -u`
+2011年 06月 11日 星期六 03:11:40 UTC
+
+前 4个字节其实隐藏了文档创建的时间，并且时间戳处在于字符的最前面，这就意味着ObjectId大致会按照插入进行排序，这对于某些方面起到很大作用，如 作为索引提高搜索效率等等。使用时间戳还有一个好处是，某些客户端驱动可以通过ObjectId解析出该记录是何时插入的，这也解答了我们平时快速连续创 建多个Objectid时，会发现前几位数字很少发现变化的现实，因为使用的是当前时间，很多用户担心要对服务器进行时间同步，其实这个时间戳的真实值并 不重要，只要其总不停增加就好。
+
+比如`"_id" : ObjectId("5b1886f8965c44c78540a4fc")`
+取id的前4个字节。由于id是16进制的string，4个字节就是32位，对应id前8个字符。即5b1886f8, 转换成10进制为1528334072. 加上1970，就是当前时间。
+
+Machine
+接下来的三个字节，就是 2cdcd2 ,这三个字节是所在主机的唯一标识符，一般是机器主机名的散列值，这样就确保了不同主机生成不同的机器hash值，确保在分布式中不造成冲突，这也就是在同一台机器生成的objectid中间的字符串都是一模一样的原因。
+
+pid
+上面的Machine是为了确保在不同机器产生的objectid不冲突，而pid就是为了在同一台机器不同的mongodb进程产生了objectid不冲突，接下来的0936两字节就是产生objectid的进程标识符。
+
+increment
+前面的九个字节是保证了一秒内不同机器不同进程生成objectid不冲突，这后面的三个字节a8b817，是一个自动增加的计数器，用来确保在同一秒内产生的objectid也不会发现冲突，允许256的3次方等于16777216条记录的唯一性。
+
+
 ## 数据库角色
 
 针对Mongodb数据库中的各种角色进行说明
@@ -304,4 +329,55 @@ Now restart the mongod and create new user then it should work fine.
 然后重新创建普通用户 smalink
 
 重新连接即可
+
+
+### MongoDB分页
+
+#### 传统分页思路
+假设一页大小为10条。则
+```js
+//page 1
+1-10
+
+//page 2
+11-20
+
+//page 3
+21-30
+...
+
+//page n
+10*(n-1) +1 - 10*n
+```
+MongoDB提供了skip()和limit()方法。
+
+skip: 跳过指定数量的数据. 可以用来跳过当前页之前的数据，即跳过`pageSize*(n-1)`。
+limit: 指定从MongoDB中读取的记录条数，可以当做页面大小pageSize。
+
+##### 问题
+
+看起来，分页已经实现了，但是官方文档并不推荐，说会扫描全部文档，然后再返回结果。
+>The cursor.skip() method requires the server to scan from the beginning of the input results set before beginning to return results. As the offset increases, cursor.skip() will become slower.
+
+所以，需要一种更快的方式。其实和mysql数量大之后不推荐用limit m,n一样，解决方案是先查出当前页的第一条，然后顺序数pageSize条。MongoDB官方也是这样推荐的。
+
+
+#### 正确的分页办法
+我们假设基于_id的条件进行查询比较。事实上，这个比较的基准字段可以是任何你想要的有序的字段，比如时间戳。
+```js
+//Page 1
+db.users.find().limit(pageSize);
+//Find the id of the last document in this page
+last_id = ...
+ 
+//Page 2
+users = db.users.find({
+  '_id' :{ "$gt" :ObjectId("5b16c194666cd10add402c87")}
+}).limit(10)
+//Update the last id with the id of the last document in this page
+last_id = ...
+```
+显然，第一页和后面的不同。对于构建分页API, 我们可以要求用户必须传递pageSize, lastId。
+pageSize 页面大小
+lastId 上一页的最后一条记录的id，如果不传，则将强制为第一页
 
