@@ -52,7 +52,7 @@ d.组合关系：如一个小组，小组是否存在与小组中是否有组员
 
 ```java
 //相当于迎宾小姐(委托类)
-class HelloGril{
+class HelloGirl{
 	public void sayHello(){
 		System.out.print("Hello");
 	}
@@ -61,10 +61,10 @@ class HelloGril{
 //相当于这个礼仪公司(代理类)
 public class StaticProxy{
 	//持有了迎宾小姐的资源
-	private HelloGril helloGirl;
+	private HelloGirl helloGirl;
 
 	public StaticProxy(){
-		helloGirl = new HelloGril();
+		helloGirl = new HelloGirl();
 	}
 	//迎宾活动
 	public void doActivi(){
@@ -81,7 +81,7 @@ public class StaticProxy{
 于是我们做如下修改：
 ```java
 //相当于迎宾小姐新阵容
-public class AnotherHelloGril {
+public class AnotherHelloGirl {
 	public void sayhello(){
 		System.out.println("您好！");
 	}
@@ -90,17 +90,17 @@ public class AnotherHelloGril {
 //相当于这个礼仪公司(代理类)
 public class StaticProxy{
 	//持有了迎宾小姐的资源
-	private AnotherHelloGril anotherHelloGril;
+	private AnotherHelloGirl anotherHelloGirl;
 
 	public StaticProxy(){
-		anotherHelloGril = new AnotherHelloGril();
+		anotherHelloGirl = new AnotherHelloGirl();
 	}
 	//迎宾活动
 	public void doActivi(){
 		//自己的乐队奏乐
 		System.out.print("do sth...");
 		//迎宾小姐欢迎
-		anotherHelloGril.sayHello();
+		anotherHelloGirl.sayHello();
 
 	}
 }
@@ -110,12 +110,12 @@ public class StaticProxy{
 
 ```java
 //专业迎宾团队
-public interface IHelloGril {
+public interface IHelloGirl {
 	//规定了做什么
 	public void sayhello();
 }
 //第一小队
-public class HelloGrilImpl implements IHelloGril{
+public class HelloGirlImpl implements IHelloGirl{
 	//照着规章去做     说英语
 	public void sayhello(){
 		System.out.println("Hello!");
@@ -123,7 +123,7 @@ public class HelloGrilImpl implements IHelloGril{
 }
  
 //第二小队
-public class HelloGrilImpl2 implements IHelloGril {
+public class HelloGirlImpl2 implements IHelloGirl {
 	//同样是致欢迎   用标准普通话
 	@Override
 	public void sayhello() {
@@ -138,12 +138,12 @@ public class HelloGrilImpl2 implements IHelloGril {
 //相当于这个礼仪公司
 public class StaticProxy{
 	//持有了迎宾团队的资源
-	private IHelloGril hello ;
+	private IHelloGirl girl;
   
 	public StaticProxy() {
 	//招呼迎宾团队准备上场,具体派哪对视情况而定
-		girl = new HelloGrilImpl();
-        //hello = new HelloWorldImpl2();
+		girl = new HelloGirlImpl();
+        //girl = new HelloWorldImpl2();
 	}
  
 	//迎宾活动
