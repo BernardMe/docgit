@@ -1291,7 +1291,7 @@ public类可以在任意地方被访问
 default类只可以被同一个包内部的类访问
 
 
-## private
+### private
 被private修饰的属性或方法，子类无法继承和访问
 只能被本类自己访问(类可见性)
 在其他类中即使通过对象引用.属性名"访问"私有属性也不允许，例如
@@ -1308,16 +1308,16 @@ public class Test1 {
 }
 ```
 
-## default
+### default
 被本类自己访问
 被同一个包的其他类访问(包可见性)
 
-## protected
+### protected
 被本类自己访问
 被同一个包的其他类访问
 被子类(同一个包及不同包的子类)访问
 
-## public
+### public
 可以被项目中所有的类访问(项目可见性)
 
 ## 继承
@@ -1337,6 +1337,106 @@ public class Test1 {
   如果调用super，必须写在子类构造方法的第一行
 3 如果子类的构造方法中没有显示地调用基类构造方法，则系统默认调用基类无参数的构造方法。
 4 如果子类的构造方法中既没有显示地调用基类构造方法，而基类中又没有无参构造方法，则编译报错
+
+
+## [180731]私有的成员能被子类继承吗?
+首先请看两个类的代码:
+BaseClass:
+```java
+package com.sitinspring;
+
+import java.util.Vector;
+
+/**
+ * 基类BaseClass,ChildClass类的父类
+ * @author: sitinspring(junglesong@gmail.com)
+ * @date: 2007-12-4
+ */
+public class BaseClass{
+    // 私有动态数组成员,注意它是"private"的
+    private Vector objects;
+    
+    /**
+     * 在构造函数
+     *
+     */
+    public BaseClass(){
+        objects=new Vector();
+    }
+    
+    /**
+     * 公有函数,向动态数组成员objects添加字符串
+     * @param str
+     */
+    @SuppressWarnings("unchecked")
+    public void addStr2Obs(String str){
+        objects.add(str);
+    }
+    
+    /**
+     * 公有函数,打印objects中的诸元素
+     *
+     */
+    public void printAll(){
+        for(int i=0;i<objects.size();i++){
+            System.out.println("序号="+i+"\t元素="+objects.get(i));
+        }
+    }
+}
+```
+ChildClass,BaseClass的派生类:
+```java
+package com.sitinspring;
+
+/**
+ * ChildClass,BaseClass的派生类
+ * @author: sitinspring(junglesong@gmail.com)
+ * @date: 2007-12-4
+ */
+public class ChildClass extends BaseClass{
+    public void printObjects(){
+        // 下面的句子是不能编译通过的
+        /*for(int i=0;i<objects.size();i++){
+            System.out.println("序号="+i+"\t元素="+objects.get(i));
+        }*/
+    }
+    
+    public static void main(String[] args){
+        ChildClass childClass=new ChildClass();
+        
+        childClass.addStr2Obs("Hello");
+        childClass.addStr2Obs("World");
+        childClass.addStr2Obs("China");
+        childClass.addStr2Obs("sitinspring");
+        
+        childClass.printAll();
+    }
+}
+```
+再让我们把断点停在main函数中的childClass.printAll()上,看看实例childClass中到底有什么.
+
+`截图省略，可以DEBUG调试探究`
+以上截图证明:objects确实是ChildClass类实例childClass的成员,而且四个字符串也都被加进去了.
+
+最后执行出来,结果如下:
+序号=0    元素=Hello
+序号=1    元素=World
+序号=2    元素=China
+序号=3    元素=sitinspring
+
+再翻看书籍,关于private限制的成员变量是这样写的:
+private  只允许来自改类内部的方法访问.不允许任何来自该类外部的访问.
+
+我们上面添字符串和遍历输出函数都是BaseClass的成员,所以它当然被这两个函数访问.而ChildClass的printObjects是BaseClass类外部的函数,结果当然是编译也不能通过.
+
+实际上,private,public,protected和继承没有关系,他们对成员函数和变量的限制只是在成员的可见性上,
+`public允许来自任何类的访问;`
+`private只允许来自改类内部的方法访问,不允许任何来自该类外部的访问;`
+`protected允许来自同一包中的任何类以及改类的任何地方的任何子类的方法访问.`
+
+而关于成员变量的继承,`父类的任何成员变量都是会被子类继承下去的`,私有的objects就是明证,这些继承下来的私有成员虽对子类来说不可见,但子类仍然可以用父类的函数操作他们.
+
+这样的设计有何意义呢?我们可以用这个方法将我们的成员保护得更好,让子类的设计者也只能通过父类指定的方法修改父类的私有成员,这样将能把类保护得更好,这对一个完整的继承体系是尤为可贵的. jdk源码就有这样的例子,java.util.Observable就是这样设计的.
 
 
 ## .java源文件增加package以后，我们在DOS下编译怎么做?
