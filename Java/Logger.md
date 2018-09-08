@@ -1,3 +1,30 @@
+
+
+## 总结
+
+### e.printStackTrace()不会打印异常堆栈到日志
+
+在Java中，通常情况下，需要将异常堆栈信息输出到日志中，这样便于纠错及修正Bug，而多数情况下，大家最常用的是使用e.printStackTrace()直接打印堆栈信息完事，这并不是值的推荐的做法。
+
+当出现异常时，`调用e.printStackTrace();其实相当于什么都没做，同时也不会把异常信息输出到日志文件中`
+使用log.error(e.getMessage());只能够输出异常信息，但是并不包括异常堆栈，所以无法追踪出错的源点
+使用log.error(e);除了输出异常信息外，还能输出异常类型，但是同样不包括异常堆栈，该方法doc说明为：Logs a message object with the ERROR level.显然并不会记录异常堆栈信息
+当然也可以自己手动写个工具类，来挨个输出e.getStackTrace();获得的堆栈信息，显然繁琐麻烦
+其实在log4j中只需要这样调用，就可以获得异常及堆栈信息log.error(Object var1, Throwable var2);，该方法doc说明为：Logs a message at the ERROR level including the stack trace of the Throwable t passed as parameter.
+
+## slf4j(Simple Logging Facade for Java)
+
+### 阿里Java代码规范引入slf4j
+>【强制】应用中不可直接使用日志系统（Log4j、Logback）中的API，而应依赖使用日志框架
+SLF4J中的API，使用门面模式的日志框架，有利于维护和各个类的日志处理方式统一。
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+private static final Logger logger = LoggerFactory.getLogger(Abc.class);
+
+大概意思就是说 SLF4J 是一个日志抽象层，允许你使用任何一个日志系统，并且可以随时切换还不需要动到已经写好的程序（我特么是真改过整个项目的所有打印日志的代码，累死...），这对于第三方组件的引入的不同日志系统来说几乎零学习成本了，况且它的优点不仅仅这一个而已;
+还有简洁的占位符的使用和日志级别的判断，众所周知的日志读写一定会影响系统的性能，但这些特性都是对系统性能友好的
+
+
 ## log4j
 
 ### 配置文件
