@@ -243,6 +243,21 @@ linux下的文件结构，看看每个文件夹都是干吗用的
 
 命令 [选项] [参数]
 
+### clear
+控制台下清屏命令
+
+### less
+less [参数] 文件..
+使用less可以随意浏览文件
+-N 显式每行的行号
+
+### nl
+nl [-bnw] 文件
+小文本文件的查看
+
+### vim
+vim 文件
+
 ### ls
 ls [选项] [文件或目录]
 选项:
@@ -429,8 +444,43 @@ whereis 只会在标准的Linux目录中进行搜索。
 
 ## VSFTPD
 
+### 配置
+
+#### 允许上传
+需要将 /etc/vsftpd.conf 中的 write_enable 值设为 YES，以便允许修改文件系统（如上传）：
+`write_enable=YES`
+
+#### 本地用户登录
+需要修改 /etc/vsftpd.conf 中的如下值，以便允许 /etc/passwd 中的用户登录:
+`local_enable=YES`
+
+#### Chroot 限制
+为了阻止用户离开家目录，可以设置 chroot 环境。要启用此功能，请在 /etc/vsftpd.conf 中添加以下行：
+`chroot_list_enable=YES`
+`chroot_list_file=/etc/vsftpd.chroot_list`
+chroot_list_file 定义了被 chroot 限制的用户列表。
+
+#### 端口配置
+可能需要调整默认FTP侦听端口和被动模式数据端口：
+
+对于暴露于 Web 的 FTP 服务器，为了减少服务器受到攻击的可能性，可以将侦听端口改为除标准端口 21 以外的端口。
+要限制被动模式将打开的端口，可以提供一个范围。
+这些端口配置更改可以使用以下几行完成：
+```shell
+/etc/vsftpd.conf
+
+listen_port=2211
+pasv_min_port=5000
+pasv_max_port=5003
+```
+
+#### 配置 iptables
+通常，运行FTP守护进程的服务器受 iptables 防火墙的保护。要允许访问FTP服务器，需要打开相应的端口，如：
+`iptables -A INPUT -m state --state NEW -m tcp -p tcp --dport 21 -j ACCEPT`
+
+
 ### CentOS中vsftpd的主动和被动方式
-FTP是File Transfer Protocol（文件传输协议）的缩写，用来在两台计算机之间互相传送文件。相比于HTTP，FTP协议要复杂得多。复杂的原因，是因为FTP协议要用到两个TCP连接，一个是命令链路，用来在FTP客户端与服务器之间传递命令；另一个是数据链路，用来上传或下载数据。
+FTP是File Transfer Protocol（文件传输协议）的缩写，用来在两台计算机之间互相传送文件。相比于HTTP，FTP协议要复杂得多。复杂的原因，是因为FTP协议要用到两个TCP连接，一个是`命令链路`，用来在FTP客户端与服务器之间传递命令；另一个是`数据链路`，用来上传或下载数据。
 
 
 PORT & PASV 
@@ -452,25 +502,6 @@ Hot Keys
 shift + pageDown/pageUp
 在控制台翻页查看前面的输出内容
 
-clear
-控制台下清屏命令
-
-文件管理
-
-less
-less [参数] 文件..
-使用less可以随意浏览文件
--N		显式每行的行号
-
-nl
-nl [-bnw] 文件
-小文本文件的查看
-
-文本编辑器vim
-vim
-vim 文件
-
-HOTKEYS:
  
 
 ## ArchLinux
@@ -502,6 +533,49 @@ we need to update the archlinux-keyring package.
 To do so, run:
 
 `sudo pacman -S archlinux-keyring`
+
+### ArchLinux中使用vsftpd
+
+#### 服务开启命令
+检查vsftpd服务是否处于活动状态
+`systemctl is-active vsftpd.service`
+
+启动vsftpd服务
+`systemctl start vsftpd.service`
+
+停止vsftpd服务
+`systemctl stop vsftpd.service`
+
+重新启动vsftpd服务
+`systemctl restart vsftpd.service`
+
+`systemctl enable vsftpd.service`
+
+#### 编辑 vsftpd.conf 文件
+```shell
+[...]
+#Uncomment and  Set YES to enable write.
+write_enable=YES
+[...]
+# Uncomment and Set banner name for your website
+ftpd_banner=Welcome to Unixmen FTP service.
+[...]
+# Uncomment
+ls_recurse_enable=YES
+[...]
+# Uncomment and set YES to allow local users to log in.
+local_enable=YES
+[...]
+# To disable anonymous access, set NO.
+anonymous_enable=NO
+[...]
+# Uncomment to enable ascii download and upload.
+ascii_upload_enable=YES
+ascii_download_enable=YES
+[...]
+## Add at the end of this  file ##
+use_localtime=YES
+```
 
 ### 在vmware中安装了archlinux网络连接有问题
 
