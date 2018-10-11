@@ -971,6 +971,81 @@ static String toString(Object[] a) //返回指定数组内容的字符串表示�
 
 # 第5章 面向对象
 
+## 枚举
+`枚举类型编译后生成一个 class 并且继承 Enum 类型（敲黑板，划重点，一定要记住）`
+
+### 枚举的使用
+
+
+Java 中的枚举是一个比较特殊的类型，既具有 class 的特性，又具有自己特殊的特性。定义枚举类型使用 enum 关键字，枚举值一般使用大写字母，如下所示。使用枚举类型的 name() 方法可以获取字符串的名称，使用 ordinal() 方法可以获取枚举值的下标，这里不做赘述。
+```java
+enum SexOne {
+    MALE,FEMALE
+}
+```
+枚举同样可以拥有构造器和变量，但枚举类型的构造器要求必须是 private 类型。这是为了确保枚举的值一定由自己定义，拒绝外界传入。与 class 不同的是，枚举类型的构造器不定义访问权限时，默认为 private。
+
+```java
+enum SexTwo {
+    MALE("man"),
+    FEMALE("woman");
+
+    String alias;
+    SexTwo(String alias){
+        this.alias = alias;
+   }
+}
+```
+枚举类型自动拥有 values 和 valueOf 方法，values 用于获取枚举所有的值，valueOf 用于根据名称反查枚举值。在后面的实现原理中，我们将看到这两个方法的实现。
+
+### 枚举的实现原理
+
+
+`枚举类型编译后生成一个 class 并且继承 Enum 类型（敲黑板，划重点，一定要记住）`。反编译可以看到 SexTwo 的字节码，对字节码进行还原可以得到如下的 class。
+```java
+final class SexTwo extends Enum{
+    public static SexTwo[] values(){
+        return (SexTwo[])$VALUES.clone();
+    }
+
+    public static SexTwo valueOf(String s){
+        return (SexTwo)Enum.valueOf(SexTwo, s);
+    }
+
+    private SexTwo(String s, int i, String s1){
+        super(s, i);
+        alias = s1;
+    }
+
+    public static final SexTwo MALE;
+    public static final SexTwo FEMALE;
+    String alias;
+    private static final SexTwo $VALUES[];
+
+    static {
+        MALE = new SexTwo("MALE", 0, "man");
+        FEMALE = new SexTwo("FEMALE", 1, "woman");
+        $VALUES = (new SexTwo[] {
+            MALE, FEMALE
+        });
+    }
+}
+```
+SexTwo 编译后变成了一个普通的 class 类型。这里需要注意的是，SexTwo 拥有修饰符 final，因此不能有子类。同时继承了 Enum 类型，因此开发中 SexTwo 也将不能继承任何父类。
+
+SexTwo 生成的构造器是 private 类型，有两个 public static final SexTwo 类型的变量 MALE 和 FEMALE。编译时编译器自动根据枚举值的顺序确定下标，并在创建枚举值时使用。枚举类型定义的值都是 public static final 类型，在静态初始化中进行初始化。这里可以看到 SexTwo 在静态初始化中为变量 MALE、FEMALE 进行赋值，使用的参数就是我们给定的参数 man 和 woman。
+
+### 自动生成的 values 和 valueOf
+
+
+Java 编译枚举类型时，自动加上两个静态方法 values 和 valueOf。如果我们定义了签名完全相同的方法会编译报错 “已在枚举中定义了方法 values”。
+
+枚举类型使用私有静态变量 $VALUES 存储所有的值，在静态初始化中赋值，类型为数组，值为所有枚举值，用于 values 和 valueOf 方法。
+
+values 方法的作用是返回所有枚举值，实现很简单，就是 clone 一下 $VALUES 的值。valueOf 方法的作用是根据枚举值的名称返回枚举值，实现方法是调用 Enum.valueOf 方法，后文会在 Enum 类型中介绍这个方法。
+
+
+
 ## 对象和类的关系
 把对象抽象成类；
 把类实例化成对象；
