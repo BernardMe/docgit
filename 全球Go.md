@@ -16,7 +16,7 @@ https://www.lycamobile.us/join
 ## 帐号
 
 b7iblcn6@icloud.com
-----Dd118811
+
 
 # 财务方面
 
