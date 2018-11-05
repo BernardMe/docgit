@@ -50,21 +50,21 @@ port = 3306
 ### 5.7安装
 以管理员身份运行开始－运行－输入cmd，进入DOS窗口后，首先切换到MYSQL的程序目录：
 
-`mysqld --initialize`（mysqld -remove 表示删除mysql）
+`mysqld  install mysql_5_7`（mysqld -remove 表示删除mysql）
 
 Service successfully installed.(说明安装成功了)
  
+#### 初始化创建用户
+在初始化时如果加上 `--initial-insecure --user=root`，则会创建空密码的 root@localhost 账号,
+否则会创建带密码的root@localhost账户，密码直接写在log-error日志文件中；
+新用户登录后必须立刻更改密码，否则无法继续后续的工作。
+
 D:\mysql-5.7\bin>net start mysql
 MySQL 服务正在启动 ..
 MySQL 服务已经启动成功。（说明服务启动成功了）
 
 `select version();` 或者 `status`
 查看MySQL服务器版本
-
-### 5.7初始化创建用户
-在初始化时如果加上 `--initial-insecure`，则会创建空密码的 root@localhost 账号,
-否则会创建带密码的root@localhost账户，密码直接写在log-error日志文件中；
-新用户登录后必须立刻更改密码，否则无法继续后续的工作。
 
 
 
