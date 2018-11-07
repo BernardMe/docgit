@@ -499,6 +499,35 @@ List<Flight> selByParam(int fstart, int fend);
 
 ## 动态SQL
 
+### <ResultMap>
+resultMap 元素是 MyBatis 中最重要最强大的元素。它可以让你从 90% 的 JDBC ResultSets 数据提取代码中解放出来
+
+这些情况下，MyBatis 会在幕后自动创建一个 ResultMap，再基于属性名来映射列到 JavaBean 的属性上。如果列名和属性名没有精确匹配，可以在 SELECT 语句中对列使用别名（这是一个 基本的 SQL 特性）来匹配标签。比如：
+
+```xml
+<resultMap id="BaseResultMap" type="com.hslt.model.device.PatrolInfo">
+    <id column="ID" jdbcType="INTEGER" property="id" />
+    <result column="DEVICE_ID" jdbcType="INTEGER" property="deviceId" />
+    <result column="MEMO" jdbcType="VARCHAR" property="memo" />
+    <result column="ALGORIRHM_VERSION" jdbcType="VARCHAR" property="algorirhmVersion" />
+</resultMap>
+
+<resultMap id="BaseResultMap2" type="com.hslt.model.views.patrol.PatrolDeviceVO" extends="BaseResultMap">
+
+<select id="queryList" resultMap="BaseResultMap2">
+    SELECT DPI.*, DBI.`NAME`,DBI.SN_CODE as snCode,DBI.IP_ADDRESS as ipAddress,
+        DBI.CONNECTION_TIME as connectionTime,DBI.DEVICE_TYPE as deviceType,DBI.FIRMWARE as firmware,
+        DBI.CONNECTION_STATE as connectionState,DBI.IS_USED as isUsed,SAI.FULL_NAME as fixLocation, DBI.DEPARTMENT_STR AS departmentStr
+    FROM DEVICE_PATROL_INFO DPI
+    JOIN DEVICE_BASIC_INFO DBI ON DBI.ID = DPI.DEVICE_ID
+      LEFT JOIN SYSTEM_AREA_INFO SAI on SAI.ID = DBI.LOCATION_ID
+      LEFT JOIN DEVICE_DEPARTMENT_RELATIVE DDR ON DDR.DEVICE_ID = DBI.ID
+      LEFT JOIN EMPLOYEE_DEPARTMENT ED ON ED.ID = DDR.DEPARTMENT_ID
+    WHERE 1=1
+</select>
+```
+其中，deviceType属性存在于PatrolDeviceVO对象中
+
 ### <set>
 
 id=#{id} 目的防止<set>中没有内容 导致的生成SQL语句有语法错误
