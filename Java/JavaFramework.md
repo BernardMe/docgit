@@ -871,6 +871,56 @@ DefaultSqlSesion
 	+ SqlSession的实现类
 	+ 
 
+## MyBatis分页插件
+1. 在mybatis.xml中配置<plugin>标签,在程序员所编写的sql命令基础上添加一些内容.
+
+2. 在pom.xml配置依赖
+```xml
+<!-- 分页插件 -->
+<dependency>
+    <groupId>com.github.pagehelper</groupId>
+    <artifactId>pagehelper</artifactId>
+    <version>4.1.6</version>
+</dependency>
+```
+
+3. 创建mybatis.xml并配置插件信息
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <plugins>
+        <plugin interceptor="com.github.pagehelper.PageHelper">
+            <!-- 告诉分页插件是哪个数据库 -->
+            <property name="dialect" value="mysql"/>
+        </plugin>
+    </plugins>
+</configuration>
+```
+
+4. 在applicationContext.xml中配置加载mybatis.xml
+```xml
+ <!-- SqlSessionFactory -->
+<bean id="factory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    <property name="dataSource" ref="dataSource"></property>
+    <property name="typeAliasesPackage" value="com.ego.pojo"></property>
+    <property name="configLocation" value="classpath:mybatis.xml"></property>
+</bean>
+```
+
+5. <运用AOP思想>编写代码时注意: PageHelper.startPage()写在[查询全部]上一行.
+```java
+PageHelper.startPage(page, rows);
+//查询全部
+List<TbItem> list = tbItemMapper.selectByExample(new TbItemExample());
+//分页代码
+//设置分页条件
+PageInfo<TbItem> pi = new PageInfo<>(list);
+
+```
+
 
 
 # Spring框架
@@ -1624,7 +1674,7 @@ encType="Multipart/form-data"
 
 ## Spring 拦截器
 
-定义拦截器之后就不能直接访问控制器controller中的方法了，必须先经过控制器才能进入控制器中的方法
+定义拦截器之后就不能直接访问控制器controller中的方法了，必须先经过拦截器才能进入控制器中的方法
 
 ### AOP与Filter对比
 
