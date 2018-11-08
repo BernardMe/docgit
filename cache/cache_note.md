@@ -222,33 +222,43 @@ j2cache.L2.provider_class=redis
 
 j2cache.serialization = fst
 
+
+#########################################
+# Ehcache configuration
+#########################################
+
+#ehcache.name=
+#ehcache.configXml=ehcache.xml
+
+
 #########################################
 # Redis connection configuration
 #########################################
 
 redis.mode = single
 
+## redis cache namespace optional, default[j2cache]
+redis.namespace =
+
 #redis storage mode (generic|hash)
 redis.storage = generic
 
+## redis pub/sub channel name
+redis.channel = j2cache
+## redis pub/sub server (using redis.hosts when empty)
+redis.channel.host =
+
 ## connection
-redis.host = 127.0.0.1
-redis.port = 6379
+redis.hosts = 127.0.0.1:6379
 redis.timeout = 2000
 redis.password = 123456
 redis.database = 10
 
-## redis cache namespace optional, default[j2cache]
-redis.namespace = j2cache
-
-## redis channel name, \u540C\u4E00\u4E2Aredis server\u5982\u679C\u6709\u591A\u4E2A\u4F7F\u7528J2Cache, \u8BF7\u4FDD\u6301channel name \u7684\u552F\u4E00\u6027
-redis.channel_name = j2cache_channel
-
-## properties
+## redis pool properties
 redis.maxTotal = -1
 redis.maxIdle = 2000
-redis.maxWaitMillis = 100
-redis.minEvictableIdleTimeMillis = 864000000
+redis.maxWaitMillis = 50000
+redis.minEvictableIdleTimeMillis = 60000
 redis.minIdle = 1000
 redis.numTestsPerEvictionRun = 10
 redis.lifo = false
@@ -259,12 +269,7 @@ redis.testWhileIdle = false
 redis.timeBetweenEvictionRunsMillis = 300000
 redis.blockWhenExhausted = true
 
-#########################################
-# Ehcache configuration
-#########################################
 
-#ehcache.name=
-#ehcache.configXml=ehcache.xml
 ```
 
 
