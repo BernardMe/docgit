@@ -489,7 +489,7 @@ List<Flight> selByParam(int fstart, int fend);
 	List<Log> selByAccinAccout(@Param("accin") String accin123,   @Param("accout") String accout34568)
 ```
 在mapper.xml中添加
- #{} 里面写@Param(“内容”)参数中内容
+ #{} 里面写@Param(“xx”)参数中xx
 
 ```xml
 <select id="selByAccInAccout" resultType="Log">
