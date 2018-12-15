@@ -77,5 +77,44 @@ scheduledFuture.cancel(mayInterruptIfRunning);
 
 
 
+## 总结_spring中定时任务taskScheduler
+
+众所周知在spring 3.0版本后，自带了一个定时任务工具，而且使用简单方便，不用配置文件，可以动态改变执行状态。
+
+被执行的类要实现Runnable接口
+
+### TaskScheduler接口
+TaskScheduler是一个接口，TaskScheduler接口下定义了6个方法
+
+1、schedule(Runnable task, Trigger trigger);
+指定一个触发器执行定时任务。可以使用CronTrigger来指定Cron表达式，执行定时任务
+
+`CronTrigger t = new CronTrigger("0 0 10,14,16 * * ?");
+taskScheduler.schedule(this, t);`
+
+2、schedule(Runnable task, Date startTime);
+指定一个具体时间点执行定时任务，可以动态的指定时间，开启任务。只执行一次。（比Timer好用多了。早发现这接口就好了。。。）
+
+3、scheduleAtFixedRate(Runnable task, long period);
+立即执行，循环任务，指定一个执行周期（毫秒计时）
+PS:不管上一个周期是否执行完，到时间下个周期就开始执行
+
+4、scheduleAtFixedRate(Runnable task, Date startTime, long period);
+指定时间开始执行，循环任务，指定一个间隔周期（毫秒计时）
+PS:不管上一个周期是否执行完，到时间下个周期就开始执行
+
+5、scheduleWithFixedDelay(Runnable task, long delay);
+立即执行，循环任务，指定一个间隔周期（毫秒计时）
+PS:上一个周期执行完，等待delay时间，下个周期开始执行
+
+6、scheduleWithFixedDelay(Runnable task, Date startTime, long delay);
+指定时间开始执行，循环任务，指定一个间隔周期（毫秒计时）
+PS:上一个周期执行完，等待delay时间，下个周期开始执行
 
 
+#### TaskScheduler下有五个实现类
+
+1、ConcurrentTaskScheduler
+以当前线程执行任务。如果任务简单，可以直接使用这个类来执行。快捷方便。
+
+PS:这是单线程运行
