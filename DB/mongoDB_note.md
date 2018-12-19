@@ -168,7 +168,7 @@ dbOwner	数据库拥有者(最高)，集合了dbAdmin/userAdmin/readWrite角色�
 
 （1）. 登录Mongodb官网点击下载
 
-（2）. 将zip文件解压放到盘符的根目录（如C：或D：），为了方便建议文件夹命名尽量简短如（d:\mongodb），确定MongoDB主目录`D:\MongoDB\Server`
+（2）. 将zip文件解压放到盘符的根目录（如C：或D：），为了方便建议文件夹命名尽量简短如（d:\mongodb），确定MongoDB主目录`D:\mongodb`
 
 （3）. 创建数据库文件的存放位置，比如d:/mongodb/data/db。启动mongodb服务之前需要必须创建数据库文件的存放文件夹，否则命令不会自动创建，而且不能启动成功。
 
@@ -181,13 +181,13 @@ dbOwner	数据库拥有者(最高)，集合了dbAdmin/userAdmin/readWrite角色�
 
 （6）. 其实可以将MongoDB设置成Windows服务，这个操作就是为了方便，每次开机MongoDB就自动启动了。
 
-在d:\mongodb\data下新建文件夹log（存放日志文件）并且新建文件mongodb.log
+在d:\mongodb下新建文件夹log（存放日志文件）并且新建文件mongodb.log
 在d:\mongodb新建文件mongo.config
 
 在mongo.config中输入：
 ```shell
 dbpath=D:\mongodb\data\db
-logpath=D:\mongodb\log\mongo.log  
+logpath=D:\mongodb\log\mongodb.log  
 ```
 （7）. 用管理员身份打开cmd命令行，进入D:\mongodb\bin目录，输入如下的命令：
 
@@ -197,8 +197,8 @@ logpath=D:\mongodb\log\mongo.log
 （8）. 打开cmd输入services.msc查看服务可以看到MongoDB服务，点击可以启动
 若以上没有添加mongo服务，则命令行添加：
 
-cd D:\MongoDB\bin
-`mongod --dbpath D:\MongoDB\data\db --logpath=D:\MongoDB\log\mongo.log --install`
+cd D:\mongodb\bin
+`mongod --dbpath D:\mongodb\data\db --logpath=D:\mongodb\log\mongo.log --install`
 
 启动服务即可：
 到服务中启mongodB（或者cmd命令提示符下输入：`net start mongodb` 即可启动mongodb了）
@@ -213,7 +213,7 @@ cd D:\MongoDB\bin
 
 linux/Mac : `mongod -f /mongodb/etc/mongo.conf`
 
-windows  : `mongod --config c:\mongodb\etc\mongo.conf ` 或者  net start mongodb （前提是mongo安装到了服务里面）
+windows  : `mongod --config d:\mongodb\mongo.config ` 或者  net start mongodb （前提是mongo安装到了服务里面）
 
 备注：
 /mongodb/etc/mongo.conf 位mongo配置文件所在的地址
@@ -245,6 +245,8 @@ use test
 
 2.创建用户
 db.createUser({user: "root", pwd: "123456", roles: [{ role: "dbOwner", db: "test" }]})
+
+db.createUser({user: "smalink", pwd: "smalink", roles: [{ role: "dbOwner", db: "smalink" }]})
 
 3.通过客户端连接test数据库
 
