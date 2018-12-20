@@ -187,7 +187,7 @@ dbOwner	数据库拥有者(最高)，集合了dbAdmin/userAdmin/readWrite角色�
 在mongo.config中输入：
 ```shell
 dbpath=D:\mongodb\data\db
-logpath=D:\mongodb\log\mongodb.log  
+logpath=D:\mongodb\log\mongo.log  
 ```
 （7）. 用管理员身份打开cmd命令行，进入D:\mongodb\bin目录，输入如下的命令：
 
@@ -198,13 +198,40 @@ logpath=D:\mongodb\log\mongodb.log
 若以上没有添加mongo服务，则命令行添加：
 
 cd D:\mongodb\bin
-`mongod --dbpath D:\mongodb\data\db --logpath=D:\mongodb\log\mongo.log --install`
+`mongod --config D:\mongodb\mongo.config --journal --install`
 
 启动服务即可：
 到服务中启mongodB（或者cmd命令提示符下输入：`net start mongodb` 即可启动mongodb了）
 
 删除服务：
 管理员模式打开cmd,输入 sc delete mongodb 即可删除mongodb服务
+
+
+### windows版本下验证方式SCRAM-SHA-1调整为MONGODB-CR
+修改system.version文档里面的authSchema版本为3，初始安装时候应该是5，
+命令行如下： 
+```js
+use admin;
+
+var schema = db.system.version.findOne({"_id":"authSchema"})
+schema.currentVersion = 3 
+
+db.system.version.save(schema)
+
+db.system.users.remove({}) //删除所有用户
+
+/*添加管理员用户*/
+db.createUser({user:"admin",pwd:"123456",roles:["root"]})
+
+use smalink
+/*smalink用户*/
+db.createUser({user: "smalink", pwd: "smalink", roles: ["readWrite", "dbAdmin"]})
+```
+Now restart the mongod and create new user then it should work fine.
+然后重新创建普通用户 smalink
+
+重新连接即可
+
 
 ### MongoDB给数据库创建用户
 
@@ -246,7 +273,9 @@ use test
 2.创建用户
 db.createUser({user: "root", pwd: "123456", roles: [{ role: "dbOwner", db: "test" }]})
 
-db.createUser({user: "smalink", pwd: "smalink", roles: [{ role: "dbOwner", db: "smalink" }]})
+use smalink
+/*smalink用户*/
+db.createUser({user: "smalink", pwd: "smalink", roles: ["readWrite", "dbAdmin"]})
 
 3.通过客户端连接test数据库
 
@@ -315,22 +344,6 @@ db.getCollection('fs.files').find({"_id" :ObjectId("5afb988c0db9852c36c4bbdb")})
 `db.removeUser("userName");`
 
 
-### 验证方式SCRAM-SHA-1调整为MONGODB-CR
-首先关闭认证，修改system.version文档里面的authSchema版本为3，初始安装时候应该是5，命令行如下： 
-```js
-use admin;
-
-var schema = db.system.version.findOne({"_id":"authSchema"})
-schema.currentVersion = 3 
-
-db.system.version.save(schema)
-
-db.system.users.remove({}) //删除所有用户
-```
-Now restart the mongod and create new user then it should work fine.
-然后重新创建普通用户 smalink
-
-重新连接即可
 
 
 ### MongoDB分页
