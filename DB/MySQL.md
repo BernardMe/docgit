@@ -55,7 +55,7 @@ port = 3306
 Service successfully installed.(说明安装成功了)
  
 #### 初始化创建用户
-在初始化时如果加上 `--initial-insecure --user=root`，则会创建空密码的 root@localhost 账号,
+在初始化时 `mysqld --initialize-insecure --user=root`，则会创建空密码的 root@localhost 账号,
 否则会创建带密码的root@localhost账户，密码直接写在log-error日志文件中；
 新用户登录后必须立刻更改密码，否则无法继续后续的工作。
 
@@ -66,6 +66,9 @@ MySQL 服务已经启动成功。（说明服务启动成功了）
 `select version();` 或者 `status`
 查看MySQL服务器版本
 
+#### 修改root用户密码
+登录后,
+`SET PASSWORD FOR 'root'@'localhost' = PASSWORD('root');`
 
 
 ### Linux下服务未启动问题Unit mysqld.service not loaded
