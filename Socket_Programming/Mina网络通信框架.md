@@ -89,6 +89,15 @@ I/O Handler - 实际的业务逻辑部分 这也是实际开发过程中需要�
 ![MINA_Server端应用](./MINA_Server端应用.png)
 
 
+### Mina网络传输框架的执行流程
+
+你只需要关心你要发送、接收的数据以及你的业务逻辑即可。同样的，无论是哪端，Mina 的执行流程如下所示：
+(1.) IoService：这个接口在一个线程上负责套接字的建立，拥有自己的Selector，监听是否有连接被建立。
+(2.) IoProcessor：这个接口在另一个线程上，负责检查是否有数据在通道上读写，也就是说它也拥有自己的Selector，这是与我们使用JAVA NIO 编码时的一个不同之处，通常在JAVA NIO 编码中，我们都是使用一个Selector，也就是不区分IoService与IoProcessor 两个功能接口。另外，IoProcessor 负责调用注册在IoService 上的过滤器，并在过滤器链之后调用IoHandler。
+(3.) IoFilter：这个接口定义一组拦截器，这些拦截器可以包括日志输出、黑名单过滤、数据的编码（write 方向）与解码（read 方向）等功能，其中数据的encode 与decode是最为重要的、也是你在使用Mina 时最主要关注的地方。
+(4.) IoHandler：这个接口负责编写业务逻辑，也就是发送，接收数据的地方。
+
+
 
 #### 小例子
 ```java
