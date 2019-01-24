@@ -570,6 +570,8 @@ id: name: area
 
 
 
+
+
 ## 表约束
 
 ### 主键约束 primary key
