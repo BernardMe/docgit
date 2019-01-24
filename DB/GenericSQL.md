@@ -546,6 +546,29 @@ WHERE sal>ALL(SELECT sal FROM emp WHERE job='SALESMAN')
 `like '%ALL%'` 包含字符ALL
 `like '_A%'` 第二个字符是A
 
+## mysql特有find_in_set的使用方法
+
+在mysql中，有时我们在做数据库查询时，需要得到某字段中包含某个值的记录，但是它也不是用like能解决的，使用like可能查到我们不想要的记录，它比like更精准，这时候mysql的FIND_IN_SET函数就派上用场了，下面来具体了解一下。
+
+FIND_IN_SET(str,strlist)函数
+
+str 要查询的字符串
+
+strlist 字段名 参数以”,”分隔 如 (1,2,6,8)
+
+查询字段(strlist)中包含(str)的结果，返回结果为null或记录
+
+
+下面我想查询area中包含”henan″这个参数的记录
+
+`SELECT * from test where FIND_IN_SET('henan',area)`
+
+结果
+id: name: area
+----------------
+1   小明  henan
+
+
 
 ## 表约束
 
