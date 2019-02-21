@@ -160,10 +160,7 @@ mvn package -DskipTests
 注：此时更改后，所有的用户都会受到影响，而且如果maven进行升级，那么所有的配置都会被清除，所以要提前复制和备份M2_HOME/conf/settings.xml文件
 故：一般情况下不推荐配置全局的settings.xml
 
-
-####　Maven远程仓库
-
-##### 中央仓库
+#### 中央仓库
 说到远程仓库先从 最核心的中央仓库开始，中央仓库是默认的远程仓库，maven在安装的时候，自带的就是中央仓库的配置
 在maven的聚合与继承中我们说过，所有的maven项目都会继承超级pom，具体的说，包含了下面配置的pom我们就称之为超级pom
 ```xml
@@ -181,7 +178,10 @@ mvn package -DskipTests
 ```
 中央仓库包含了绝大多数流行的开源Java构件，以及源码、作者信息、SCM、信息、许可证信息等。一般来说，简单的Java项目依赖的构件都可以在这里下载到
 
-##### Maven私服[Nexus]理论原理
+
+###　Maven私服nexus
+
+#### Maven私服[Nexus]理论原理
 `私服是一种特殊的远程仓库，它是架设在局域网内的仓库服务，私服代理广域网上的远程仓库，供局域网内的Maven用户使用。
 Nexus的仓库类型`
 
@@ -197,12 +197,12 @@ group（仓库组）：仓库的一种组合策略，并不存在实在意义的
 `nexus特有概念`
 在maven里没有这个概念，是nexus特有的。目的是将上述多个仓库聚合，对用户暴露统一的地址，这样用户就不需要在pom中配置多个地址，只要统一配置group的地址就可以了右边那个Repository Path可以点击进去，看到仓库中artifact列表。不过要注意浏览器缓存。我今天就发现，明明构件已经更新了，在浏览器里却看不到，还以为是BUG，其实是被浏览器缓存了
 
-##### Maven私服的 特性
+#### Maven私服的 特性
 1.节省自己的外网带宽：减少重复请求造成的外网带宽消耗
 2.加速Maven构件：如果项目配置了很多外部远程仓库的时候，构建速度就会大大降低
 3.部署第三方构件：有些构件无法从外部仓库获得的时候，我们可以把这些构件部署到内部仓库(私服)中，供内部maven项目使用
 
-##### Maven私服使用办法
+#### Maven私服使用办法
 
 前提:已经配置JDK环境变量
 
@@ -227,30 +227,129 @@ D:\nexus\soft\nexus-2.12.0-01\bin\jsw
 修改nexus端口
 `nexus.properties文件中# Jetty section application-port=8091`
 
-#### 远程仓库配置
-配置远程仓库将引入新的配置元素：`<repositories>`     `<repository>`
-在<repositories>元素下，可以使用  <repository>子元素声明一个或者多个远程仓库。
-例子： 
+#### 只对单独一个项目有效
+
+我们要想使用这个私服仓库，先在项目pom中配置相关私服信息指定仓库，如下片段需要配置到maven项目的 pom.xml 中。
+
 ```xml
-<repositories> 
-  <repository> 
-   <id>jboss</id> 
-   <name>JBoss Repository</name> 
-   <url>http://repository.jboss.com/maven2/</url> 
-   <releases> 
-    <updatePolicy>daily</updatePolicy><!-- never,always,interval n -->
-    <enabled>true</enabled> 
-    <checksumPolicy>warn</checksumPolicy><!-- fail,ignore -->
-   </releases> 
-   <snapshots> 
-    <enabled>false</enabled> 
-   </snapshots> 
-   <layout>default</layout> 
-  </repository> 
- </repositories> 
+<project>
+    ...
+    <!-- 配置仓库 -->
+    <repositories>  
+        <repository>  
+            <id>nexus</id>  
+            <name>nexus</name>
+            <url>http://127.0.0.1:8081/repository/maven-public/</url>  
+            <releases>  
+                <enabled>true</enabled>  
+            </releases>  
+            <snapshots>  
+                <enabled>true</enabled>  
+            </snapshots>  
+        </repository>  
+    </repositories> 
+
+    <!-- 配置插件仓库 -->
+    <pluginRepositories>  
+        <pluginRepository>  
+            <id>nexus</id>  
+            <name>nexus</name>  
+            <url>http://127.0.0.1:8081/repository/maven-public/</url>  
+            <releases>  
+                <enabled>true</enabled>  
+            </releases>  
+            <snapshots>  
+                <enabled>true</enabled>  
+            </snapshots>  
+        </pluginRepository>  
+    </pluginRepositories>
+    ... 
+</project>
+
 ```
-<updatePolicy>元素：表示更新的频率，值有：never, always,interval,daily, daily 为默认值
-<checksumPolicy>元素：表示maven检查和检验文件的策略，warn为默认值
+
+
+#### 本地所有Maven使用私服
+
+安装和配置好之后，在开发中如何使用呢。可在maven的默认配置settings.xml中修改如下：
+
+settins.xml并不支持直接配置repositories和pluginRepositories。但是Maven提供了Profile机制，能让用户将仓库配置防止到setting.xml中的Profile中。修改 settings.xml 中的profiles内容为：
+
+```xml
+<servers>
+    <server>
+        <id>releases</id>
+        <username>admin</username>
+        <password>admin123</password>
+    </server>
+    <server>
+        <id>snapshots</id>
+        <username>admin</username>
+        <password>admin123</password>
+    </server>
+</servers>
+
+<mirrors>
+    <mirror>
+        <id>nexus</id>
+        <mirrorOf>*</mirrorOf>
+        <url>http://127.0.0.1:8081/repository/maven-public/</url>
+    </mirror>
+</mirrors>
+
+ </profiles>
+    <profile>
+      <id>Nexus</id>
+	<!--配置仓库 -->
+      <repositories>
+        <repository>
+          <id>nexus</id>
+          <url>http://127.0.0.1:8081/repository/maven-public/</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots> 
+        </repository>
+      </repositories>
+
+	<!--配置插件仓库 -->
+      <pluginRepositories>
+        <pluginRepository>
+          <id>nexus</id>
+          <url>http://127.0.0.1:8081/repository/maven-public/</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots> 
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+
+    <profile>
+      <id>jdk-1.8</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+        <jdk>1.8</jdk>
+      </activation>
+      <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
+      </properties>
+    </profile>
+    
+  </profiles>
+ 
+ 	 <!--激活id为Nexus的profile-->
+  <activeProfiles>      
+	<activeProfile>Nexus</activeProfile>
+  </activeProfiles>
+
+```
 
 
 ### Maven3中ojdbc驱动问题
@@ -259,7 +358,7 @@ D:\nexus\soft\nexus-2.12.0-01\bin\jsw
 此文档用的是Oracle 11g.
 
 
-### POM.xml
+### 项目中的POMxml文件
 
 #### 资源拷贝插件
 ```xml
