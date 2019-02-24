@@ -1,5 +1,45 @@
 
 
+## MyBatis插入insert操作返回主键值
+
+### 第一种方式：
+
+```xml
+<insert id="insert" parameterType="TUser" useGeneratedKeys="true" keyProperty="id">
+    insert into t_user (id, u_name, u_password)
+    values (#{id,jdbcType=BIGINT}, #{uName,jdbcType=VARCHAR}, #{uPassword,jdbcType=VARCHAR})
+</insert>
+```
+
+在insert标签上添加了两个属性：useGeneratedKeys和keyProperty。
+
+### 第二种方式：
+```xml
+<insert id="insert" parameterType="TUser">
+    insert into t_user (id, u_name, u_password)
+    values (#{id,jdbcType=BIGINT}, #{uName,jdbcType=VARCHAR}, #{uPassword,jdbcType=VARCHAR})
+    <selectKey keyColumn="id" resultType="long" keyProperty="id" order="AFTER">
+        SELECT LAST_INSERT_ID()
+    </selectKey>
+</insert>
+```
+在insert标签内添加了一个子标签selectKey。
+
+### 测试
+
+```java
+TUserMapper tUserMapper = sqlSession.getMapper(TUserMapper.class);
+TUser tUser = new TUser();
+tUser.setuName("mh");
+tUser.setuPassword("123");
+int result = tUserMapper.insert(tUser);
+System.out.println(tUser.getId());
+```
+
+### 总结
+开始时一直打印insert方法的返回值result，还纳闷为什么一直是1。原来，insert的返回值是影响的行数。而返回的主键值赋给了实体属性，需要调用实体的getId方法来获取。
+
+
 ## Mybatis分页插件
 
 利用AOP实现分页功能可以达到零代码入侵的目的，只需要在请求方法上传入对应的分页请求数据即可，SQL的编写和后台业务逻辑与分页代码没有耦合
