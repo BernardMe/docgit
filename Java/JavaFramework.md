@@ -925,7 +925,9 @@ PageInfo<TbItem> pi = new PageInfo<>(list);
 
 # Spring框架
 
-Spring最根本的使命：`简化Java开发`。
+Spring最根本的使命：
+`简化Java开发`
+
 为了降低Java开发的复杂性，Spring采取以下4种关键策略：
 
 基于POJO的轻量级和最小侵入性编程
