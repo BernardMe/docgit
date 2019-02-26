@@ -148,15 +148,25 @@ NVL函数　Oracle/PLSQL中的一个函数。
 NVL(yanlei777, 0) 的意思是 如果 yanlei777 是NULL， 则取 0值
 
 
-## 多行函数(分组函数)(给好多行记录只会产生一行输出)
-“所有的雇员中平均工资多少，最高工资多少。。。”
--- [1]sum 求和
--- [2]avg 求平均值
--- [3]count 计数
--- [4]max 求最大值
--- [5]min 求最小值
+## SQL中group by的用法
 
---统计
+### 概述
+“Group By”从字面意义上理解就是根据“By”指定的规则对数据进行分组，所谓的分组就是将一个“数据集”划分成若干个“小区域”，然后针对若干个“小区域”进行数据处理。
+
+### group by中的易错点
+group by有一个原则， 就是select后的列如果不在聚合函数中，就必须要出现在group by后面(多重分组条件)
+
+`SELECT  deptno, sum(sal), avg(sal), max(sal) from emp where deptno=10;`
+报错 ORA-00937: 不是单组分组函数
+很好理解：你既然指定了分组函数，又同时制定了其他列，还想不按照指定的列来分组，你到底想让oracle怎么做呢？这根本就得不出结果。就像你需要统计班上男女生的人数，但是又不能分组，只能在一条数据里表示出来，怎么能办得到呢？
+`select deptno from emp where deptno=10;`正常
+
+#### 原因很简单
+MAX(sal)返回的一定是单个数值，但是拿到该数值工资的人数可能有多个，无法和Max(sal)返回的单一值组成ResultSet
+
+## 聚合函数
+
+“所有的雇员中平均工资多少，最高工资多少。。。”
 select sum(sal), avg(sal), count(empno) from emp;
 
 -- 多行函数可以操作什么类型的数据?
@@ -168,29 +178,7 @@ select sum(sal), avg(sal), count(empno) from emp;
 `select count(ename) from emp;`
 `select max(ename), min(hiredate) from emp`
 
-### 多行函数不能和普通字段同时查询
-`SELECT  deptno, sum(sal), avg(sal), max(sal) from emp where deptno=10;`
-报错 ORA-00937: 不是单组分组函数
-很好理解：你既然指定了分组函数，又同时制定了其他列，还想不按照指定的列来分组，你到底想让oracle怎么做呢？这根本就得不出结果。就像你需要统计班上男女生的人数，但是又不能分组，只能在一条数据里表示出来，怎么能办得到呢？
-`select deptno from emp where deptno=10;`正常
-
---计算所有员工的平均工资
-`SELECT  avg(sal), max(sal) from emp ;`
-
---统计每个部门的总工资，总人数，平均工资 排除 部门10
--- where 子句要写在 group by之前  先过滤再分组
-`select deptno, sum(sal), count(*), avg(sal) from emp where deptno<>10 group by deptno order by deptno;`
-
-## SQL中group by的用法
-
-### 概述
-“Group By”从字面意义上理解就是根据“By”指定的规则对数据进行分组，所谓的分组就是将一个“数据集”划分成若干个“小区域”，然后针对若干个“小区域”进行数据处理。
-
-### group by中的易错点
-使用了group by子句后， select列表中的字段如果不在分组函数中，就必须要出现在group by子句中
-`原因：MAX(sal)返回的一定是单个数值，但是拿到该数值工资的人数可能有多个，无法和Max(sal)返回的单一值组成ResultSet`
-
-常见的分组函数如下表：
+常见的聚合函数如下表：
 函数  作用  支持性
 sum(列名) 求和  　　　　
 max(列名) 最大值 　　　　
@@ -204,6 +192,12 @@ count(列名) 统计记录数 注意和count(`*`)的区别
 
 示例6：求各组记录数目
 `select 类别, count(*) AS 记录数 from A group by 类别;`
+
+### 聚合函数having的用法
+
+group by可以将查询结果按照属性列在行的方向上进行分组，若在分组后还要按照一定条件进行筛选，则需使用having子句。
+having子句一定要与group by子句一起使用
+ 
 
 ## SQL执行顺序
 from 取数据
