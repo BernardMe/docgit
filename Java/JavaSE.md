@@ -2554,10 +2554,59 @@ Java中的泛型基本上都是在编译器这个层次来实现的。在生成�
 
 
 
-# 第9章 IO流
+# Java中的IO(传统IO和NIO)
 
-##Java流式输入/输出原理
->在java程序中，对于数据的输入输出操作以“流”(Stream)方式进行
+[传统IO是阻塞式IO，主要是系统资源的浪费。] [比如我们为了读取一个TCP连接的数据，调用InputStream的read()方法，这会使当前线程被挂起，直到有数据到达才把线程唤醒，在数据到达前的这段时间，占用着内存资源(存储线程栈)却无所作为，为了读取其他连接的数据，我们不得不启动另外的线程。然而当连接数量达到一定规模，内存资源会被大量线程消耗殆尽。另一方面，线程切换需要更改处理器的状态，比如程序计数器、寄存器的值，因此频繁的在大量线程之间切换，同样是一种资源浪费]
+
+现代操作系统提供了新的IO机制，可以避免这种资源浪费。基于此，大拿生了Java NIO，NIO的代表性特征就是非阻塞IO。紧接着我们发现，简单的使用非阻塞IO并不能解决问题，因为在非阻塞模式下，read()方法在没有读到数据时就会立即返回，不知道数据何时到达的我们，只能不停的调用read()方法重试，这显然太浪费CPU资源了，从下文可以知道，Selector组件正是为了解决这一问题。
+
+## Java的NIO
+
+### Channel
+
+Java NIO中的所有IO操作都基于Channel对象，就像流操作都要基于Stream一样，必须先了解Channel是什么。摘自JDK1.8文档
+> A channel represents an open connection to an entity such as a hardware device, a file, a network socket, or a program component that is capable of performing one or more distinct I/O operations, for example reading or writing.
+
+从上述内容可知，一个channel代表和某一实体的连接，这个实体可以是文件，网络套接字等。就是说，通道是Java NIO提供的一座桥梁，用于我们的程序和操作系统底层IO服务进行交互。
+
+通道时一种很基本很抽象的描述，和不同的IO服务交互，执行不同的IO操作，实现不一样，因此具体的有FileChannle、SocketChannel等。
+
+通道使用起来跟Stream比较像，可以读取数据到Buffer中，也可以把Buffer中的数据写入通道。
+当然也有区别，主要两点：
+一个通道，既可以读也可以写，而一个Stream是单向的(所以分InputStream和OutputStream)
+通道有非阻塞IO模式
+
+### Buffer
+
+NIO中所使用的缓冲区不是一个简单的byte数组，而是封装过的Buffer类，通过它提供的API，我们可以灵活的操纵数据，下面细细道来。
+
+与Java基本类型相对应，NIO提供了多种 Buffer 类型，如ByteBuffer、CharBuffer、IntBuffer等，区别就是读写缓冲区时的单位不一样(以对应类型的变量为单位进行读写)
+
+Buffer中有3个很重要的变量，它们是理解Buffer工作机制的关键，分别是
+capacity(总容量)
+position(指针当前位置)
+limit(读/写边界位置)
+
+在对Buffer进行读/写操作前，我们可以调用Buffer类提供的一些辅助方法来正确设置 position 和 limit 的值，主要有如下几个
+flip(): 设置 limit 为 position 的值，然后 position 置为0。对Buffer进行读取操作前调用。
+rewind();仅仅将 position 置0。一般是在重新读取Buffer数据前调用，比如要读取同一个Buffer的数据写入多个通道时会用到。
+clear(): 回到初始状态，即 limit 等于 capacity，position 置0。重新对Buffer进行写入操作前调用。
+compact(): 将未读取完的数据（position 与 limit 之间的数据）移动到缓冲区开头，并将 position 设置为这段数据末尾的下一个位置。其实就等价于重新向缓冲区中写入了这么一段数据。
+
+源代码实例，使用 FileChannel 读写文本文件(篇幅有限省去):
+这个例子中使用了两个Buffer，其中 byteBuffer 作为通道读写的数据缓冲区，charBuffer 用于存储解码后的字符。clear() 和 flip() 的用法正如上文所述，需要注意的是最后那个 compact() 方法，即使 charBuffer 的大小完全足以容纳 byteBuffer 解码后的数据，那个compact()方法也必不可少。这是因为常用中文字符的UTF-8编码占3个字节，因此有很大概率出现在中间截断的情况，请看下图：
+![NIO_buffer_compact()](./NIO_buffer_compact().jpg)
+
+
+
+当 Decoder 读取到缓冲区末尾的 0xe4 时，无法将其映射到一个 Unicode，decode()方法第三个参数 false 的作用就是让 Decoder 把无法映射的字节及其后面的数据都视作附加数据，因此 decode() 方法会在此处停止，并且 position 会回退到 0xe4 的位置。如此一来， 缓冲区中就遗留了“中”字编码的第一个字节，必须将其 compact 到前面，以正确的和后序数据拼接起来。
+
+BTW，例子中的 CharsetDecoder 也是 Java NIO 的一个新特性，所以大家应该发现了一点哈，NIO的操作是面向缓冲区的（传统I/O是面向流的）。
+
+
+
+## Java传统流式输入/输出原理
+>在java传统IO中，对于数据的输入输出操作以“流”(Stream)方式进行
 JDK提供了各种各样的“流”类，用以获取不同种类的数据；程序中通过标准的方法输入或输出数据。
 
 >输入流：向程序输入数据；
@@ -2573,7 +2622,7 @@ JDK提供了各种各样的“流”类，用以获取不同种类的数据；�
 按处理数据单位的不同可以分为字节流和字符流
 按照功能不同可以分为节点流和处理流
 
-##字节流
+## 字节流
 InputStream
 继承自InputStream的流都是用于向程序中输入数据，且数据的单位为字节(8bit);
 OutPutStream
@@ -2584,13 +2633,13 @@ OutPutStream
 所以next()不会得到带空格的字符串，而nextLine()可以得到带空格的字符串。
 如果在next()方法后紧跟nextLine()方法，nextLine()方法会吃掉next()的回车符，造成第二个字符串接受了回车符
 
-##字符流
+## 字符流
 Reader
 继承自Reader的流都是向程序输入数据，且数据单位是字符(16bit);
 Writer
 继承自Writer的流都是用于向外输出数据，且数据单位是字符(16bit);
 
-##节点流
+## 节点流
 "管道"可以直接接入数据源(文件，memory  Array, Memory String, Pipe管道)
 ```
               字符流          字节流
@@ -2645,12 +2694,12 @@ buffering
 filtering
 converting between byte and character
 
-###缓冲流
+### 缓冲流
 BufferedReader BufferedWriter
 带小桶，带缓冲区的
 缓冲流要“套接”在相应的节点流之上，对读写的数据提供了缓冲的功能，提高了读写的效率，同时增加了一些新的方法
 
-###转换流
+### 转换流
 InputStreamReader OutputStreamWriter
 ```
 字节流 InputStreamReader--> 字符流的桥梁
@@ -2692,6 +2741,7 @@ DataInputStream和DataOutputstream继承自Inputstream和OutputStream，它属�
 只有输出流，没有输入流
 -------------------------
 PrintWriter   PrintStream
+
 
 
 # 第10章 多线程
@@ -3267,46 +3317,8 @@ T1 创建线程的时间
 ### mod函数
 mod函数是一个求余函数,其格式为: mod(nExp1,nExp2),即是两个数值表达式作除法运算后的余数
 
-## Java NIO
-三个核心概念 通道，缓冲区，选择器
-            Channel，Buffer，Selector
-![java_nio.png](./java_nio.png)
 
-### Channel
-基本上，所有的 IO 在NIO 中都从一个Channel 开始。Channel 有点象流。 数据可以从Channel读到Buffer中，也可以从Buffer 写到Channel中。
 
-JAVA NIO中的一些主要Channel的实现：
-FileChannel(从文件中读写数据)
-DatagramChannel(通过UDP读写网络中的数据)
-SocketChannel(通过TCP读写网络中的数据)
-ServerSocketChannel(可以监听新进来的TCP连接，像Web服务器那样。对每一个新进来的连接都会创建一个SocketChannel)
-这些通道涵盖了UDP和TCP网络IO，以及文件IO。
-
-### Buffer
-缓冲区本质上是一块可以写入数据，然后可以从中读取数据的内存。这块内存被包装成NIO Buffer对象，并提供了一组方法，用来方便的访问该块内存
-
-- Buffer的基本用法
-使用Buffer读写数据一般遵循以下四个步骤：
-
-1) 写入数据到Buffer
-2) 调用flip()方法
-3) 从Buffer中读取数据
-4) 调用clear()方法或者compact()方法
-
-- Buffer中三个重要参数 position limit capacity
-position和limit的含义取决于Buffer处在读模式还是写模式。不管Buffer处在什么模式，capacity的含义总是一样的。
-
-### Selector
-Selector允许单线程处理多个Channel。如果你的应用打开了多个连接（通道），但每个连接的流量都很低，使用Selector就会很方便(需要再次分析学习)。
-```java
-要使用Selector，得向Selector注册Channel，然后调用它的select()方法。这个方法会一直阻塞到某个注册的通道有事件就绪。
-一旦这个方法返回，线程就可以处理这些事件，事件的例子有如新连接进来，数据接收等。
-```
-
-Selector的创建（open()）
-向Selector注册通道（register（））
-通过Selector选择通道（select()）
-Selector唤醒（wakeUp()）
 
 ## volatile关键字
 volatile 只能保证 “可见性”，不能保证 “原子性”。
@@ -3342,18 +3354,6 @@ count++; 这条语句由3条指令组成：
 　　1.保证此变量对所有的线程的可见性，这里的“可见性”，如本文开头所述，当一个线程修改了这个变量的值，volatile 保证了新值能立即同步到主内存，以及每次使用前立即从主内存刷新。但普通变量做不到这点，普通变量的值在线程间传递均需要通过主内存（详见：Java内存模型）来完成。
 
 　　2.禁止指令重排序优化。有volatile修饰的变量，赋值后多执行了一个“load addl $0x0, (%esp)”操作，这个操作相当于一个内存屏障（指令重排序时不能把后面的指令重排序到内存屏障之前的位置），只有一个CPU访问内存时，并不需要内存屏障；（什么是指令重排序：是指CPU采用了允许将多条指令不按程序规定的顺序分开发送给各相应电路单元处理）。
-
-
-## JVM进阶
-
-### JVM内存模型
-方法区（method area）只是JVM规范中定义的一个概念，用于存储类信息、常量池、静态变量、JIT编译后的代码等数据，具体放在哪里，不同的实现可以放在不同的地方 而永久代是Hotspot虚拟机特有的概念，是方法区的一种实现，别的JVM都没有这个东西
-方法区：线程共享的，用于存放被虚拟机加载的类的元数据信息：如常量、静态变量、即时编译器编译后的代码。也称之为`永久代`。
-
-在Java 6中，方法区中包含的数据，除了JIT编译生成的代码存放在native memory的CodeCache区域，其他都存放在永久代；在Java 7中，Symbol的存储从PermGen移动到了native memory，并且把静态变量从instanceKlass末尾（位于PermGen内）移动到了java.lang.Class对象的末尾（位于普通Java heap内）；在Java 8中，永久代被彻底移除，取而代之的是另一块与堆不相连的本地内存——元空间（Metaspace）,‑XX:MaxPermSize 参数失去了意义，取而代之的是-XX:MaxMetaspaceSize。
-
-
-### GC原理
 
 
 
