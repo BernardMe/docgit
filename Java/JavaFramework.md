@@ -1460,15 +1460,12 @@ ViewResolver：视图解析器，解析结果，准备跳转到具体的物理�
 如果在web.xml中设置Dispathcer的urlpattern为  `/`  时
 
 当用户发起请求，请求一个控制器时，
-首先会执行 DispatcherServlet ，
-由DS 调用 HandlerMapping组件的DAHM解析URL，
-
-解析URL后， 调用HandlerAdaptor组件的AMHA调用 controller中的HandlerMethod，
-
-当HandleMethod执行完成后会返回view，
-会被ViewResovler进行视图解析，
-解析后调用jsp对应的.class文件并运行，
-最终把运行.class文件的结果响应给客户端，
+首先会执行 DispatcherServlet 查询 HandlerMapping解析URL寻找处理器
+DispatcherServlet通过HandlerAdaptor将请求提交到 controller中的处理业务方法，
+当处理业务方法执行完成后会返回处理结果，
+DispatcherServlet查询ViewResovler进行视图解析，
+找到处理结果对应的视图
+视图负责把运行.class文件的结果响应给客户端，
 
 ===以上就是springmvc运行原理(给面试官)
 
