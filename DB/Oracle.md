@@ -1,4 +1,4 @@
-[TOC]
+v[TOC]
 
 # Oracle安装
 
@@ -12,6 +12,68 @@ G:\SXTOracle
 (内存结构+一系列进程结构)
 安装好oracle后，需要配置一个数据库，数据库是静态的，具体就是存储在硬盘的一系列文件；启动数据库即启动一个实例，就是运行起来的一系列管理数据库的后台进程和内存区域
 ![oracle_instance](./oracle_instance.jpg)
+
+
+## oracle Instant Client + PLSQL使用方法
+
+### 下载Instant Client
+
+：http://www.oracle.com/technetwork/topics/winsoft-085727.html
+选择：Instant Client for Microsoft Windows (32-bit) 64位的系统选择64 
+
+下载完成之后解压到任意目录下，如我的：D:\clientOracle\instantclient_12_1
+
+### 添加tnsnames.ora 文件
+进入instant client 解压目录（D:\clientOracle\instantclient_12_1），添加文件夹network，然后在network下添加文件夹admin，在admin文件夹下添加tnsnames.ora文件
+
+tnsnames.ora 文件内添加以下内容：
+```
+orcl=
+(DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xxx.xxx.xxx.xxx)(PORT = 1521))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = orcl)
+    )
+)
+orcl 是数据库名，HOST = xxx.xxx.xxx.xxx 你的远程数据库IP地址。
+如存在多个数据库地址可以复制上面代码，追加在后面如：
+orcl1=
+(DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xxx.xxx.xxx.xxx)(PORT = 1521))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = orcl1)
+    )
+)
+```
+
+### 设置环境变量
+
+在系统变量PATH中添加：instant client的解压目录，如：D:\开发工具\instantclient_12_1；
+
+添加用户变量：
+
+NLS_LANG 值 SIMPLIFIED CHINESE_CHINA.ZHS16GBK
+
+TNS_ADMIN 值 D:\开发工具\instantclient_12_1\network\admin
+
+### 设置PLSQL
+
+打开PL/SQL,选择 tools->preferences->connection 
+
+Oracle Home 设置为：D:\开发工具\instantclient_12_1
+
+OCI library 设置为: D:\开发工具\instantclient_12_1\oci.dll
+
+重启PL/SQL
+
+### 选择刚才添加的数据库，输入帐号密码登录
+
+oracle Instant Client 是ORACLE的客户端，配合PL/SQL就能在不安装数据库的情况下连接远程ORACLE数据库
+
 
 ## ERROR
 
