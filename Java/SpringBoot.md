@@ -2,6 +2,37 @@
 
 # SpringBoot
 
+
+## 入门介绍
+入门Spring Boot的入门介绍，相关的需要理解的概念：
+
+Spring Boot父级依赖的概念
+起步依赖 spring-boot-starter-xx的概念
+应用入口类的作用
+
+### Spring Boot父级依赖的概念
+
+```java
+<parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>1.5.1.RELEASE</version>
+    <relativePath/> <!-- lookup parent from repository -->
+</parent>
+```
+这块配置就是Spring Boot父级依赖，有了这个，当前的项目就是Spring Boot项目了，
+spring-boot-starter-parent是一个特殊的starter,它用来提供相关的Maven默认依赖
+
+
+### 起步依赖 spring-boot-starter-xx的概念
+Spring Boot提供了很多”开箱即用“的依赖模块，都是以spring-boot-starter-xx作为命名的
+
+### 应用入口类的作用
+
+@SpringBootApplication是Sprnig Boot项目的核心注解，主要目的是开启自动配置
+
+
+
 ## 定时任务
 
 ### 创建定时任务
