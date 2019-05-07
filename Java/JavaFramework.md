@@ -1705,7 +1705,30 @@ HandlerInterceptor 接口中定义了三个方法，我们就是通过这三个�
 #### postHandle (HttpServletRequest request, HttpServletResponse response, Object handle, ModelAndView modelAndView) 
 #### afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handle, Exception ex) 方法
 
-### 拦截器栈
+### 过滤器_拦截器_service()方法_dispatc()方法的执行顺序
+
+![过滤器_拦截器_service()方法_dispatc()方法的执行顺序](./过滤器_拦截器_service()方法_dispatc()方法的执行顺序.jpg)
+
+```java
+	/**
+     * 在业务处理器处理请求之前被调用
+
+     * 如果返回false
+     *     从当前的拦截器往回执行所有拦截器的afterCompletion(),再退出拦截器链
+     
+     * 如果返回true
+     *    执行下一个拦截器,直到所有的拦截器都执行完毕
+     *    再执行被拦截的Controller
+     *    然后进入拦截器链,
+     *    从最后一个拦截器往回执行所有的postHandle()
+     *    接着再从最后一个拦截器往回执行所有的afterCompletion()
+     */
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
+		...
+	}
+```
+
 
 
 ### SpringMVC原理
