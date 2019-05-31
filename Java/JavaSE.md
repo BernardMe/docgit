@@ -3365,6 +3365,21 @@ rawtypes是说传参时也要传递带泛型的参数
 
 
 
+## Java8 新特性
+
+### Lambda表达式
+
+#### 函数式接口
+
+理解Functional Interface（函数式接口，以下简称FI）是学习Java8 Lambda表达式的关键所在，所以放在最开始讨论。
+FI的定义其实很简单：任何接口，如果只包含 唯一 一个抽象方法，那么它就是一个FI
+
+
+### 为什么需要Stream
+Java 8 中的 Stream 是对集合（Collection）对象功能的增强，它专注于对集合对象进行各种非常便利、高效的聚合操作（aggregate operation），或者大批量数据操作 (bulk data operation)。
+
+
+
 ## Java9，OSGi以及模块化的未来
 
 ### 关键要点
