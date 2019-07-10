@@ -86,6 +86,65 @@ dependencies节点： 重点的重点！规定了Project要加载哪些Jar包
 build节点：编译打包生成相关配置
 
 
+## maven坐标Dependencies和Exclusions概念介绍
+
+### 概念
+Dependencies：是可选依赖（Optional Dependencies） 
+Exclusions：是依赖排除（Dependency Exclusions） 
+
+### Dependencies 
+（1）当一个项目A依赖另一个项目B时，项目A可能很少一部分功能用到了项目B，此时就可以在A中配置对B的可选依赖。举例来说，一个类似hibernate的项目，它支持对mysql、oracle等各种数据库的支持，但是在引用这个项目时，我们可能只用到其对mysql的支持，此时就可以在这个项目中配置可选依赖。 
+（2）配置可选依赖的原因： 
+1）节约磁盘、内存等空间； 
+2）避免license许可问题； 
+3）避免类路径问题，等等。 
+（3）示例：
+
+```xml
+<project>
+  ...
+  <dependencies>
+    <!-- declare the dependency to be set as optional -->
+    <dependency>
+      <groupId>sample.ProjectB</groupId>
+      <artifactId>Project-B</artifactId>
+      <version>1.0</version>
+      <scope>compile</scope>
+      <optional>true</optional> <!-- value will be true or false only -->
+    </dependency>
+  </dependencies>
+</project>
+```
+
+### Exclusions 
+（1）当一个项目A依赖项目B，而项目B同时依赖项目C，如果项目A中因为各种原因不想引用项目C，在配置项目B的依赖时，可以排除对C的依赖。 
+（2）示例（假设配置的是A的pom.xml，依赖关系为：A –> B; B –> C）：
+
+```
+<project>
+  ...
+  <dependencies>
+    <dependency>
+      <groupId>sample.ProjectB</groupId>
+      <artifactId>Project-B</artifactId>
+      <version>1.0</version>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>  <!-- declare the exclusion here -->
+          <groupId>sample.ProjectC</groupId>
+          <artifactId>Project-C</artifactId>
+        </exclusion>
+      </exclusions> 
+    </dependency>
+  </dependencies>
+</project>
+```
+
+### maven的依赖调解有两大原则
+路径最近者优先；第一声明者优先。 
+
+
+
 
 ## Maven项目的应用
 
