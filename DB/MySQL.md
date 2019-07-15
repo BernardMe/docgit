@@ -301,6 +301,29 @@ INSERT INTO employee VALUES (currval('seq_employee_num1'), '李四', 24, 1200.00
 
 ```
 
+## MySQL原生函数
+
+### mysql插入当前日期now()
+
+特殊情况下
+用current_timestamp，不过这个默认值只用在timestamp的列，对datetime列无效
+```sql
+create table default_time (
+  id int not null primary key auto_increment,
+  name varchar(20) default 'chenlb',
+  my_time timestamp default current_timestamp
+);
+```
+注意：一个表只能有一个timestamp列的默认值为当前日期时间
+
+
+一般情况下
+数据库应该有一个表项addtime 类型为datetime 输入的时候sql语句类似
+insert into tablename （“a”，“addtime”）value （“Haha”，NOW（））； 
+
+
+
+
 ## MySQL存储过程
 
 ### 什么是mysql存储例程? 
