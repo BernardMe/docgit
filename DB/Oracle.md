@@ -1,4 +1,4 @@
-v[TOC]
+[TOC]
 
 # Oracle安装
 
@@ -137,7 +137,57 @@ grant revoke
 
 ## where子句
 
-### and 比 or 的优先级高
+and 比 or 的优先级高
+
+
+# Oracle函数
+
+## oracle取上下行分析函数
+
+lag()和lead()
+
+lag(EXPR,<OFFSET>,<DEFAULT>)
+LEAD(EXPR,<OFFSET>,<DEFAULT>)
+
+表示根据COL1分组，在分组内部根据COL2排序，而这个值就表示魅族内部排序后的顺序编号(组内连续的唯一的)
+lead()下一个值 lag()上一个值
+
+
+```sql
+-- 根据班级id查出该班级学生photo列表(上一个下一个学生)
+select t.id             as "studentId",
+       t.student_img    as "studentImg",
+       t.student_name   as "studentName",
+       t.sex            as "studentSex",
+       c.class_name     as "className",
+       lead(t.id) over(order by t.student_name) as "nextStuId",
+       lead(student_name) over(order by t.student_name) as "nextStuName",
+       lag(t.id) over(order by t.student_name) as "preStuId",
+       lag(student_name) over(order by t.student_name) as "preStuName"
+  from t_student t
+  left join t_class c
+    on c.id = t.class_id
+ where t.class_id = 73195
+```
+student表数据
+3760302   ces 1 6.01班
+3760130   安鹏宇 1 6.01班
+3682225   程涵义1  0 6.01班
+3682234   程涵义10 0 6.01班
+3682324   程涵义100  0 6.01班
+3682325   程涵义101  0 6.01班
+
+sql运行结果
+3760302   ces 1 6.01班 3760130 安鹏宇   
+3760130   安鹏宇 1 6.01班 3682225 程涵义1  3760302 ces
+3682225   程涵义1  0 6.01班 3682234 程涵义10 3760130 安鹏宇
+3682234   程涵义10 0 6.01班 3682324 程涵义100  3682225 程涵义1
+3682324   程涵义100  0 6.01班 3682325 程涵义101  3682234 程涵义10
+3682325   程涵义101  0 6.01班 3682326 程涵义102  3682324 程涵义100
+3682326   程涵义102  0 6.01班 3682327 程涵义103  3682325 程涵义101
+
+
+
 
 ## 字符函数
 `TO_CHAR( value [, format_mask] [, nls_language] )`
