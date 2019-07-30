@@ -3357,11 +3357,70 @@ count++; 这条语句由3条指令组成：
 
 
 
-## 注解用法详解
+## Java注解
 
 @SuppressWarnings("rawtypes")
 作用：用于抑制编译器产生警告信息。
 rawtypes是说传参时也要传递带泛型的参数
+
+
+### Java中注解如何工作
+
+什么是注解？
+
+用一个词就可以描述注解，那就是元数据，即一种描述数据的数据。所以，可以说注解就是源代码的元数据。
+
+为什么要引入注解？
+
+一个很重要的因素是Annotation定义了一种标准的描述元数据的方式
+
+### 元注解
+
+J2SE5.0版本在 java.lang.annotation提供了四种元注解，专门注解其他的注解：
+
+@Documented –注解是否将包含在JavaDoc中
+
+@Retention –什么时候使用该注解
+
+@Target? –注解用于什么地方
+
+@Inherited – 是否允许子类继承该注解
+
+即：
+@Documented–一个简单的Annotations标记注解，表示是否将注解信息添加在java文档中。
+
+@Retention– 定义该注解的生命周期。
+
+RetentionPolicy.SOURCE
+在编译阶段丢弃。这些注解在编译结束之后就不再有任何意义，所以它们不会写入字节码。
+@Override, @SuppressWarnings偶属于这类注解
+
+RetentionPolicy.CLASS
+在类加载的时候丢弃。在字节码文件的处理中有用。注解默认使用这种方式
+
+RetentionPolicy.RUNTIME
+始终不会丢弃，运行期也保留该注解，因此可以使用反射机制读取该注解的信息。
+我们自定义的注解通常使用这种方式
+
+@Target 
+表示该注解用于什么地方。如果不明确指出，该注解可以放在任何地方。以下是一些可用的参数。需要说明的是：属性的注解是兼容的，如果你想给7个属性都添加注解，仅仅排除一个属性，那么你需要在定义target包含所有的熟悉。
+
+@Inherited
+定义盖住结合子类的关系
+
+### 注解的内部
+注解参数的可支持数据类型
+
+1.所有基本数据类型（int,float,boolean,byte,double,char,long,short)
+2.String类型
+3.Class类型
+4.enum类型
+5.Annotation类型
+
+
+
+引申--元注解
+说到底Spring Boot框架是在Spring框架的基础上做了一层二次封装
 
 
 
