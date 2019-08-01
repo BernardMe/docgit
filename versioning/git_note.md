@@ -238,6 +238,16 @@ netty_note.md:5
 所有命令历史记录都存储在`~/.bash_history`文件中，所以可以直接vi编辑该文件，删除记录就可以
 另外，`HISTSIZE=10`可以设置方向键查询历史命令条数
 
+### 查询log
+查看指定fileName相关的commit记录
+git log filename
+
+查看某次提交中的变化
+git show <commit...>
+
+只看某次提交中的某个文件变化，可以直接加上fileName
+git show <commit...> filename
+
 
 ### git取消对文件的跟踪
 - 对git未跟踪的文件不跟踪
