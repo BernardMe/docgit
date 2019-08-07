@@ -16,6 +16,12 @@ Maven本质上是一个插件框架，它的核心并不执行任何具体的构
 ### 重点
 而Maven所做的工作，『就是把网络上一个地址映射到你本地一个地址』然后使用一个『坐标』的概念拼接出来这个路径。其实质就是`一个本地文件夹和云盘的同步`
 
+### maven的三种classpath
+
+1 编译
+2 测试
+3 运行
+
 ### maven的依赖管理
 依赖管理一般是最吸引人使用maven的功能特性了，这个特性让开发者只需要关注代码的直接依赖，比如我们用了spring，就加入spring依赖说明就可以了，至于spring自己还依赖哪些外部的东西，maven帮我们搞定。
 
@@ -24,7 +30,8 @@ Maven本质上是一个插件框架，它的核心并不执行任何具体的构
 groupId 必须
 artifactId 必须
 version 必须。 
-这里的version可以用区间表达式来表示，比如(2.0,)表示>2.0，[2.0,3.0)表示2.0<=ver<3.0；多个条件之间用逗号分隔，比如[1,3),[5,7]。
+这里的version可以用区间表达式来表示，比如(2.0,)表示>2.0，[2.0,3.0)表示2.0<=ver<3.0；
+多个条件之间用逗号分隔，比如[1,3),[5,7]。
 scope 作用域限制
 type 一般在pom引用依赖时候出现，其他时候不用
 optional 是否可选依赖
@@ -33,22 +40,28 @@ optional 是否可选依赖
 maven认为，程序对外部的依赖会随着程序的所处阶段和应用场景而变化，所以maven中的依赖关系有作用域(scope)的限制。在maven中，scope包含如下的取值：
 
 compile（编译范围） 
-compile是默认的范围；如果没有提供一个范围，那该依赖的范围就是编译范围。编译范围依赖在所有的classpath中可用，同时它们也会被打包。
+compile是默认的范围；适用于所有阶段
+编译范围依赖在所有的classpath中可用，同时它们也会被打包。
 
 provided（已提供范围） 
 provided依赖只有在当JDK或者一个容器已提供该依赖之后才使用。
+
 比如说，假定我们自己的项目ProjectABC 中有一个类叫C1,而这个C1中会import这个portal-impl的artifact中的类B1，那么在编译阶段，我们肯定需要这个B1，否则C1通不过编译，因为我们的scope设置为provided了，所以编译阶段起作用，所以C1正确的通过了编译。测试阶段类似，故忽略；
 那么最后我们要吧ProjectABC部署到Liferay服务器上了，这时候，我们到$liferay-tomcat-home\webapps\ROOT\WEB-INF\lib下发现，里面已经有了一个portal-impl.jar了，换句话说，容器已经提供了这个artifact对应的jar,所以，我们在运行阶段，这个C1类直接可以用容器提供的portal-impl.jar中的B1类，而不会出任何问题。
 
 
 runtime（运行时范围） 
-runtime依赖在运行和测试系统的时候需要，但在编译的时候不需要。比如，你可能在编译的时候只需要JDBC API JAR，而只有在运行的时候才需要JDBC驱动实现。
+runtime依赖在运行和测试系统的时候需要，但在编译的时候不需要。
+比如，你可能在编译的时候只需要JDBC API JAR，而只有在运行的时候才需要JDBC驱动实现。
 
 test（测试范围） 
-test范围依赖 在一般的 编译和运行时都不需要，它们只有在测试编译和测试运行阶段可用。测试范围依赖在之前的???中介绍过。
+test范围依赖 在一般的 编译和运行时都不需要，它们只有在测试编译和测试运行阶段可用。
 
 system（系统范围） 
-system范围依赖与provided类似，但是你必须显式的提供一个对于本地系统中JAR文件的路径。这么做是为了允许基于本地对象编译，而这些对象是系统类库的一部分。这样的构件应该是一直可用的，Maven也不会在仓库中去寻找它。 `如果你将一个依赖范围设置成系统范围，你必须同时提供一个systemPath元素` 。注意该范围是不推荐使用的（你应该一直尽量去从公共或定制的Maven仓库中引用依赖）。
+system范围依赖与provided类似，但是你必须显式的提供一个对于本地系统中JAR文件的路径。
+这么做是为了允许基于本地对象编译，而这些对象是系统类库的一部分。
+这样的构件应该是一直可用的，Maven也不会在仓库中去寻找它。
+`如果你将一个依赖范围设置成系统范围，你必须同提时供一个systemPath元素` 注意该范围是不推荐使用的（你应该一直尽量去从公共或定制的Maven仓库中引用依赖）。
 
 
 ## Maven的pom.xml文件
@@ -171,12 +184,93 @@ Exclusions：是依赖排除（Dependency Exclusions）
 
 ### Maven项目之间的关系
 
-- 依赖关系
-	+ 标签<dependency>把另一个项目的jar引入到当过前项目
+#### 依赖关系
+	+ 标签<dependency>把另一个项目的jar引入到当前项目
 	+ 自动下载另一个项目所依赖的其他项目
 
-- 继承关系
-- 聚合关系
+#### 继承关系
+
+根据官方文档说明继承会根据父模块与子模块的包含与否，对pom.xml的写法则有两种
+
+第一种写法
+假设我们有两个模块，前一个叫 com.mycompany.app:my-app:1，后一个叫com.mycompany.app:my-module:1。
+
+my-app的pom文件为：
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.mycompany.app</groupId>
+  <artifactId>my-app</artifactId>
+  <version>1</version>
+</project>
+
+my-module的pom文件为：
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.mycompany.app</groupId>
+  <artifactId>my-module</artifactId>
+  <version>1</version>
+</project>
+
+我们指定如下项目结构：
+
+.
+ |-- my-module
+ |   `-- pom.xml
+ `-- pom.xml
+
+那么，我们需要my-module去继承my-app，则需要在my-module的pom文件中添加以下代码：
+
+<project>
+  <parent>
+    <groupId>com.mycompany.app</groupId>
+    <artifactId>my-app</artifactId>
+    <version>1</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.mycompany.app</groupId>
+  <artifactId>my-module</artifactId>
+  <version>1</version>
+</project>
+
+第二种写法
+However, that would work if the parent project was already installed inour local repository or was in that specific directory structure (parent pom.xml is one directory higher than that of the module's pom.xml). But what if the parent is not yet installed and if the directory structure is
+
+.
+ |-- my-module
+ |   `-- pom.xml
+ `-- parent
+     `-- pom.xml  
+
+上一段话摘自官网对继承的介绍，就是说如果你的父模块已在本地安装或者父模块不包含子模块，目录级别甚至是 比子模块的还要高，就在第一种写法上添加<relativePath>标签。 ​
+
+<project>
+    <parent>
+      <groupId>com.mycompany.app</groupId>
+      <artifactId>my-app</artifactId>
+      <version>1</version>
+      <relativePath>../parent/pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>my-module</artifactId>
+</project>
+
+笔者在看视频时就发现，当父模块与子模块处于同一级别时，在按照视频中的写法（第一种写法）test时就会报错， 而此时的情况是不包含子模块，所以应该在<parent>标签中添加<relativePath>标签即可测试通过。
+
+#### 聚合关系
+
+<packaging>pom</packaging>
+<modules>
+  <module>HoictasStudio-MavenDemo01</module>
+  <module>HoictasStudio-MavenDemo02</module>
+  <module>HoictasStudio-MavenDemo03</module>
+</modules>
+
+假设在HoictasStudio-MavenParent模块中添加以上代码，输入clean install命令后，即可同时安装多个jar到本地仓库中
+[INFO]HoictasStudio-MavenDemo01.........................SUCCESS [4.618s]
+[INFO]HoictasStudio-MavenDemo02.........................SUCCESS [0.333s]
+[INFO]HoictasStudio-MavenDemo03.........................SUCCESS [0.933s]
+[INFO]HoictasStudio-MavenDemo04.........................SUCCESS [0.102s]
+
 
 #### maven子项目如何使用父项目的jar包
 ```xml
@@ -254,7 +348,7 @@ mvn package -DskipTests
 中央仓库包含了绝大多数流行的开源Java构件，以及源码、作者信息、SCM、信息、许可证信息等。一般来说，简单的Java项目依赖的构件都可以在这里下载到
 
 
-###　Maven私服nexus
+### Maven私服nexus
 
 #### Maven私服[Nexus]理论原理
 `私服是一种特殊的远程仓库，它是架设在局域网内的仓库服务，私服代理广域网上的远程仓库，供局域网内的Maven用户使用。
@@ -404,6 +498,7 @@ settins.xml并不支持直接配置repositories和pluginRepositories。但是Mav
       </pluginRepositories>
     </profile>
 
+    <!-- 全局指定JDK版本 -->
     <profile>
       <id>jdk-1.8</id>
       <activation>
@@ -496,6 +591,23 @@ settins.xml并不支持直接配置repositories和pluginRepositories。但是Mav
   </build>
 
 ```
+
+
+## 优先级
+
+### JDK版本配置优先级
+
+问题:
+全局的settings.xml文件里面指定了JDK版本之后，工程的pom.xml文件里面又指定另外一个JDK版本
+
+这个时候的JDK版本优先级：
+工程pom.xml指定版本 > 全局settings.xml文件指定的版本 > 系统运行默认的JDK版本
+
+注：
+1、如果工程pom.xml文件里面指定的javac路径是错误的，编译失败，不会自动寻找全局的。
+2、如果pom.xml只指定了<source><target>没有指定<executable>，编译的时候executable是全局指定的JDK
+
+
 
 
 
