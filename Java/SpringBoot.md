@@ -10,6 +10,43 @@ Spring Boot父级依赖的概念
 起步依赖 spring-boot-starter-xx的概念
 应用入口类的作用
 
+## SpringBoot启动流程
+
+```
+组装SpringApplication  --> 设置ApplicationContextInitializer,ApplicationListener和webApplicationType
+
+调用run方法
+
+获取SpringApplicationRunListeners，并启动该listener
+
+--------BEGINNING 过程中出现异常调用handleRunFailure(context, ex, exReporters, listener)-----------
+
+获取ApplicationArguments
+
+设置ConfigurableEnvironment
+
+    if 设置configureIgnoreBeanInfo
+
+    else 创建Bannner
+
+创建Spring容器ConfigurableApplicationContext
+
+准备容器prepareContext
+
+刷新容器refreshContext
+
+完成刷新afterRefresh
+
+调用SpringApplicationRunListeners的started方法
+
+callRunners
+
+--------END 过程中出现异常调用handleRunFailure(context, ex, exReporters, listener)-----------
+
+调用listeners.running(context);
+```
+
+
 ### Spring Boot父级依赖的概念
 
 ```java
@@ -33,7 +70,7 @@ Spring Boot提供了很多”开箱即用“的依赖模块，都是以spring-bo
 
 
 
-## 定时任务
+## 基础功能_定时任务
 
 ### 创建定时任务
 
