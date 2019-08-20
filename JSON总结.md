@@ -83,3 +83,34 @@ JSON(JavaScript Object Notation)一种简单的数据格式，比xml更轻巧。
 
 
 
+## JSON序列化和反序列化
+
+`序列化：将数据结构或对象转换成二进制串的过程。`
+
+`反序列化：将在序列化过程中所生成的二进制串转换成数据结构或对象的过程。`
+
+
+### alibaba/fastjson处理泛型反序列化
+
+在fastjson中提供了一个用于处理泛型反序列化的类TypeReference。
+
+```java
+import com.alibaba.fastjson.TypeReference;
+
+List<VO> list = JSON.parseObject("...", new TypeReference<List<VO>>() {});
+```
+
+如下写法有更好的性能
+```java
+import com.alibaba.fastjson.TypeReference;
+
+final static Type type = new TypeReference<List<VO>>() {}.getType();
+
+List<VO> list = JSON.parseObject("...", type);
+```
+
+在这里例子中，通过TypeReference能够解决List中T的类型问题。
+
+
+
+
