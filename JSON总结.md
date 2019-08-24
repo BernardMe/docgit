@@ -90,7 +90,7 @@ JSON(JavaScript Object Notation)一种简单的数据格式，比xml更轻巧。
 `反序列化：将在序列化过程中所生成的二进制串转换成数据结构或对象的过程。`
 
 
-### alibaba/fastjson处理泛型反序列化
+### alibaba/FastJson处理泛型反序列化
 
 在fastjson中提供了一个用于处理泛型反序列化的类TypeReference。
 
@@ -113,4 +113,10 @@ List<VO> list = JSON.parseObject("...", type);
 
 
 
+### alibaba/FastJson中@JSONField的作用对象:
 
+1. Field
+
+2. Setter 和 Getter方法
+
+FastJson在进行操作时，是根据getter和setter的方法进行的，并不是依据Field进行

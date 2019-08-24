@@ -40,6 +40,70 @@ System.out.println(tUser.getId());
 开始时一直打印insert方法的返回值result，还纳闷为什么一直是1。原来，insert的返回值是影响的行数。而返回的主键值赋给了实体属性，需要调用实体的getId方法来获取。
 
 
+## Mybatis动态SQL
+
+
+### if标签判断数字大小
+
+主意:条件表达式中大于号小于号用 gt,lt
+<if test="vane gt 0">...</if>
+ 
+<if test="vane lt 0">...</if>
+
+mapper 接口代码：
+```java
+/**
+ * @Description: 体制内_根据学校id获取套餐列表
+ * @Param: [schoolId]
+ * @return: java.util.List<java.util.Map<java.lang.String,java.lang.Object>>
+ * @Author: wangzhuo
+ * @Date: 2019/7/17
+ */
+List<Map<String, Object>> getExtSystemPlan(@Param("schoolId")Long schoolId, @Param("isInSystem")Integer isInSystem, @Param("isChinaMobile")Integer isChinaMobile);
+```
+
+mapper xml代码：
+```xml
+<!-- 体制内_根据学校id获取套餐列表 -->
+<select id="getExtSystemPlan" resultType="java.util.Map" >
+    SELECT
+    t.`type_name`,
+    t.biz_type,
+    p.`id` "planId",
+    p.`plan_name`,
+    p.`amount`
+    FROM t_school_plan_type s
+    LEFT JOIN t_plan_type t ON s.`plan_type_id` = t.`id`
+    LEFT JOIN t_plan p ON t.`id` = p.`plan_type_id`
+    WHERE s.`school_id` = #{schoolId} AND p.`state` = 1 AND p.`sale_state` = 1
+    AND t.biz_type = 0 AND t.is_in_system = #{isInSystem}
+    <if test="null != isChinaMobile">
+        <if test="0 lt isChinaMobile">AND (t.scope = 0 OR t.scope = 2)</if>
+        <if test="0 gt isChinaMobile">AND (t.scope = 0 OR t.scope = 1)</if>
+    </if>
+    ORDER BY p.`amount` DESC
+</select>
+```
+
+
+### if标签非空判断数字0为什么是false
+
+今天工作中发现一个Long类型的参数没有传到sql中去，在sql xml配置文件中是使用if test标签判断：
+ <if test="version != null and version != ''">xxxxx</if>
+通过debug发现参数中的version是有值的，但出来的sql语句就没有这个version
+
+大致解决办法分两种：
+
+1、去掉空字符串判断
+ <if test="version != null">xxxxx</if>
+
+2、添加0值判断
+ <if test="version != null and version != '' or version == 0">xxxxx</if>
+
+这两种方法都是可以的，在我看来是这样，如果这个version类型和我的情况一样，是包装类型而不是基本数据类型的话，第一种就足够了，而且更贴近实际，因为包装类型除了有值的情况就是null，
+
+
+
 ## Mybatis分页插件
 
 利用AOP实现分页功能可以达到零代码入侵的目的，只需要在请求方法上传入对应的分页请求数据即可，SQL的编写和后台业务逻辑与分页代码没有耦合
