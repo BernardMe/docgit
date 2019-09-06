@@ -43,9 +43,34 @@
  
 2.3 配置my.ini
 复制程序目录下的文件my-default.ini 为my.ini，并且编辑里面的内容为：
-basedir = D:\mysql-5.7
-datadir = D:\mysql-5.7\data
+
+```
+#代码开始
+[Client]
+#设置3306端口
 port = 3306
+ 
+[mysqld]
+#设置3306端口
+port = 3306
+# 设置mysql的安装目录
+basedir=D:\mysql_5_7
+# 设置mysql数据库的数据的存放目录
+datadir=D:\mysql_5_7\data
+# 允许最大连接数
+max_connections=200
+# 服务端使用的字符集默认为8比特编码的latin1字符集
+character-set-server=utf8
+# 创建新表时将使用的默认存储引擎
+default-storage-engine=INNODB
+sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
+ 
+[mysql]
+# 设置mysql客户端默认字符集
+default-character-set=utf8
+#代码结束
+```
+
  
 ### 5.7安装
 以管理员身份运行开始－运行－输入cmd，进入DOS窗口后，首先切换到MYSQL的程序目录：
@@ -321,6 +346,8 @@ create table default_time (
 数据库应该有一个表项addtime 类型为datetime 输入的时候sql语句类似
 insert into tablename （“a”，“addtime”）value （“Haha”，NOW（））； 
 
+### mysql表链接
+mysql默认使用等值链接join  取得两个表中存在连接匹配关系的记录
 
 
 
