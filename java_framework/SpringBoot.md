@@ -10,6 +10,36 @@ Spring Boot父级依赖的概念
 起步依赖 spring-boot-starter-xx的概念
 应用入口类的作用
 
+
+
+## SpringBoot为什么没有web.xml了
+
+>随着 spring 的普及，配置逐渐演变成了两种方式—java configuration 和 xml 配置共存。现如今，springboot 的普及，java configuration 成了主流，xml 配置似乎已经“灭绝”了。不知道你有没有好奇过，这中间都发生了哪些改变，web.xml 中的配置项又是被什么替代项取代了？
+
+
+### servlet3.0 新特性
+Servlet 3.0 作为 Java EE 6 规范体系中一员，随着 Java EE 6 规范一起发布。该版本在前一版本（Servlet 2.5）的基础上提供了若干新特性用于简化 Web 应用的开发和部署。其中一项新特性便是提供了无 xml 配置的特性。
+
+servlet3.0 首先提供了 @WebServlet，@WebFilter 等注解，这样便有了抛弃 web.xml 的第一个途径，凭借注解声明 servlet 和 filter 来做到这一点。
+
+除了这种方式，servlet3.0 规范还提供了更强大的功能，可以在运行时动态注册 servlet ，filter，listener。以 servlet 为例，过滤器与监听器与之类似
+
+
+### SpringBoot 如何加载 Servlet？
+
+读到这儿，你已经阅读了全文的 1/2。springboot 对于 servlet 的处理才是重头戏，
+其一，是因为 springboot 使用范围很广，很少有人用 spring 而不用 springboot 了；
+其二，是因为它没有完全遵守 servlet3.0 的规范！
+
+是的，前面所讲述的 servlet 的规范，无论是 web.xml 中的配置，还是 servlet3.0 中的 ServletContainerInitializer 和 springboot 的加载流程都没有太大的关联。按照惯例，先卖个关子，先看看如何在 springboot 中注册 servlet 和 filter，再来解释下 springboot 的独特之处。
+
+注册方式一：servlet3.0注解+@ServletComponentScan
+
+注册方式二：RegistrationBean
+
+
+
+
 ## SpringBoot启动流程
 
 ```
@@ -155,4 +185,7 @@ public class Application {
 
 引用官方文档原文：
 `@EnableScheduling ensures that a background task executor is created. Without it, nothing gets scheduled.`
+
+
+
 
