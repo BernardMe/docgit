@@ -666,6 +666,24 @@ use_localtime=YES
 
 ## CentOS
 
+### CentOS 查看硬盘情况
+lsblk 　　　　                                 查看分区和磁盘
+
+df -h 　　                                        查看空间使用情况
+
+fdisk -l 　　                                    分区工具查看分区信息
+
+cfdisk /dev/sda  　　                      查看分区
+
+blkid 　                                       　查看硬盘label（别名）
+
+du -sh ./* 　　                                统计当前目录各文件夹大小
+
+free -h 　                                    　查看内存大小
+
+cat /proc/cpuinfo| grep "cpu cores"| uniq  　　查看cpu核心数
+
+
 ### 安装本地源 
 `yum --disablerepo=\* --enablerepo=c6-media `
 
