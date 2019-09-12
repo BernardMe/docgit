@@ -1,40 +1,75 @@
 
-
+[TOC]
 # MongoDB
 
-## MongoDB的基本概念
 
-是一种文档型数据库
+## MongoDB的安装及配置 
 
-MongoDB的数据单元是文档，可以看作JavaScript中的对象，类似于关系数据库中的行。
-集合类似于关系数据库中的表，区别在于没有模式
-每个MongoDB数据库都有自身的集合和权限
-MongoDB的操作主要靠终端的JavaScript Shell完成
+之前整理的mongo基本语法都是在没有用户名密码验证的条件下测试的，因为mongo与mysql不同，它安装的时候默认是没有权限控制的额，也就是说任何人，只要知道了host和port都可以登陆数据库并操作。
+如果想要设置用户，需要自己另行配置。
+
+### Windows版本
+
+（1）. 登录Mongodb官网点击下载
+
+（2）. 将zip文件解压放到盘符的根目录（如C：或D：），为了方便建议文件夹命名尽量简短如（d:\mongodb），确定MongoDB主目录`D:\mongodb`
+
+（3）. 创建数据库文件的存放位置，比如d:/mongodb/data/db。启动mongodb服务之前需要必须创建数据库文件的存放文件夹，否则命令不会自动创建，而且不能启动成功。
+
+（4）. 打开cmd命令行，进入D:\mongodb\bin目录（如图先输入d:进入d盘然后输入cd d:\mongodb\bin），
+
+输入如下的命令启动mongodb服务：
+
+`D:/mongodb/bin>mongod --dbpath D:\mongodb\data\db`
+（5）. mongodb默认连接端口27017，如果出现如图的情况，可以打开http://localhost:27017查看（笔者这里是chrome），发现如图则表示连接成功，如果不成功，可以查看端口是否被占用。
+
+（6）. 其实可以将MongoDB设置成Windows服务，这个操作就是为了方便，每次开机MongoDB就自动启动了。
+
+在d:\mongodb下新建文件夹log（存放日志文件）并且新建文件mongodb.log
+在d:\mongodb新建文件mongo.config
+
+在mongo.config中输入：
+```shell
+dbpath=D:\mongodb\data\db
+logpath=D:\mongodb\log\mongo.log  
+```
+（7）. 用管理员身份打开cmd命令行，进入D:\mongodb\bin目录，输入如下的命令：
+
+`D:\mongodb\bin>mongod --config D:\mongodb\mongo.config `
+如图结果存放在日志文件中，查看日志发现已经成功。如果失败有可能没有使用管理员身份，遭到拒绝访问。
+
+（8）. 打开cmd输入services.msc查看服务可以看到MongoDB服务，点击可以启动
+若以上没有添加mongo服务，则命令行添加：
+
+cd D:\mongodb\bin
+`mongod --config D:\mongodb\mongo.config --journal --install`
+
+启动服务即可：
+到服务中启mongodB（或者cmd命令提示符下输入：`net start mongodb` 即可启动mongodb了）
+
+删除服务：
+管理员模式打开cmd,输入 sc delete mongodb 即可删除mongodb服务
 
 
-## 文档
-在JavaScript中，文档表示为对象：
 
-{"name": "XueSeason", "age": 22}
-以上文档有一个name键，其值为XueSeason，age键值为22。
-从这个文档，解释了几个概念：
+##　启动MongoDB
+确保你成功安装MongoDB并且正确配置。
+终端输入mongod命令
+如果出现类似以下信息：
 
-文档中的键值对是有序的，上面例子中如果调换name和age的键值对，将会被视为一个全新的文档
-文档中的值不仅仅只限于字符串形式，还有其他更高级的类型
-文档的键使用UTF-8字符。其中`.和$`通常被保留，只有在特定环境下使用，`_`也是保留的
+```shell
+2015-03-28T13:35:04.067+0800 W -        [initandlisten] Detected unclean shutdown - /data/db/mongod.lock is not empty.
+2015-03-28T13:35:04.067+0800 I STORAGE  [initandlisten] exception in initAndListen: 98 Unable to lock file: /data/db/mongod.lock errno:35 Resource temporarily unavailable. Is a mongod instance already running?, terminating
+2015-03-28T13:35:04.067+0800 I CONTROL  [initandlisten] dbexit:  rc: 100
+```
+表明已经有一个MongoDB程序在后台运行。
+可以通过ps -ef查找到相关的pid，执行kill [pid]强制关闭。
+MongoDB在没有参数的情况下默认会使用/data/db目录，并监听27017端口
+如果该目录不存在或者不可写，服务器也会启动失败。
 
 
-## 集合
-集合就是文档集，作为NoSQL是区别于关系数据库的表。
 
-
-
-## 命名
-集合名不能为空字符串。
-不能含有\0字符。
-不能以system.开头，系统集合的保留前缀。
-不能含有保留字符$
-
+## MongoDB操作文档对象
 
 
 ### MongoDB GridFS
@@ -111,49 +146,6 @@ db.fs.files.remove({_id:ObjectId("5b17654c03b6c2233029dcc4")})
 ```
 
 
-
-
-### 关于 ObjectID组成
-前面说了： `_id` 是mongodb ObjectID类型的，它由12位结构组成，包括timestamp, machined, processid, counter 等。
-
-
-TimeStamp
-前 4字节是一个unix的时间戳，是一个int类别，我们将上面的例子中的objectid的前4位进行提取“4df2dcec”，然后再将他们安装十六进制 专为十进制：“1307761900”，这个数字就是一个时间戳，为了让效果更佳明显，我们将这个时间戳转换成我们习惯的时间格式
-
-`$ date -d ‘1970-01-01 UTC 1307761900  sec’  -u`
-2011年 06月 11日 星期六 03:11:40 UTC
-
-前 4个字节其实隐藏了文档创建的时间，并且时间戳处在于字符的最前面，这就意味着ObjectId大致会按照插入进行排序，这对于某些方面起到很大作用，如 作为索引提高搜索效率等等。使用时间戳还有一个好处是，某些客户端驱动可以通过ObjectId解析出该记录是何时插入的，这也解答了我们平时快速连续创 建多个Objectid时，会发现前几位数字很少发现变化的现实，因为使用的是当前时间，很多用户担心要对服务器进行时间同步，其实这个时间戳的真实值并 不重要，只要其总不停增加就好。
-
-比如`"_id" : ObjectId("5b1886f8965c44c78540a4fc")`
-取id的前4个字节。由于id是16进制的string，4个字节就是32位，对应id前8个字符。即5b1886f8, 转换成10进制为1528334072. 加上1970，就是当前时间。
-
-Machine
-接下来的三个字节，就是 2cdcd2 ,这三个字节是所在主机的唯一标识符，一般是机器主机名的散列值，这样就确保了不同主机生成不同的机器hash值，确保在分布式中不造成冲突，这也就是在同一台机器生成的objectid中间的字符串都是一模一样的原因。
-
-pid
-上面的Machine是为了确保在不同机器产生的objectid不冲突，而pid就是为了在同一台机器不同的mongodb进程产生了objectid不冲突，接下来的0936两字节就是产生objectid的进程标识符。
-
-increment
-前面的九个字节是保证了一秒内不同机器不同进程生成objectid不冲突，这后面的三个字节a8b817，是一个自动增加的计数器，用来确保在同一秒内产生的objectid也不会发现冲突，允许256的3次方等于16777216条记录的唯一性。
-
-
-
-## Mongodb数据库中的各种角色
-
-### 数据库访问
-
-角色名称	拥有权限
-read	允许读取指定数据库的角色
-readWrite	允许读写指定数据库的角色
-
-### 数据库管理
-
-角色名称	拥有权限
-dbAdmin	允许用户在指定数据库中执行管理函数，如索引创建、删除，查看统计或访问system.profile
-userAdmin	允许管理当前数据库的用户，如创建用户、为用户授权
-dbOwner	数据库拥有者(最高)，集合了dbAdmin/userAdmin/readWrite角色权限
-
 ## mongodb访问控制
 
 ### windows版本下验证方式SCRAM-SHA-1
@@ -223,74 +215,6 @@ use smalink
 db.createUser({user: "smalink", pwd: "smalink", roles: ["readWrite", "dbAdmin"]})
 
 3.通过客户端连接test数据库
-
-
-## MongoDB的安装及配置 
-
-之前整理的mongo基本语法都是在没有用户名密码验证的条件下测试的，因为mongo与mysql不同，它安装的时候默认是没有权限控制的额，也就是说任何人，只要知道了host和port都可以登陆数据库并操作。
-如果想要设置用户，需要自己另行配置。
-
-### Windows版本
-
-（1）. 登录Mongodb官网点击下载
-
-（2）. 将zip文件解压放到盘符的根目录（如C：或D：），为了方便建议文件夹命名尽量简短如（d:\mongodb），确定MongoDB主目录`D:\mongodb`
-
-（3）. 创建数据库文件的存放位置，比如d:/mongodb/data/db。启动mongodb服务之前需要必须创建数据库文件的存放文件夹，否则命令不会自动创建，而且不能启动成功。
-
-（4）. 打开cmd命令行，进入D:\mongodb\bin目录（如图先输入d:进入d盘然后输入cd d:\mongodb\bin），
-
-输入如下的命令启动mongodb服务：
-
-`D:/mongodb/bin>mongod --dbpath D:\mongodb\data\db`
-（5）. mongodb默认连接端口27017，如果出现如图的情况，可以打开http://localhost:27017查看（笔者这里是chrome），发现如图则表示连接成功，如果不成功，可以查看端口是否被占用。
-
-（6）. 其实可以将MongoDB设置成Windows服务，这个操作就是为了方便，每次开机MongoDB就自动启动了。
-
-在d:\mongodb下新建文件夹log（存放日志文件）并且新建文件mongodb.log
-在d:\mongodb新建文件mongo.config
-
-在mongo.config中输入：
-```shell
-dbpath=D:\mongodb\data\db
-logpath=D:\mongodb\log\mongo.log  
-```
-（7）. 用管理员身份打开cmd命令行，进入D:\mongodb\bin目录，输入如下的命令：
-
-`D:\mongodb\bin>mongod --config D:\mongodb\mongo.config `
-如图结果存放在日志文件中，查看日志发现已经成功。如果失败有可能没有使用管理员身份，遭到拒绝访问。
-
-（8）. 打开cmd输入services.msc查看服务可以看到MongoDB服务，点击可以启动
-若以上没有添加mongo服务，则命令行添加：
-
-cd D:\mongodb\bin
-`mongod --config D:\mongodb\mongo.config --journal --install`
-
-启动服务即可：
-到服务中启mongodB（或者cmd命令提示符下输入：`net start mongodb` 即可启动mongodb了）
-
-删除服务：
-管理员模式打开cmd,输入 sc delete mongodb 即可删除mongodb服务
-
-
-
-
-
-##　启动MongoDB
-确保你成功安装MongoDB并且正确配置。
-终端输入mongod命令
-如果出现类似以下信息：
-
-```shell
-2015-03-28T13:35:04.067+0800 W -        [initandlisten] Detected unclean shutdown - /data/db/mongod.lock is not empty.
-2015-03-28T13:35:04.067+0800 I STORAGE  [initandlisten] exception in initAndListen: 98 Unable to lock file: /data/db/mongod.lock errno:35 Resource temporarily unavailable. Is a mongod instance already running?, terminating
-2015-03-28T13:35:04.067+0800 I CONTROL  [initandlisten] dbexit:  rc: 100
-```
-表明已经有一个MongoDB程序在后台运行。
-可以通过ps -ef查找到相关的pid，执行kill [pid]强制关闭。
-MongoDB在没有参数的情况下默认会使用/data/db目录，并监听27017端口
-如果该目录不存在或者不可写，服务器也会启动失败。
-
 
 
 ## MongoDB脚本
