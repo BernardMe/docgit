@@ -5,26 +5,32 @@
 	1.文档是MongoDB的基本单元,核心概念  类似于关系型数据库的行
 	2.每一个文档都有一个特殊的键"_id",它在文档所在的集合中是唯一的
 	3.MongoDB不但区分类型还区分大小写 文档不能有重复的键
+ 	MongoDB文档类似与JSON对象，字段值可以包含其他文档，数组及文档数组
   
 ## 集合
     集合就是一组文档  相当于关系型数据库里的表
-	集合是无模式的  一个集合里的文档可以是各式各样的 如下
+	
+### 集合是无模式的  一个集合里的文档可以是各式各样的 如下
 		{"key1":"Hello word"}
 		{"key2":5}
 	上面两个文档的数据类型不同.键也不一样,因为集合里可以放置任意类型的文档
-	集合的命名  
+
+### 集合的命名  
 		不能是""空串  
 		不能含有\0字符,这个字符表示集合名的结尾 ,
 		结合不能以system.开头 这是为系统集合保留的前缀
 		用户创建的集合的名字不能包含保留字$
-	子集合
-		组织集合的一种惯例是使用"."字符分开的按命名空间的划分的子集合.如
-			person.detail与person.address  这样的目的只是使组织结构更好些 也就是说 person这个集合(这里根本不需要存在)及其子集合根本没有任何关系
-			GridFS是一种存储大文本的协议,使用子集合来存储文件的元数据  这样就与内容快分开了
-	MongoDB的客户端shell
+
+### 子集合
+		组织集合的一种惯例是使用"."字符分开的按命名空间的划分的子集合.
+		如
+		person.detail与person.address  这样的目的只是使组织结构更好些 也就是说 person这个集合(这里根本不需要存在)及其子集合根本没有任何关系
+		GridFS是一种存储大文本的协议,使用子集合来存储文件的元数据  这样就与内容快分开了
+
+### MongoDB的客户端shell
 		db是MongoDB的全局变量 db 保存的是客户端与服务器数据库的连接 这个变量是通过shell访问MongoDB的主要入口点
 
-	ObjectID组成
+### ObjectID组成
 		`_id` 是mongodb ObjectID类型的，它由12位结构组成，包括timestamp, machined, processid, counter 等。
 
 		TimeStamp
@@ -46,141 +52,81 @@
 
 ##  Mongodb数据库中的各种角色
 
-	数据库访问
+### 数据库访问
 		角色名称	拥有权限
 		read		允许读取指定数据库的角色
 		readWrite	允许读写指定数据库的角色
 
-	数据库管理
+### 数据库管理
 		角色名称	拥有权限
 		dbAdmin		允许用户在指定数据库中执行管理函数，如索引创建、删除，查看统计或访问system.profile
 		userAdmin	允许管理当前数据库的用户，如创建用户、为用户授权
 		dbOwner		数据库拥有者(最高)，集合了dbAdmin/userAdmin/readWrite角色权限
 
-# MongoDB的插入
-	db.user.insert({username:"yxw",password:"123456"})
+
+
+# MongoDB使用
+
+## MongoDB的安装及配置 
+
+之前整理的mongo基本语法都是在没有用户名密码验证的条件下测试的，因为mongo与mysql不同，它安装的时候默认是没有权限控制的额，也就是说任何人，只要知道了host和port都可以登陆数据库并操作。
+如果想要设置用户，需要自己另行配置。
+
+### Windows版本
+
+（1）登录Mongodb官网下载并将zip文件解压放到（d:\mongodb），确定MongoDB主目录`D:\mongodb`
+（2）创建数据库文件的存放位置，比如d:/mongodb/data/db。启动mongodb服务之前需要必须创建数据库文件的存放文件夹，否则命令不会自动创建，而且不能启动成功。
+（3）打开cmd命令行，进入D:\mongodb\bin目录（如图先输入d:进入d盘然后输入cd d:\mongodb\bin），
+
+输入如下的命令启动mongodb服务：
+
+`D:/mongodb/bin>mongod --dbpath D:\mongodb\data\db`
+（4）mongodb默认连接端口27017，如果出现如图的情况，可以打开http://localhost:27017查看
+（5）其实可以将MongoDB设置成Windows服务，这个操作就是为了方便，每次开机MongoDB就自动启动了。
+
+在d:\mongodb下新建文件夹log（存放日志文件）并且新建文件mongodb.log
+在d:\mongodb新建文件mongo.config
+
+在mongo.config中输入：
+```shell
+dbpath=D:\mongodb\data\db
+logpath=D:\mongodb\log\mongo.log  
+```
+（6）用管理员身份打开cmd命令行，进入D:\mongodb\bin目录，输入如下的命令：
+
+`D:\mongodb\bin>mongod --config D:\mongodb\mongo.config `
+如图结果存放在日志文件中，查看日志发现已经成功。如果失败有可能没有使用管理员身份，遭到拒绝访问。
+
+（7）打开cmd输入services.msc查看服务可以看到MongoDB服务，点击可以启动
+若以上没有添加mongo服务，则命令行添加：
+
+cd D:\mongodb\bin
+`mongod --config D:\mongodb\mongo.config --journal --install`
+
+启动服务即可：
+到服务中启mongodB（或者cmd命令提示符下输入：`net start mongodb` 即可启动mongodb了）
+
+
+
+## Java操作Mongo(Java操作GridFS)
+
+GridFS 用于存储和恢复那些超过16M（BSON文件限制）的文件(如：图片、音频、视频等)。
+
+GridFS 也是文件存储的一种方式，但是它是存储在MonoDB的集合中。
+
+GridFS 可以更好的存储大于16M的文件。
+
+GridFS 会将大文件对象分割成多个小的`chunk(文件片段)`,一般为256k/个,每个chunk将作为MongoDB的一个文档(document)被存储在`chunks集合`中。
+
+GridFS 用两个集合来存储一个文件：fs.files与fs.chunks。
+
+每个文件的实际内容被存在chunks(二进制数据)中,和文件有关的`meta数据(filename,content_type,还有用户自定义的属性)`将会被存在`files集合`中。
 	
 
-# MongoDB的删除
-	db.user.remove()--->删除集合中的所有数据 不删除集合本身和原有的索引
-	db.user.remove({username:"yxw"}) 只删除符合条件的数据
-	db.drop_collection("user1")
-
 	
-# MongoDB文档修改
-	
-## update函数
-		// query    查询条件  指明要更新的文档  相当于SQL中的where语句
-		// obj      更改的内容  更改的内容  相当于SQL中的set语句
-		// upsert   当查询条件query指明的文档不存在时，是否需要插入一条新文档 {upsert:true}
-		// multi    当查询条件query返回多个文档时，是否需要一次更新所有满足条件的文档 {multi:true}
-	
-		更新多个文档 第四个参数  设为true 会更新所有匹配的文档(添加键值gift:"happyBIrthday" 不设为true 只更新匹配的第一条)
-		db.user.update({birthday:"02/02/2008"},{$set:{gift:"happyBIrthday"}},false,true)
+## 索引
 
-
-## 更新操作符(update operators)
-		更新操作是原子性
-		
-		在执行修改语句前 对变量的操作不会修改数据库
-		使用修改器时,"_id"的值不能改变(整个文档改变时是可以改变"_id"的值得)
-		
-		$inc
-			更新修改器是特殊的键  
-			用来增加已有键的值,或者在键不存在的时候创建一个键
-			对于分析数据,因果关系.投票或者其他有变化数值的地方
-			下面是更新文档中某个键的值  使其结果加1
-		
-			db.user.insert({url:"www.example.com",pageviews:52})
-			db.user.update({url:"www.example.com"},{$inc:{pageviews:1}})    结果 pageviews=53要是想加多改变 1 的值就好
-		
-		$set
-			用来指定一个键的值.如果这个键不存在,则创建它 存在将其值修改  还可以修改数据类型,内嵌文档
-			
-			db.user.update({username:"joe"}, {$set:{"favorite book":["green eggs and ham","guzhuang","yanqing"]}})  可以变成数组
-		
-		$unset  
-			将键完全删除 
-			
-			db.user.update({username:"joe"},{$unset:{"favoeite book":1}})
-			增加,修改或删除键的时候,应该使用$修改器.一定要使用以$开头的修改器来修改键/值对
-		
-		$inc 与 $set的用法类似,就是专门来增加(减少)数字的.$inc只能用于键的值是数字
-
-		$upsert  
-			值为true 
-			db.blog.update({url:"/log"},{$inc:{visits:1}},true) 有就更新+1 没有创建 不会在查询回来再判断
-
-
-## 数组元素
-		$push 		    
-			如果指定的键已经存在,$push会向已有的的元素的末尾追加一个元素,要是没有就会创建一个新的数组
-			db.blog.posts({title:"a blog post"},{$push:{comments:{name:"joe",email:"999@.com",content:"nice post"}}})
-						会向文档中添加一个数组comments 如果在在此基础上运行此修改语句会在数组的后面追加新 
-
-		$addToSet
-			如果一个值不在数组中 可以用$ne $addToSet把他加进去  addToSet可以避免重复
-			
-		$addToSet
-			与  $each 组合 可以添加不同的多个值
-			
-		$pop 
-			若是把数组看成是队列或栈 可以用$pop 从数组的任意一端删除元素{$pop:{key:1}}删除末尾元素{$pop:{key:-1}}删除头部元素
-		
-			
-		$pull  
-			会将所有匹配的部分删除如 update({},{pull:{name:"zhangsan"}})
-
-
-## 修改器的速度
-		$inc 运行速度比较快 能就地的修改.因为不需要改变文档的大小 只需要将键的值改变
-		而数组修改器可能会改变文档的大小,就会慢一些 ($set能在文档大小不发生变化时立即修改,否则性能也会下降)
-
-# 查询
-## find
-		find({name:"zhangsan"},{_id:0,username:1}) 第一个参数查询条件  第二个参数是过滤是否返回的列  0 不返回 1返回
-		查询条件 $lt(<) $lte(<=) $gt(>) $get(>=) $ne(!=)
-		
-		$in  用来查询一个键的多个值  与之相反的事$nin
-		
-		$or  用来查询多个键的任意给定值
-		
-		两者连用 ticket_no与三个值匹配 外加 winner键
-		db.user.find({$or:[{ticket_no}:{$in:[725,21,098]},]},{winner:true})
-		
-		$not  元条件句  $mod {$mod:[5,1]}
-		
-		null  null 不仅匹配自身  而且匹配不存在的	所以还会匹配缺少这个键的所有文档
-				如果仅仅匹配键值为null 的文档  要通过$exists 来判断	键值已经存在
-				db.user.find(name:{$in:[null],$exists:true})
-## 查询数组
-			
-		$all 通过多个元素匹配数组 用$all就会匹配一组元素  要找到所有文档中fruit数组中既有  banana  又有apple的数组 
-		
-		要想查询数组指定位置的元素 则需要使用key.index语法   如db.food.find(fruit.2:"apple") 查找水果 的下标为2及第三个元素是 "apple"
-		
-		$size  查询指定长度的数组
-		
-		limit(条数) skip(条数) sort({price:-1(1)})
-			分页 db.stock.find({name:"mp3"}).limit(5).skip(5).sort(price:1) 每次返回limit 每次跳过skip  排序 sort (1升序,-1降序)
-			
-			不建议使用skip做分页 因为skip略过太多的数据 影响效率
-			分页如下
-			var page1 = db.foo.find().sort({data:-1)).limit(100)	
-			利用最后一个文档的排序条件作为查询条件来查询下一条记录
-			var latest = null;
-			//display first page 
-			while(page1.hasNext()){
-				latest = page1.next();
-				display(latest);
-			}
-			//get next page 
-			var page2= db.foo.find({"data"}:{$gt:latest.data});
-			page2.sort({data:-1}).limit(100);
-	
-# 索引
-
-# 集群	
+## 集群	
 	主从  主库  写  丛库(备份主库数据) 只读  主库丛库物理分隔
 	搭建高可用MongoDB集群
 	

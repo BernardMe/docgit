@@ -1,78 +1,19 @@
 
 [TOC]
-# MongoDB
+# MongoDB脚本(shell)
 
 
-## MongoDB的安装及配置 
-
-之前整理的mongo基本语法都是在没有用户名密码验证的条件下测试的，因为mongo与mysql不同，它安装的时候默认是没有权限控制的额，也就是说任何人，只要知道了host和port都可以登陆数据库并操作。
-如果想要设置用户，需要自己另行配置。
-
-### Windows版本
-
-（1）. 登录Mongodb官网点击下载
-
-（2）. 将zip文件解压放到盘符的根目录（如C：或D：），为了方便建议文件夹命名尽量简短如（d:\mongodb），确定MongoDB主目录`D:\mongodb`
-
-（3）. 创建数据库文件的存放位置，比如d:/mongodb/data/db。启动mongodb服务之前需要必须创建数据库文件的存放文件夹，否则命令不会自动创建，而且不能启动成功。
-
-（4）. 打开cmd命令行，进入D:\mongodb\bin目录（如图先输入d:进入d盘然后输入cd d:\mongodb\bin），
-
-输入如下的命令启动mongodb服务：
-
-`D:/mongodb/bin>mongod --dbpath D:\mongodb\data\db`
-（5）. mongodb默认连接端口27017，如果出现如图的情况，可以打开http://localhost:27017查看（笔者这里是chrome），发现如图则表示连接成功，如果不成功，可以查看端口是否被占用。
-
-（6）. 其实可以将MongoDB设置成Windows服务，这个操作就是为了方便，每次开机MongoDB就自动启动了。
-
-在d:\mongodb下新建文件夹log（存放日志文件）并且新建文件mongodb.log
-在d:\mongodb新建文件mongo.config
-
-在mongo.config中输入：
-```shell
-dbpath=D:\mongodb\data\db
-logpath=D:\mongodb\log\mongo.log  
-```
-（7）. 用管理员身份打开cmd命令行，进入D:\mongodb\bin目录，输入如下的命令：
-
-`D:\mongodb\bin>mongod --config D:\mongodb\mongo.config `
-如图结果存放在日志文件中，查看日志发现已经成功。如果失败有可能没有使用管理员身份，遭到拒绝访问。
-
-（8）. 打开cmd输入services.msc查看服务可以看到MongoDB服务，点击可以启动
-若以上没有添加mongo服务，则命令行添加：
-
-cd D:\mongodb\bin
-`mongod --config D:\mongodb\mongo.config --journal --install`
-
-启动服务即可：
-到服务中启mongodB（或者cmd命令提示符下输入：`net start mongodb` 即可启动mongodb了）
-
-删除服务：
-管理员模式打开cmd,输入 sc delete mongodb 即可删除mongodb服务
-
-
-
-##　启动MongoDB
-确保你成功安装MongoDB并且正确配置。
-终端输入mongod命令
-如果出现类似以下信息：
-
-```shell
-2015-03-28T13:35:04.067+0800 W -        [initandlisten] Detected unclean shutdown - /data/db/mongod.lock is not empty.
-2015-03-28T13:35:04.067+0800 I STORAGE  [initandlisten] exception in initAndListen: 98 Unable to lock file: /data/db/mongod.lock errno:35 Resource temporarily unavailable. Is a mongod instance already running?, terminating
-2015-03-28T13:35:04.067+0800 I CONTROL  [initandlisten] dbexit:  rc: 100
-```
-表明已经有一个MongoDB程序在后台运行。
-可以通过ps -ef查找到相关的pid，执行kill [pid]强制关闭。
-MongoDB在没有参数的情况下默认会使用/data/db目录，并监听27017端口
-如果该目录不存在或者不可写，服务器也会启动失败。
-
-
+## 脚本一般会用来执行以下任务
+备份；
+调度map-reduce命令； 
+离线报告，离线任务； 
+管理员定时任务；
 
 ## MongoDB操作文档对象
 
 
 ### MongoDB GridFS
+
 GridFS 用于存储和恢复那些超过16M（BSON文件限制）的文件(如：图片、音频、视频等)。
 
 GridFS 也是文件存储的一种方式，但是它是存储在MonoDB的集合中。
@@ -136,8 +77,6 @@ db.getCollection('fs.files').find({})
 
 db.fs.chunks.find({files_id:ObjectId("5b17866403b6c204b0337f27")})
 
-db.fs.files.find({_id:ObjectId("5b17866403b6c204b0337f27")})
-
 /* 删除文件存储块 */
 db.fs.chunks.remove({files_id:ObjectId("5b17654c03b6c2233029dcc4")})
 
@@ -146,7 +85,7 @@ db.fs.files.remove({_id:ObjectId("5b17654c03b6c2233029dcc4")})
 ```
 
 
-## mongodb访问控制
+## 访问控制
 
 ### windows版本下验证方式SCRAM-SHA-1
 命令行如下： 
@@ -217,15 +156,9 @@ db.createUser({user: "smalink", pwd: "smalink", roles: ["readWrite", "dbAdmin"]}
 3.通过客户端连接test数据库
 
 
-## MongoDB脚本
+## 业务脚本
 
-### 非查询语句
-```js
-/*查询id为5afb988c0db9852c36c4bbdb的 车禁相机抓拍照片*/
-db.getCollection('fs.files').find({"_id" :ObjectId("5afb988c0db9852c36c4bbdb")})
-```
-
-、切换/创建数据库
+### 切换/创建数据库
 `use yourDB;` 当创建一个集合(table)的时候会自动创建当前数据库
 
 查询所有数据库
@@ -248,6 +181,7 @@ db.getCollection('fs.files').find({"_id" :ObjectId("5afb988c0db9852c36c4bbdb")})
 
 查看当前db的链接机器地址
 `db.getMongo();`
+
 
 #### 用户相关
 
@@ -286,6 +220,10 @@ db.person.update({"name":"ken"},{$inc:{"age":10}})//如果原来的age为20，�
 
 3.find 查找
 
+```js
+/*查询id为5afb988c0db9852c36c4bbdb的 车禁相机抓拍照片*/
+db.getCollection('fs.files').find({"_id" :ObjectId("5afb988c0db9852c36c4bbdb")})
+```
 
 4.remove  删除记录
 
@@ -293,7 +231,7 @@ db.person.update({"name":"ken"},{$inc:{"age":10}})//如果原来的age为20，�
 5.count 计数
 
 
-### MongoDB分页
+### 分页
 
 #### 传统分页思路
 假设一页大小为10条。则
@@ -342,4 +280,117 @@ last_id = ...
 显然，第一页和后面的不同。对于构建分页API, 我们可以要求用户必须传递pageSize, lastId。
 pageSize 页面大小
 lastId 上一页的最后一条记录的id，如果不传，则将强制为第一页
+
+
+
+
+### update函数
+      // query    查询条件  指明要更新的文档  相当于SQL中的where语句
+      // obj      更改的内容  更改的内容  相当于SQL中的set语句
+      // upsert   当查询条件query指明的文档不存在时，是否需要插入一条新文档 {upsert:true}
+      // multi    当查询条件query返回多个文档时，是否需要一次更新所有满足条件的文档 {multi:true}
+   
+      更新多个文档 第四个参数  设为true 会更新所有匹配的文档(添加键值gift:"happyBIrthday" 不设为true 只更新匹配的第一条)
+      db.user.update({birthday:"02/02/2008"},{$set:{gift:"happyBIrthday"}},false,true)
+
+
+### 更新操作符(update operators)
+      更新操作是原子性
+      
+      在执行修改语句前 对变量的操作不会修改数据库
+      使用修改器时,"_id"的值不能改变(整个文档改变时是可以改变"_id"的值得)
+      
+      $inc
+         更新修改器是特殊的键  
+         用来增加已有键的值,或者在键不存在的时候创建一个键
+         对于分析数据,因果关系.投票或者其他有变化数值的地方
+         下面是更新文档中某个键的值  使其结果加1
+      
+         db.user.insert({url:"www.example.com",pageviews:52})
+         db.user.update({url:"www.example.com"},{$inc:{pageviews:1}})    结果 pageviews=53要是想加多改变 1 的值就好
+      
+      $set
+         用来指定一个键的值.如果这个键不存在,则创建它 存在将其值修改  还可以修改数据类型,内嵌文档
+         
+         db.user.update({username:"joe"}, {$set:{"favorite book":["green eggs and ham","guzhuang","yanqing"]}})  可以变成数组
+      
+      $unset  
+         将键完全删除 
+         
+         db.user.update({username:"joe"},{$unset:{"favoeite book":1}})
+         增加,修改或删除键的时候,应该使用$修改器.一定要使用以$开头的修改器来修改键/值对
+      
+      $inc 与 $set的用法类似,就是专门来增加(减少)数字的.$inc只能用于键的值是数字
+
+      $upsert  
+         值为true 
+         db.blog.update({url:"/log"},{$inc:{visits:1}},true) 有就更新+1 没有创建 不会在查询回来再判断
+
+
+### 数组元素
+      $push           
+         如果指定的键已经存在,$push会向已有的的元素的末尾追加一个元素,要是没有就会创建一个新的数组
+         db.blog.posts({title:"a blog post"},{$push:{comments:{name:"joe",email:"999@.com",content:"nice post"}}})
+                  会向文档中添加一个数组comments 如果在在此基础上运行此修改语句会在数组的后面追加新 
+
+      $addToSet
+         如果一个值不在数组中 可以用$ne $addToSet把他加进去  addToSet可以避免重复
+         
+      $addToSet
+         与  $each 组合 可以添加不同的多个值
+         
+      $pop 
+         若是把数组看成是队列或栈 可以用$pop 从数组的任意一端删除元素{$pop:{key:1}}删除末尾元素{$pop:{key:-1}}删除头部元素
+      
+         
+      $pull  
+         会将所有匹配的部分删除如 update({},{pull:{name:"zhangsan"}})
+
+
+### 修改器的速度
+      $inc 运行速度比较快 能就地的修改.因为不需要改变文档的大小 只需要将键的值改变
+      而数组修改器可能会改变文档的大小,就会慢一些 ($set能在文档大小不发生变化时立即修改,否则性能也会下降)
+
+## 查询
+### find
+      find({name:"zhangsan"},{_id:0,username:1}) 第一个参数查询条件  第二个参数是过滤是否返回的列  0 不返回 1返回
+      查询条件 $lt(<) $lte(<=) $gt(>) $get(>=) $ne(!=)
+      
+      $in  用来查询一个键的多个值  与之相反的事$nin
+      
+      $or  用来查询多个键的任意给定值
+      
+      两者连用 ticket_no与三个值匹配 外加 winner键
+      db.user.find({$or:[{ticket_no}:{$in:[725,21,098]},]},{winner:true})
+      
+      $not  元条件句  $mod {$mod:[5,1]}
+      
+      null  null 不仅匹配自身  而且匹配不存在的   所以还会匹配缺少这个键的所有文档
+            如果仅仅匹配键值为null 的文档  要通过$exists 来判断   键值已经存在
+            db.user.find(name:{$in:[null],$exists:true})
+### 查询数组
+         
+      $all 通过多个元素匹配数组 用$all就会匹配一组元素  要找到所有文档中fruit数组中既有  banana  又有apple的数组 
+      
+      要想查询数组指定位置的元素 则需要使用key.index语法   如db.food.find(fruit.2:"apple") 查找水果 的下标为2及第三个元素是 "apple"
+      
+      $size  查询指定长度的数组
+      
+      limit(条数) skip(条数) sort({price:-1(1)})
+         分页 db.stock.find({name:"mp3"}).limit(5).skip(5).sort(price:1) 每次返回limit 每次跳过skip  排序 sort (1升序,-1降序)
+         
+         不建议使用skip做分页 因为skip略过太多的数据 影响效率
+         分页如下
+         var page1 = db.foo.find().sort({data:-1)).limit(100)  
+         利用最后一个文档的排序条件作为查询条件来查询下一条记录
+         var latest = null;
+         //display first page 
+         while(page1.hasNext()){
+            latest = page1.next();
+            display(latest);
+         }
+         //get next page 
+         var page2= db.foo.find({"data"}:{$gt:latest.data});
+         page2.sort({data:-1}).limit(100);
+
 
