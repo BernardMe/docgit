@@ -1,12 +1,12 @@
 
-MongoDB
+# MongoDB
 	
 	什么是文档:多个键及其关联的值有序的放置在一起便是文档
 	1.文档是MongoDB的基本单元,核心概念  类似于关系型数据库的行
 	2.每一个文档都有一个特殊的键"_id",它在文档所在的集合中是唯一的
 	3.MongoDB不但区分类型还区分大小写 文档不能有重复的键
   
-  集合
+## 集合
     集合就是一组文档  相当于关系型数据库里的表
 	集合是无模式的  一个集合里的文档可以是各式各样的 如下
 		{"key1":"Hello word"}
@@ -44,7 +44,7 @@ MongoDB
 		increment
 		前面的九个字节是保证了一秒内不同机器不同进程生成objectid不冲突，这后面的三个字节a8b817，是一个自动增加的计数器，用来确保在同一秒内产生的objectid也不会发现冲突，允许256的3次方等于16777216条记录的唯一性。
 
-  Mongodb数据库中的各种角色
+##  Mongodb数据库中的各种角色
 
 	数据库访问
 		角色名称	拥有权限
@@ -57,19 +57,19 @@ MongoDB
 		userAdmin	允许管理当前数据库的用户，如创建用户、为用户授权
 		dbOwner		数据库拥有者(最高)，集合了dbAdmin/userAdmin/readWrite角色权限
 
-MongoDB的插入
+# MongoDB的插入
 	db.user.insert({username:"yxw",password:"123456"})
 	
 
-MongoDB的删除
+# MongoDB的删除
 	db.user.remove()--->删除集合中的所有数据 不删除集合本身和原有的索引
 	db.user.remove({username:"yxw"}) 只删除符合条件的数据
 	db.drop_collection("user1")
 
 	
-MongoDB文档修改
+# MongoDB文档修改
 	
-	update函数
+## update函数
 		// query    查询条件  指明要更新的文档  相当于SQL中的where语句
 		// obj      更改的内容  更改的内容  相当于SQL中的set语句
 		// upsert   当查询条件query指明的文档不存在时，是否需要插入一条新文档 {upsert:true}
@@ -79,7 +79,7 @@ MongoDB文档修改
 		db.user.update({birthday:"02/02/2008"},{$set:{gift:"happyBIrthday"}},false,true)
 
 
-	更新操作符(update operators)
+## 更新操作符(update operators)
 		更新操作是原子性
 		
 		在执行修改语句前 对变量的操作不会修改数据库
@@ -112,7 +112,7 @@ MongoDB文档修改
 			db.blog.update({url:"/log"},{$inc:{visits:1}},true) 有就更新+1 没有创建 不会在查询回来再判断
 
 
-	数组元素
+## 数组元素
 		$push 		    
 			如果指定的键已经存在,$push会向已有的的元素的末尾追加一个元素,要是没有就会创建一个新的数组
 			db.blog.posts({title:"a blog post"},{$push:{comments:{name:"joe",email:"999@.com",content:"nice post"}}})
@@ -132,12 +132,12 @@ MongoDB文档修改
 			会将所有匹配的部分删除如 update({},{pull:{name:"zhangsan"}})
 
 
-	修改器的速度
+## 修改器的速度
 		$inc 运行速度比较快 能就地的修改.因为不需要改变文档的大小 只需要将键的值改变
 		而数组修改器可能会改变文档的大小,就会慢一些 ($set能在文档大小不发生变化时立即修改,否则性能也会下降)
 
-查询
-	find
+# 查询
+## find
 		find({name:"zhangsan"},{_id:0,username:1}) 第一个参数查询条件  第二个参数是过滤是否返回的列  0 不返回 1返回
 		查询条件 $lt(<) $lte(<=) $gt(>) $get(>=) $ne(!=)
 		
@@ -153,7 +153,7 @@ MongoDB文档修改
 		null  null 不仅匹配自身  而且匹配不存在的	所以还会匹配缺少这个键的所有文档
 				如果仅仅匹配键值为null 的文档  要通过$exists 来判断	键值已经存在
 				db.user.find(name:{$in:[null],$exists:true})
-	查询数组
+## 查询数组
 			
 		$all 通过多个元素匹配数组 用$all就会匹配一组元素  要找到所有文档中fruit数组中既有  banana  又有apple的数组 
 		
@@ -178,9 +178,9 @@ MongoDB文档修改
 			var page2= db.foo.find({"data"}:{$gt:latest.data});
 			page2.sort({data:-1}).limit(100);
 	
-索引
+# 索引
 
-集群	
+# 集群	
 	主从  主库  写  丛库(备份主库数据) 只读  主库丛库物理分隔
 	搭建高可用MongoDB集群
 	
