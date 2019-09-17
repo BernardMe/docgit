@@ -63,6 +63,18 @@
 		userAdmin	允许管理当前数据库的用户，如创建用户、为用户授权
 		dbOwner		数据库拥有者(最高)，集合了dbAdmin/userAdmin/readWrite角色权限
 
+## mongodb存储二进制数据的二种方式
+
+### binary bson
+
+BJSON格式本身就支持保存二进制格式的数据，因此可以把文件的二进制格式的数据直接保存到MongoDB的文档结构中
+
+当文件大小较小的时候，直接存入文档对象实现起来更简洁。比如大量图片文件的存取等，一般图片文件都不会超过4M
+
+### gridfs
+
+为了提供对大容量文件存取的支持，samus驱动提供了“GridFS”方式来支持
+
 
 
 # MongoDB使用
