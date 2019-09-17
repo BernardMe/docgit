@@ -87,7 +87,7 @@ db.fs.files.remove({_id:ObjectId("5b17654c03b6c2233029dcc4")})
 
 ## 访问控制
 
-### windows版本下验证方式SCRAM-SHA-1
+### 添加管理员用户
 命令行如下： 
 ```js
 use admin;
