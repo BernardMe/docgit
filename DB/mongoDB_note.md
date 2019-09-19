@@ -2,9 +2,10 @@
 
 # NoSQL四大种类
 
-临时性键值存储		永久性键值存储		面向文档存储		面向列的存储
-Memcached			Redis				MongoDB				Hbase
-Redis
+-				|	-				|	-				|	-
+临时性键值存储	|	永久性键值存储	|	面向文档存储	|	面向列的存储
+Memcached		|	Redis			|	MongoDB			|	Hbase
+Redis			|					|					|
 
 
 
