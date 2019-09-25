@@ -1,5 +1,36 @@
 
 
+## MyBatis原理
+
+### 获取主键id实现原理
+
+需要注意的是，不论在xml映射器还是在接口映射器中，添加记录的主键值并非添加操作的返回值。
+实际上，在MyBatis中执行添加操作时只会返回当前添加的记录数
+```java
+package org.apache.ibatis.executor.statement;
+public class PreparedStatementHandler extends BaseStatementHandler {
+    @Override
+    public int update(Statement statement) throws SQLException {
+        PreparedStatement ps = (PreparedStatement) statement;
+        // 真正执行添加操作的SQL语句
+        ps.execute();
+        int rows = ps.getUpdateCount();
+        Object parameterObject = boundSql.getParameterObject();
+        KeyGenerator keyGenerator = mappedStatement.getKeyGenerator();
+        // 在执行添加操作完毕之后，再处理记录主键字段值
+        keyGenerator.processAfter(executor, mappedStatement, ps, parameterObject);
+        // 添加记录时返回的是记录数，而并非记录的主键字段值
+        return rows;
+    }
+}
+```
+
+顺便看一下MyBatis添加操作的时序图：
+![MyBatis添加操作时序图.png](./MyBatis添加操作时序图.png)
+
+跟踪时序图执行步骤可以看到，MyBatis最终是通过MySQL驱动程序获取到了新添加的记录主键值
+
+
 ## MyBatis插入insert操作返回主键值
 
 ### 第一种方式：
