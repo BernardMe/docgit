@@ -326,6 +326,18 @@ INSERT INTO employee VALUES (currval('seq_employee_num1'), '李四', 24, 1200.00
 
 ```
 
+## MySQL自增
+
+### MySQL自增ID起始值修改方法
+
+并且该语句也适用于改动现有表的id上。
+比如大批量删除数据后，想 id 从 654321 退回 123456 开始
+```sql
+-- id从123456 开始
+alter table users AUTO_INCREMENT=123456;
+```
+
+
 ## MySQL原生函数
 
 ### mysql插入当前日期now()

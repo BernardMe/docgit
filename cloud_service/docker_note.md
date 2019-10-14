@@ -19,3 +19,71 @@ docker就是类似的理念。现在都流行云计算了，云计算就好比�
 总之docker就是集装箱原理。
 
 
+
+## Docker 的核心组件包括：
+
+Docker 客户端
+
+Docker 服务器
+
+Docker 镜像
+
+Docker 容器
+
+registry
+
+### Docker 服务器
+
+Docker daemon 是服务器组件，以Linux后台服务的方式运行
+
+### docker daemon远程连接设置详解
+
+默认配置下，Docker daemon 只能响应来自本地 Host 的客户端请求。如果要允许远程客户端请求，需要在配置文件中打开 TCP 监听，
+步骤如下：
+
+Centos7：
+
+/etc/docker/daemon.json会被docker.service的配置文件覆盖，直接添加daemon.json不起作用。可以有如下几种设置：
+
+1、直接编辑配置文件：Centos中docker daemon配置文件在/lib/systemd/system/docker.service，找到以下字段，在后面添加如下，注意，此处不能用"fd：//",否则报错
+```
+... 
+[Service] 
+... 
+ExecStart=/usr/bin/dockerd -H unix:///var/run/docker.sock -H tcp://0.0.0.0:2375
+```	
+执行
+```
+systemctl daemon-reload 
+systemctl restart docker.service
+```
+
+### Docker 镜像
+
+本节讨论 base 镜像。
+
+base 镜像有两层含义：
+
+不依赖其他镜像，从 scratch 构建。
+
+其他镜像可以之为基础进行
+
+可以看到，新镜像是从 base 镜像一层一层叠加生成的。每安装一个软件，就在现有镜像的基础上增加一层。
+
+问什么 Docker 镜像要采用这种分层结构呢？
+
+最大的一个好处就是 - 共享资源。
+
+这时可能就有人会问了：如果多个容器共享一份基础镜像，当某个容器修改了基础镜像的内容，比如 /etc 下的文件，这时其他容器的 /etc 是否也会被修改？
+
+答案是不会！
+修改会被限制在单个容器内。
+这就是我们接下来要学习的容器 Copy-on-Write 特性。
+
+
+#### 可写的容器层
+
+当容器启动时，一个新的可写层被加载到镜像的顶部。
+这一层通常被称作“容器层”，“容器层”之下的都叫“镜像层”。
+
+`只有容器层是可写的，容器层下面的所有镜像层都是只读的。`
