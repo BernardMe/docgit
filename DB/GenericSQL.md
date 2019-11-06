@@ -148,7 +148,7 @@ NVL函数　Oracle/PLSQL中的一个函数。
 NVL(yanlei777, 0) 的意思是 如果 yanlei777 是NULL， 则取 0值
 
 
-## SQL中group by的用法
+## 分组条件group by
 
 ### 概述
 “Group By”从字面意义上理解就是根据“By”指定的规则对数据进行分组，所谓的分组就是将一个“数据集”划分成若干个“小区域”，然后针对若干个“小区域”进行数据处理。
@@ -163,6 +163,13 @@ group by有一个原则， 就是select后的列如果不在聚合函数中，�
 
 #### 原因很简单
 MAX(sal)返回的一定是单个数值，但是拿到该数值工资的人数可能有多个，无法和Max(sal)返回的单一值组成ResultSet
+
+
+## 排序order by
+
+ASC 升序顺序
+DESC 降序顺序
+
 
 ## 聚合函数
 
@@ -245,6 +252,10 @@ SELECT `user`.`name`,`user`.mobile,`order`.order_id,`order`.`status`,`order`.amo
 
 ## SQL92版
 
+### 笛卡尔积
+
+X和Y的笛卡尔积就是X和Y的所有可能组合
+
 ### 等值连接
 当被连接的多个表中存在同名字段时，须在该字段前加上"表名."前缀
 可使用AND 操作符增加查询条件；
@@ -306,7 +317,7 @@ AND (t.consignee LIKE '%%' OR t.phone LIKE '%%' OR t.orderid LIKE '%%')
 2 将礼品表右外链接临时表，礼品表中不符合关联条件(pro_gift.giftid = t.giftid)的礼品表中记录行就被丢弃了
 
 
-## 自连接
+### 自连接
 将一个表当两个表使用
 例子：
 ```
