@@ -558,6 +558,9 @@ pasv_max_port=5003
 ```
 
 #### 配置 iptables
+
+/etc/sysconfig/iptables
+
 通常，运行FTP守护进程的服务器受 iptables 防火墙的保护。要允许访问FTP服务器，需要打开相应的端口，如：
 `iptables -A INPUT -m state --state NEW -m tcp -p tcp --dport 21 -j ACCEPT`
 

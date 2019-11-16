@@ -2,6 +2,15 @@
 
 ## MyBatis原理
 
+
+### mysql类型映射
+
+关于mysql的datetime和mybatis映射
+
+mysql里的datetime包含了日期和时间 映射到 java代码里是用String来映射这个datetime的
+SQL脚本将datetime数据格式化`DATE_FORMAT(a.record_date,'%Y-%m-%d %H:%i:%s')`
+
+
 ### 获取主键id实现原理
 
 需要注意的是，不论在xml映射器还是在接口映射器中，添加记录的主键值并非添加操作的返回值。
