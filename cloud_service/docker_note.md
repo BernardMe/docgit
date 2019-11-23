@@ -25,6 +25,54 @@ docker就是类似的理念。现在都流行云计算了，云计算就好比�
 K8s就是操作系统！
 
 
+## Docker基础操作
+
+
+启动交互式容器
+docker run -i -t IMAGE /bin/bash
+
+
+以守护形式运行容器
+docker run -i -t IMAGE /bin/bash
+
+	退出 Ctrl+P Ctrl+Q
+
+启动守护式容器
+docker run -d 容器名
+
+
+启动docker容器，-d表示后台启动 -p表示做端口的映射 把容器里面的80端口映射到宿主机的81端口，使用镜像为httpd
+docker run -d -p 81:80 httpd
+
+
+查看容器信息
+docker inspect 容器名
+
+
+附加到运行中的容器
+docker attach 容器名
+
+
+在容器中启动进程
+docker exec [-d][-i][-t] 容器名 [COMMAND] [ARGS...] 
+
+
+查看容器日志
+docker logs [-f][-t][--tail] 容器名
+
+
+停止守护式容器
+docker stop 容器名 发送信号到容器 等待容器停止
+
+docker kill 容器名 直接停止容器
+
+
+删除已停止的容器
+docker rm 容器名
+
+
+
+
 
 
 
