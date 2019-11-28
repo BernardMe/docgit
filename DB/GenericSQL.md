@@ -327,6 +327,42 @@ FROM emp e1, emp e2
 WHERE e1.mgr=e2.empno
 ORDER BY e1.empno;
 ```
+
+### 自连接的使用
+
+```sql
+-- 查询用户礼品关系表
+--  查询我送出的礼品列表 -->
+-- id="getSentGoods" resultType="com.joinus.biz.po.SentGoodsPo">
+SELECT
+       (select goods_name from t_physical_goods where id = ug.goods_id) goodsName,
+       (select goods_desc from t_physical_goods where id = ug.goods_id) goodsDesc,
+       (select master_pic_url from t_physical_goods where id = ug.goods_id) masterPicUrl,
+       goug.give_order_no giveOrderNo,
+       go.receiver_id receiverId,
+       go.send_time sendTime,
+       u.wx_nick_name wxNickName,
+       u.wx_avatar_url wxAvatarUrl,
+       go.wish_words wishWords,
+       goug2.give_order_no giveOrderNo2,
+       go2.sender_id senderId2,
+       go2.receive_time receiveTime,
+       u2.wx_nick_name wxNickName2
+FROM t_user_goods ug
+INNER JOIN t_give_order_user_goods goug ON goug.user_goods_id = ug.id
+INNER JOIN t_give_order go on go.give_order_no = goug.give_order_no
+INNER JOIN t_user u ON u.id = go.sender_id
+LEFT JOIN t_user_goods ug2 ON ug2.relation_id = ug.id
+LEFT JOIN t_give_order_user_goods goug2 ON goug2.user_goods_id = ug2.id
+LEFT JOIN t_give_order go2 ON go2.give_order_no = goug2.give_order_no
+LEFT JOIN t_user u2 ON u2.id = go2.sender_id
+where go.sender_id = 1002
+```
+
+自连接查询，可以表示表中列与列之间层次关系。
+当所要查询的信息都出于同一个表，而又不能直接通过该表的各个列的直接层次关系得到最终结果的时候，那么应该考虑使用表的自连接查询。
+
+
 ### 缺点
 语句过滤条件和表连接的条件都放到了where子句中
 当条件过多时，连接条件多，过滤条件多时，就容易造成混淆。
