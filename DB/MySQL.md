@@ -38,6 +38,23 @@ Block Nested-Loop Join 其优化思路是减少外层表的循环次数，Block 
 指令：Show variables like 'join_buffer_size%';
 
 
+## mysql常用命令查看数据库、表、字段编码
+
+ 1.查看数据库支持的所有字符集 
+        show character set;或show char set;  
+
+  2.查看当前状态 里面包括当然的字符集设置 
+        status或者\s 
+
+  3.查看系统字符集设置，包括所有的字符集设置 
+        show variables like 'char%'; 
+
+  4.查看数据表中字符集设置 
+        show full columns from tablename; 或者 show create table tablename\G; 
+
+  5.查看数据库编码 
+        show create database dnname;  
+
 
 
 ## MySQL5.7(windows)解压版如何安装
