@@ -64,6 +64,17 @@ system范围依赖与provided类似，但是你必须显式的提供一个对于
 `如果你将一个依赖范围设置成系统范围，你必须同提时供一个systemPath元素` 注意该范围是不推荐使用的（你应该一直尽量去从公共或定制的Maven仓库中引用依赖）。
 
 
+## 构建配置文件的类型
+
+构建配置文件大体上有三种类型:
+
+类型  在哪定义
+项目级（Per Project）  定义在项目的POM文件pom.xml中
+用户级 （Per User）  定义在Maven的设置xml文件中 (%USER_HOME%/.m2/settings.xml)
+全局（Global）  定义在 Maven 全局的设置 xml 文件中 (%M2_HOME%/conf/settings.xml)
+
+
+
 ## Maven的pom.xml文件
 
 ### Maven的中央仓库
@@ -520,6 +531,138 @@ settins.xml并不支持直接配置repositories和pluginRepositories。但是Mav
   </activeProfiles>
 
 ```
+
+### 华为云AS公司的maven私服
+
+如果有搭建自己公司的maven私服，公司内部会把自己的公司的公共jar包上传到maven私服中。
+如果私服配置了上传权限，servers标签需要给出授权信息。
+```xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+<localRepository>D:/maven/myRepo</localRepository>
+
+<pluginGroups>
+
+</pluginGroups>
+
+
+<proxies>
+
+</proxies>
+
+<servers>
+
+  <server>  
+    <id>releases</id>  
+    <username>admin</username>  
+    <password>admin123</password>  
+  </server>  
+  <server>  
+    <id>snapshots</id>  
+    <username>admin</username>  
+    <password>admin123</password>  
+  </server>  
+
+  <server>
+    <id>central</id>
+      <username>783dba0535e34e4ea97eac3eb1317b44_9da841bc24654b27aa855e44c933db8f</username>
+      <password>m0B[m[3H3^</password>
+  </server>
+</servers>
+
+
+<mirrors>
+
+  <!-- JYSD [HUAWEI YUN private] repository -->
+  <mirror>
+    <id>central</id>
+    <mirrorOf>*</mirrorOf>
+    <name>JYSD_HUAWEIYUN_private</name>
+    <url>https://devrepo.devcloud.huaweicloud.com/03/nexus/content/repositories/783dba0535e34e4ea97eac3eb1317b44_1_0/</url>
+  </mirror>
+
+  <mirror>     
+    <id>nexus-releases</id>     
+    <mirrorOf>*</mirrorOf>     
+    <url>http://localhost:8091/nexus/content/groups/public</url>     
+  </mirror> 
+   <mirror>     
+     <id>nexus-snapshots</id>     
+    <mirrorOf>*</mirrorOf>     
+     <url>http://localhost:8091/nexus/content/repositories/apache-snapshots/</url>     
+   </mirror> 
+
+</mirrors>
+
+
+<profiles>
+
+  <profile>
+    <id>UFindNexus</id>
+    <repositories>
+      <repository>
+        <id>UFindNexus</id>
+        <url>http://127.0.0.1:8091/nexus/content/groups/public/</url>
+        <releases>
+          <enabled>true</enabled>
+          <updatePolicy>daily</updatePolicy>
+          <checksumPolicy>warn</checksumPolicy>
+        </releases>
+        <snapshots>
+          <enabled>true</enabled>
+          <checksumPolicy>fail</checksumPolicy>
+        </snapshots> 
+      </repository>
+    </repositories>
+    <pluginRepositories>
+      <pluginRepository>
+        <id>UFindNexus</id>
+        <url>http://127.0.0.1:8091/nexus/content/groups/public/</url>
+        <releases>
+          <enabled>true</enabled>
+          <updatePolicy>daily</updatePolicy>
+          <checksumPolicy>warn</checksumPolicy>
+        </releases>
+        <snapshots>
+          <enabled>true</enabled>
+          <checksumPolicy>fail</checksumPolicy>
+        </snapshots> 
+      </pluginRepository>
+    </pluginRepositories>
+  </profile>
+
+
+  <profile>
+    <id>jdk-1.8</id>
+    <activation>
+      <activeByDefault>true</activeByDefault>
+      <jdk>1.8</jdk>
+    </activation>
+    <properties>
+      <maven.compiler.source>1.8</maven.compiler.source>
+      <maven.compiler.target>1.8</maven.compiler.target>
+      <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
+    </properties>
+  </profile>
+</profiles>
+
+
+<!--激活id为UFindNexus的profile-->
+<activeProfiles>
+    <activeProfile>UFindNexus</activeProfile>
+</activeProfiles>
+
+</settings>
+
+
+```
+
 
 
 ### Maven3中ojdbc驱动问题

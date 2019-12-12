@@ -40,6 +40,32 @@ servlet3.0 首先提供了 @WebServlet，@WebFilter 等注解，这样便有了�
 
 
 
+## 外部化配置
+
+### 外部化配置的优先级顺序如下：
+
+Devtools 全局配置：当 devtools 启用时，$HOME/.config/spring-boot
+测试类中的 @TestPropertySource
+测试中的 properties 属性：在 @SpringBootTest 和 用来测试特定片段的测试注解
+命令行参数
+SPRING_APPLICATION_JSON 中的属性：内嵌在环境变量或系统属性中的 JSON
+ServletConfig 初始化参数
+ServletContext 初始化参数
+java:comp/env 中的 JNDI 属性
+Java 系统属性：System.getProperties()
+操作系统环境变量
+随机值（RandomValuePropertySource）：random.*属性
+jar 包外的指定 profile 配置文件：application-{profile}.properties
+jar 包内的指定 profile 配置文件：application-{profile}.properties
+jar 包外的默认配置文件：application.properties
+jar 包内的默认配置文件：application.properties
+代码内的 @PropertySource注解：用于 @Configuration 类上
+默认属性：通过设置 SpringApplication.setDefaultProperties 指定
+
+注意：以上用 properties 文件的地方也可用 yml文件
+
+
+
 ## SpringBoot启动流程
 
 ```
