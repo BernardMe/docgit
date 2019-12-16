@@ -1476,7 +1476,7 @@ package com.sitinspring;
 public class ChildClass extends BaseClass{
     public void printObjects(){
         // 下面的句子是不能编译通过的
-        /*for(int i=0;i<objects.size();i++){
+        /*for(int i=0;i < objects.size();i++){
             System.out.println("序号="+i+"\t元素="+objects.get(i));
         }*/
     }
@@ -3441,6 +3441,57 @@ FI的定义其实很简单：任何接口，如果只包含 唯一 一个抽象�
 ### 为什么需要Stream
 Java 8 中的 Stream 是对集合（Collection）对象功能的增强，它专注于对集合对象进行各种非常便利、高效的聚合操作（aggregate operation），或者大批量数据操作 (bulk data operation)。
 
+### Stream 的特性可以归纳为：
+
+不是数据结构
+它没有内部存储，它只是用操作管道从 source（数据结构、数组、generator function、IO channel）抓取数据。
+它也绝不修改自己所封装的底层数据结构的数据。例如 Stream 的 filter 操作会产生一个不包含被过滤元素的新 Stream，而不是从 source 删除那些元素。
+所有 Stream 的操作必须以 lambda 表达式为参数
+不支持索引访问
+你可以请求第一个元素，但无法请求第二个，第三个，或最后一个。不过请参阅下一项。
+很容易生成数组或者 List
+惰性化
+很多 Stream 操作是向后延迟的，一直到它弄清楚了最后需要多少数据才会开始。
+Intermediate 操作永远是惰性化的。
+
+
+### Stream的使用
+
+简单说，对 Stream 的使用就是实现一个 filter-map-reduce 过程，产生一个最终结果，或者导致一个副作用（side effect）。
+
+一个 Stream 只可以使用一次，上面的代码为了简洁而重复使用了数次。
+
+
+### Stream的操作
+
+中间操作列表
+filter
+map
+limit
+sorted
+distinct
+
+#### map/flatMap
+
+我们先来看 map。如果你熟悉 scala 这类函数式语言，对这个方法应该很了解，它的作用就是把 input Stream 的每一个元素，映射成 output Stream 的另外一个元素。
+
+`List<Long> list2 = userGoodsIds.stream().map(Long::valueOf).collect(Collectors.toList());`
+
+最终操作
+forEach
+count
+collect
+
+#### count
+
+count用来统计流中的元素个数。
+
+`List<String> strings = Arrays.asList("Hollis", "HollisChuang", "hollis","Hollis666", "Hello", "HelloWorld", "Hollis");
+System.out.println(strings.stream().count());`
+
+#### collect
+
+`Map<Long, List<Long>> map = list.stream().collect(Collectors.groupingBy(Long::longValue));`
 
 
 ## Java9，OSGi以及模块化的未来
