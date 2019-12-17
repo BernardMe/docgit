@@ -193,6 +193,92 @@ $ git push -u origin master
 ```
 
 
+## 自定义Git
+
+### 搭建Git服务器
+
+
+服务器端
+
+1.先从yum安装git
+
+yum –y install git
+2.在需要的位置创建一个裸仓库（最后以.git结尾）
+
+cd /usr/local
+mkdir git
+cd git
+git init --bare learngit.git
+3.创建一个git用户并赋予密码
+
+useradd git
+passwd git
+4.赋予git用户权限
+
+chown -R git:git learngit.git
+5.禁用git用户shell登录（一定要禁用）
+
+vi /etc/passwd
+　　将git用户修改为如下（一般在最后一行）
+
+git:x:1000:1000::/home/git:/usr/bin/git-shell
+其他的不用改。服务端完成。
+
+
+客户端
+
+我使用的客户端为git for windows
+
+1.安装，略...
+
+2.进入想要将项目放置的目录
+
+3.创建用户
+
+git config --global user.name "你的名字"
+git config --global user.email "你的邮箱"
+4.创建秘钥（用来防止每次commit或push都需要密码）
+
+ssh-keygen -t rsa -C "你的邮箱"
+　　一直回车....
+
+5.将秘钥加入服务器列表
+
+　　5.1 取得公钥（本地）
+
+　　　　在当前目录下(若未改变目录，到C:\Users\Administrator\.ssh\id_rsa.pub)找到.ssh目录下的id_rsa.pub文件，使用notepad++或其他软件打开，复制其中内容（类似如下：
+
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCq+DNXnrzPoGJe3uCObDG7DcMMotWght/QNZnnO39FLzin+xMj+cOGpwbi5PSRqUwVrq4So7uuQGz2xyLb3vjHYK3z7SG/Sk/HdQctvbIVo+NugXbgmopm25Ps518aDuQ7w8nlPY3IvxTqH1U2ijoCdqgnVrwKCCPf7QY/2HGI+nDbF+s6cCX4CIkhwWnWhJXVqmSxbPSA8sX/2NE71gwhypLLfH8PG8nHr36zSfCdf0/DASdzJD7wE3cdlvICT82TmmqZLPWgYQv+4zNjbuPpzupp5zBIN+piS9VfBv+RdFEtx3oPk3Ou0z1tR9T5Lpe55b+U.......... 你的邮箱
+　　　　）
+
+　　5.2 将公钥加入服务器列表（服务器）
+
+　　　　CentOS 7默认列表在/root/.ssh/authorized_keys，使用vi 编辑此文件输入刚才复制的内容，保存退出。
+
+vi /root/.ssh/authorized_keys
+    //i修改
+    //esc后输入:wq保存退出
+　　5.3 可以跳过此步，若克隆远程项目多次仍然需要密码，则检查上一步是否有错误，没有错误后，在配置这一步（服务器）
+
+　　　　在/home目录下创建.ssh目录，进入，创建authorized_keys文件
+
+cd /home
+mkdir .ssh
+cd .ssh
+vi authorized_keys
+　　　　加入我们的公钥后保存退出。
+
+6.克隆远程项目（本地）
+
+cd F:
+cd git
+//把ip换成自己服务器的
+git clone git@101.101.101.101:/usr/local/git/learngit.git
+7.如果需要密码，输入你设置的git用户密码，若clone之后commit多此后仍然需要密码，执行5.3，若已经执行，检查公钥是否正确，然后退出git for windows，再此打开git for windows克隆。
+
+
+
+
 从现有仓库克隆
 如果想对某个开源项目出一份力，可以先把该项目的 git 仓库复制一份出来，这就需要用到 git clone 命令。如果你熟悉其他的 VCS 比如 Subversion，你可能已经注意到这里使用的是 clone 而不是 checkout。这是个非常重要的差别，git 收取的是项目历史的所有数据（每一个文件的每一个版本），服务器上有的数据克隆之后本地也都有了。实际上，即便服务器的磁盘发生故障，用任何一个克隆出来的客户端都可以重建服务器上的仓库，回到当初克隆时的状态（虽然可能会丢失某些服务器端的挂钩设置，但所有版本的数据仍旧还在，有关细节请参考第四章）。
 
