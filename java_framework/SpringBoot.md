@@ -103,6 +103,81 @@ callRunners
 ```
 
 
+源码分析
+
+那么我们来总结下@SpringBootApplication:就是说，他已经把很多东西准备好，具体是否使用取决于我们的程序或者说配置，那我们到底用不用？那我们继续来看一行代码
+
+```java
+public static void main(String[] args) {
+    SpringApplication.run(StartEurekaApplication.class, args);
+}
+```
+那我们来看下在执行run方法到底有没有用到那些自动配置的东西，比如说内置的Tomcat，那我们来找找内置Tomcat，我们点进run
+
+```java
+public static ConfigurableApplicationContext run(Object[] sources, String[] args) {
+    return new SpringApplication(sources).run(args);
+}
+```
+然后他调用又一个run方法，我们点进来看，
+
+```java
+
+public ConfigurableApplicationContext run(String... args) {
+    //计时器
+    StopWatch stopWatch = new StopWatch();
+    stopWatch.start();
+    ConfigurableApplicationContext context = null;
+    Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList();
+    this.configureHeadlessProperty();
+    //监听器
+    SpringApplicationRunListeners listeners = this.getRunListeners(args);
+    listeners.starting();
+
+    Collection exceptionReporters;
+    try {
+        ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
+        ConfigurableEnvironment environment = this.prepareEnvironment(listeners, applicationArguments);
+        this.configureIgnoreBeanInfo(environment);
+        Banner printedBanner = this.printBanner(environment);
+	//准备上下文
+        context = this.createApplicationContext();
+        exceptionReporters = this.getSpringFactoriesInstances(SpringBootExceptionReporter.class, new Class[]{ConfigurableApplicationContext.class}, context);
+	//预刷新context
+        this.prepareContext(context, environment, listeners, applicationArguments, printedBanner);
+	//刷新context
+        this.refreshContext(context);
+	//刷新之后的context
+        this.afterRefresh(context, applicationArguments);
+        stopWatch.stop();
+        if (this.logStartupInfo) {
+            (new StartupInfoLogger(this.mainApplicationClass)).logStarted(this.getApplicationLog(), stopWatch);
+        }
+
+        listeners.started(context);
+        this.callRunners(context, applicationArguments);
+    } catch (Throwable var10) {
+        this.handleRunFailure(context, var10, exceptionReporters, listeners);
+        throw new IllegalStateException(var10);
+    }
+
+    try {
+        listeners.running(context);
+        return context;
+    } catch (Throwable var9) {
+        this.handleRunFailure(context, var9, exceptionReporters, (SpringApplicationRunListeners)null);
+        throw new IllegalStateException(var9);
+    }
+}
+```
+那我们关注的就是refreshContext(context); 刷新context，我们点进来看
+
+```java
+
+```
+
+
+
 ### Spring Boot父级依赖的概念
 
 ```java

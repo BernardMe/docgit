@@ -38,6 +38,12 @@ Block Nested-Loop Join 其优化思路是减少外层表的循环次数，Block 
 指令：Show variables like 'join_buffer_size%';
 
 
+### MySQL中Schema(模式)概念
+
+在MySQL中创建一个Schema和创建一个Database的效果好像是一样的，
+官方文档描述是这样的：
+`In MySQL, physically, a schema is synonymous with a database. You can substitute the keyword SCHEMA instead of DATABASE in MySQL SQL syntax, for example using CREATE SCHEMA instead of CREATE DATABASE.`
+
 ## mysql常用命令查看数据库、表、字段编码
 
  1.查看数据库支持的所有字符集 
