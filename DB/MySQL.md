@@ -44,6 +44,40 @@ Block Nested-Loop Join 其优化思路是减少外层表的循环次数，Block 
 官方文档描述是这样的：
 `In MySQL, physically, a schema is synonymous with a database. You can substitute the keyword SCHEMA instead of DATABASE in MySQL SQL syntax, for example using CREATE SCHEMA instead of CREATE DATABASE.`
 
+### MySQL索引
+
+explain分析查询SQL
+
++ select_type 
+  SIMPLE:简单地查询，不包括子查询，关联查询等等
+  PRIMARY:查询中如果有复杂的部分，最外层的查询将被标记为PRIMARY
+  SUBQUERY:子查询中的第一个查询
+  UNION:关联查询，最后面的一个
++ type
+  ALL:全表扫描，最耗性能
+  index:全索引列扫描
+  range:对单个索引列进行范围查找，使用<或者between and或者in或者!=
+  index_merge:多个索引合并查询
+  ref:根据单个索引查找
+  eq_ref:连接时使用primary key或者unique类型
+  constant:常量
+  system:系统
++ possible_keys
++ key:真实使用的索引
++ key_len:使用到的索引长度
++ rows:扫描的行数
++ extra:包含MySQL为了解决查询的详细信息
+
+索引失效的几种情况
+  查询列中有函数计算
+  查询列中有模糊查询，'%cloum'，可以使用'cloum%'代替，如果要使用'%column%'，那么select列中是索引列
+  如果查询条件中有or，索引会失效，除非所有条件都将上索引
+  使用不等于(!=或者<>)
+  is null 或者 is not null
+  字符串不加引号，会导致索引失效
+
+
+
 ## mysql常用命令查看数据库、表、字段编码
 
  1.查看数据库支持的所有字符集 
