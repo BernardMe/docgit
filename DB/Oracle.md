@@ -679,7 +679,15 @@ comment on column tb_order.paid is '是否已支付';
 create sequence seq_student_sno;
 
 ## 创建序列指定详细信息
-`create    start with 1000 increment by 1;`
+```
+create sequence SEQ_QYL_LEAVE_STATIS_TODAY
+nomaxvalue
+start with 1   --从1开始
+increment by 1 --增量为1
+nocycle
+nocache
+;
+```
 
 ## 查询
 先 select 序列名.nextval(该值每次会先自增再参与运算)
