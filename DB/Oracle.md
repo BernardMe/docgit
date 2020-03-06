@@ -115,29 +115,180 @@ select * from nls_instance_parameters where parameter='NLS_LANGUAGE';
 ```
 oracle客户端在获取字符集设置信息时的优先级顺序依次为：session、环境变量、注册表、参数文件，因此可以通过设置这些位置实现客户端字符集设置的目的，因此本文采用设置session的方法，设置NLS_LANG变量值，从而覆盖所有设置值
 
-# SQL
 
-## SQL语言的分类
-- DQL(数据查询语言)
-select(最重要的SQL语句)
+# Oracle基本数据类型
 
-- DML(数据操作语言)
-针对表中的数据，
-insert update delete
+## 数字类型
 
-- DDL(数据定义语言)
-针对数据库对象 (用户，角色，表，索引，视图，触发器，存储过程，函数，表空间)
-creat alter drop
+### NUMBER类型
 
-- DCL(数据控制语言)
-grant revoke
+NUMBER(P,S)是最常见的数字类型，可以存放数据范围为10^130~10^126（不包含此值)，需要1~22字节(BYTE)不等的存储空间。
 
-## 问题：int(3) 和 int(11) 有什么区别？
+P 是Precison的英文缩写，即精度缩写，表示有效数字的位数，最多不能超过38个有效数字
+
+S是Scale的英文缩写，
+
+### INTEGER类型
+
+INTEGER是NUMBER的子类型，它等同于NUMBER(38,0)，用来存储整数。
+若插入，更新的数值有小数，则会被四舍五入
+
+
+# Oracle基础
+
+## SQL中group by的用法
+
+### 概述
+“Group By”从字面意义上理解就是根据“By”指定的规则对数据进行分组，所谓的分组就是将一个“数据集”划分成若干个“小区域”，然后针对若干个“小区域”进行数据处理。
+
+### group by中的易错点
+使用了group by子句后， select列表中的字段如果不在分组函数中，就必须要出现在group by子句中
+`原因：MAX(sal)返回的一定是单个数值，但是拿到该数值工资的人数可能有多个，无法和Max(sal)返回的单一值组成ResultSet`
+
+常见的分组函数如下表：
+函数  作用  支持性
+sum(列名) 求和  　　　　
+max(列名) 最大值 　　　　
+min(列名) 最小值 　　　　
+avg(列名) 平均值 　　　　
+first(列名) 第一条记录 仅Access支持
+last(列名)  最后一条记录  仅Access支持
+count(列名) 统计记录数 注意和count(`*`)的区别
+示例5：求各组平均值
+`select 类别, avg(数量) AS 平均值 from A group by 类别;`
+
+示例6：求各组记录数目
+`select 类别, count(*) AS 记录数 from A group by 类别;`
+
+## SQL执行顺序
+from 取数据
+where 过滤数据
+groupby 进行分组
+having 对分组进行限制
+select 查具体字段
+orderby 最后的结果进行排序
+
+综合练习
+```
+--对薪水>1200的员工，按deptno分组，分组后平均薪水>1500
+--查询--->分组内的平均工资，按照工资的倒序进行排序
+  SELECT deptno, AVG(sal) avgSal
+  FROM emp 
+  WHERE sal>1200 
+  GROUP BY deptno 
+  HAVING AVG(sal)>1500
+  ORDER BY avgSal DESC;
+```
+
+## SQL JOINS
+![SQL_JOINS](Visual_SQL_JOINS_orig.jpg)
+
+left join 和 right join
+
+A表left join B表 等价于 B表 right join A表
+
+inner join 
+规律：
+A表inner join B表：则返回A表和B表同时符合条件的记录。
+```
+两种写法，后者使用的居多
+
+SELECT `user`.`name`,`user`.mobile,`order`.order_id,`order`.`status`,`order`.amout
+ FROM `order` INNER JOIN `user` ON `user`.uid=`order`.uid;
+
+等价于
+
+SELECT `user`.`name`,`user`.mobile,`order`.order_id,`order`.`status`,`order`.amout
+ FROM `order`,`user` WHERE `user`.uid=`order`.uid;
+```
+
+
+
+## 子查询
+```
+SELECT empno,ename,sal 
+FROM emp 
+WHERE sal>(SELECT AVG(sal) FROM emp);
+
+```
+
+## 特点
+子查询在主查询前执行一次
+主查询使用子查询的结果
+
+## 单行子查询
+单行子查询只返回一行记录
+对单行子查询可使用[单行记录比较运算符]
+```
+--查询工资比所有"SALESMAN"的最高工资更高的雇员信息
+--单行子查询
+SELECT empno,ename,sal
+FROM emp
+WHERE sal>(SELECT MAX(sal) FROM emp WHERE job='SALESMAN')
+```
+
+## 多行子查询
+多行子查询返回多行记录
+对多行子查询只能使用[多行记录比较运算符]
+ALL 和子查询返回的所有值比较
+ANY 和子查询返回的任意一个值比较
+IN 等于列表中的任何一个
+
+```
+--查询工资比所有"SALESMAN"的最高工资更高的雇员信息
+--多行子查询
+SELECT empno,ename,sal
+FROM emp
+WHERE sal>ALL(SELECT sal FROM emp WHERE job='SALESMAN')
+```
+
+## 模糊查询
+`like '%ALL%'` 包含字符ALL
+`like '_A%'` 第二个字符是A
 
 
 ## where子句
 
 and 比 or 的优先级高
+
+
+## Oracle游标
+
+### 参数游标
+
+在定义游标时加入参数的游标，可以配合游标for循环快速找到需要的数据。
+
+游标for循环：
+隐含的执行了打开提取关闭数据，代码精简很多
+
+`
+for RESTINFO in cur loop
+
+  statement;
+
+end loop;
+`
+
+例: 使用游标for循环打印员工信息
+```
+DECLEAR 
+CURSOR emp_cursor IS SELECT empno, ename, job FROM emp;
+BEGIN
+  FOR emp_record IN emp_cursor LOOP
+  DBMS_OUTPUT.PUT_LINE('员工号：'||emp_record.empno||'员工姓名'||emp_record.ename||'员工职位'||emp_record.job)
+  END LOOP;
+END;
+```
+
+
+# Oracle事务管理
+
+一个事务起源于一条DML语句
+结束于以下情况：
+1用户显示执行commit 或 rollback
+2用户执行 DDL
+3数据库正常连接断开，事务会自动提交
+4非正常断开连接时，自动回滚事务
 
 
 # Oracle函数
@@ -271,6 +422,34 @@ Result: 'JUL 9TH, 2003'
 ```
 
 
+## 字符串函数
+
+### Oracle ||运算符
+`string1 || string2 [ || string_n ]`
+string1： 第一个要连接的字符串。
+string2：第二个要连接的字符串。
+string_n：可选项，第n个要连接的字符串。
+
+```
+'oraok' || '.com'
+-- Result: 'oraok.com'
+
+'a' || 'b' || 'c' || 'd'
+-- Result: 'abcd'
+```
+
+### Oracle Concat()函数
+`CONCAT( string1, string2 )`
+string1：第一个要连接的字符串。
+string2：第二个要连接的字符串
+
+```
+CONCAT('Oraok', '.com')
+-- Result: 'Oraok.com'
+```
+[注1]如果需要连接多个值，那么我们可以嵌套多个CONCAT函数调用。
+
+
 ## 数值函数
 
 ## 日期函数
@@ -345,264 +524,6 @@ select sum(sal), avg(sal), count(empno) from emp;
 -- where 子句要写在 group by之前  先过滤再分组
 `select deptno, sum(sal), count(*), avg(sal) from emp where deptno<>10 group by deptno order by deptno;`
 
-## SQL中group by的用法
-
-### 概述
-“Group By”从字面意义上理解就是根据“By”指定的规则对数据进行分组，所谓的分组就是将一个“数据集”划分成若干个“小区域”，然后针对若干个“小区域”进行数据处理。
-
-### group by中的易错点
-使用了group by子句后， select列表中的字段如果不在分组函数中，就必须要出现在group by子句中
-`原因：MAX(sal)返回的一定是单个数值，但是拿到该数值工资的人数可能有多个，无法和Max(sal)返回的单一值组成ResultSet`
-
-常见的分组函数如下表：
-函数  作用  支持性
-sum(列名) 求和  　　　　
-max(列名) 最大值 　　　　
-min(列名) 最小值 　　　　
-avg(列名) 平均值 　　　　
-first(列名) 第一条记录 仅Access支持
-last(列名)  最后一条记录  仅Access支持
-count(列名) 统计记录数 注意和count(`*`)的区别
-示例5：求各组平均值
-`select 类别, avg(数量) AS 平均值 from A group by 类别;`
-
-示例6：求各组记录数目
-`select 类别, count(*) AS 记录数 from A group by 类别;`
-
-## SQL执行顺序
-from 取数据
-where 过滤数据
-groupby 进行分组
-having 对分组进行限制
-select 查具体字段
-orderby 最后的结果进行排序
-
-综合练习
-```
---对薪水>1200的员工，按deptno分组，分组后平均薪水>1500
---查询--->分组内的平均工资，按照工资的倒序进行排序
-  SELECT deptno, AVG(sal) avgSal
-  FROM emp 
-  WHERE sal>1200 
-  GROUP BY deptno 
-  HAVING AVG(sal)>1500
-  ORDER BY avgSal DESC;
-```
-
-## SQL JOINS
-![SQL_JOINS](Visual_SQL_JOINS_orig.jpg)
-
-left join 和 right join
-
-A表left join B表 等价于 B表 right join A表
-
-inner join 
-规律：
-A表inner join B表：则返回A表和B表同时符合条件的记录。
-```
-两种写法，后者使用的居多
-
-SELECT `user`.`name`,`user`.mobile,`order`.order_id,`order`.`status`,`order`.amout
- FROM `order` INNER JOIN `user` ON `user`.uid=`order`.uid;
-
-等价于
-
-SELECT `user`.`name`,`user`.mobile,`order`.order_id,`order`.`status`,`order`.amout
- FROM `order`,`user` WHERE `user`.uid=`order`.uid;
-```
-
-	
-
-## SQL92版
-
-### 等值连接
-当被连接的多个表中存在同名字段时，须在该字段前加上"表名."前缀
-可使用AND 操作符增加查询条件；
-使用表别名可以简化查询
-使用表名（表别名）前缀可提高查询效率；
-
-### 非等值连接
-```
-查询员工的工资等级
-
-select  empno,ename,job,sal,grade 
-from emp e,salgrade s
-where e.sal<s.hisal and e.sal>s.losal;
-```
-例子：
-```
---查询20部门员工姓名，入职日期，薪水和薪水等级
-SELECT *
-FROM emp e, salgrade s
-WHERE e.sal BETWEEN s.losal AND s.hisal--关联条件
-AND e.deptno=20;--过滤条件
-```
-
-### 左外连接
-左外连接显示左边表的全部行
-SELECT	table.column, table.column
-FROM		table1, table2
-WHERE	table1.column = table2.column(+);
-
-### 右外连接
-右外连接显示右边表的全部行
-SELECT	table.column, table.column
-FROM		table1, table2
-WHERE	table1.column(+) = table2.column;
-
-例如：
-```sql
-SELECT t.orderid,
-       t.giftname,
-       t.consignee,
-       t.phone,
-       t.receiptaddress,
-       t.createtime,
-       t.flag,
-       t.trackingnum,
-       t.trackcompany,
-       t.trackcompanycode
-FROM kmh_order t
- RIGHT JOIN (SELECT providerid, giftid
-               FROM kmh_provider_gift o
-              WHERE 1=1
-                AND o.providerid = '1') pro_gift
-    ON pro_gift.giftid = t.giftid
-WHERE t.createtime > 1493049600000
-AND t.giftname LIKE '%%'
-AND (t.consignee LIKE '%%' OR t.phone LIKE '%%' OR t.orderid LIKE '%%')
-```
-1 根据providerId查询中间表获取供应商id和giftid的对应临时表，
-2 将礼品表右外链接临时表，礼品表中不符合关联条件(pro_gift.giftid = t.giftid)的礼品表中记录行就被丢弃了
-
-
-## 自连接
-将一个表当两个表使用
-例子：
-```
---查询所有员工的编号，姓名以及领导的编号和姓名
-SELECT e1.empno, e1.ename, e1.mgr, e2.ename 
-FROM emp e1, emp e2
-WHERE e1.mgr=e2.empno
-ORDER BY e1.empno;
-```
-### 缺点
-语句过滤条件和表连接的条件都放到了where子句中
-当条件过多时，连接条件多，过滤条件多时，就容易造成混淆。
-
-SQL99修正了这个缺点，把连接条件，过滤条件分开来，包括以下新的TABLE JOIN 的句法结构：
-交叉连接（Cross join）
-自然连接（Natural join）
-使用Using子句建立连接
-使用On子句建立连接
-外连接（ Outer join ）
- 左外连接
- 右外连接
- 全外连接
-
-内链接 在SQL99规范中，内连接只返回满足连接条件的数据
-
-## SQL99 
-
-### 特点
-SQL99等值连接（连接条件写在ON子句中，where子句中只放过滤条件）
-
-###多表连接查询
-
-```
---[1]交叉连接：CROSS JOIN 作用实际是SQL92中的笛卡儿积
-SELECT * FROM emp, dept;
-SELECT * FROM emp CROSS JOIN dept;
-
---[2]自然连接：NATURAL JOIN 作用就是按照两表所有【同名字段】进行等值连接
--- 在自然链接中，同名字段不能用表（表别名）前缀修饰
-
-SELECT * FROM emp NATURAL JOIN dept;
-
-SELECT * FROM emp, dept WHERE emp.deptno=dept.deptno;
-```
-
-## SQL99和SQL92对比
-```
---92emp表和dept表做笛卡尔乘积
-SELECT * FROM emp, dept;
-
---99emp表和dept表连接做笛卡尔乘积
-SELECT * FROM emp cross JOIN dept;
-
---SQL92等值连接
-SELECT * FROM emp, dept WHERE emp.deptno=dept.deptno;
-
---SQL99等值连接（连接条件写在ON子句中，where子句中只放过滤条件）
-SELECT * FROM emp JOIN dept ON (emp.deptno=dept.deptno);
-
---SQL99 非等值连接
-SELECT ename, empno, grade
-FROM emp e JOIN salgrade s ON (e.sal BETWEEN s.losal AND s.hisal);
-
---SQL99三表连接
-SELECT ename, empno, grade 
-FROM emp e JOIN dept d ON (e.deptno=d.deptno)
-JOIN salgrade s ON (e.sal BETWE EN s.losal AND s.hisal)
-WHERE ename NOT LIKE '_A%';
-
---SQL99自连接
-SELECT a.ename, b.ename
-FROM emp a JOIN emp b ON a.mgr=b.empno;
-
---SQL99左外连接
---(会把左边那张表的多余的数据(不能和另外表连接的数据)也拿出来)
-SELECT a.ename, b.ename
-FROM emp a LEFT JOIN emp b ON a.mgr=b.empno;
-
-SELECT * FROM dept; 
-
---SQL99右外连接
-SELECT a.ename, b.deptno, b.dname
-FROM emp a RIGHT JOIN dept b ON (a.deptno=b.deptno);
-```
-
-## 子查询
-```
-SELECT empno,ename,sal 
-FROM emp 
-WHERE sal>(SELECT AVG(sal) FROM emp);
-
-```
-
-## 特点
-子查询在主查询前执行一次
-主查询使用子查询的结果
-
-## 单行子查询
-单行子查询只返回一行记录
-对单行子查询可使用[单行记录比较运算符]
-```
---查询工资比所有"SALESMAN"的最高工资更高的雇员信息
---单行子查询
-SELECT empno,ename,sal
-FROM emp
-WHERE sal>(SELECT MAX(sal) FROM emp WHERE job='SALESMAN')
-```
-
-## 多行子查询
-多行子查询返回多行记录
-对多行子查询只能使用[多行记录比较运算符]
-ALL 和子查询返回的所有值比较
-ANY 和子查询返回的任意一个值比较
-IN 等于列表中的任何一个
-
-```
---查询工资比所有"SALESMAN"的最高工资更高的雇员信息
---多行子查询
-SELECT empno,ename,sal
-FROM emp
-WHERE sal>ALL(SELECT sal FROM emp WHERE job='SALESMAN')
-```
-
-## 模糊查询
-`like '%ALL%'` 包含字符ALL
-`like '_A%'` 第二个字符是A
 
 ## 表约束
 
@@ -786,15 +707,6 @@ CREATE OR REPLACE VIEW view_test AS (SELECT cname, countStu FROM view_cla);
 SELECT * FROM view_test;
 ```
 
-# 事务管理
-
-一个事务起源于一条DML语句
-结束于以下情况：
-1用户显示执行commit 或 rollback
-2用户执行 DDL
-3数据库正常连接断开，事务会自动提交
-4非正常断开连接时，自动回滚事务
-
 
 # rowid 和 rownum
 
@@ -865,28 +777,6 @@ exp wxcedb/wxcedb@10.0.12.31:1521/testlis file=d:\daochu.dmp full=y
 imp home/xb101406@10.243.5.101:1521/xe  file=f:\daochu.dmp full=y
 ```
 
-
-## 三大范式
-范式：数据库设计的一些规则, 一个姓范的兄弟制定的，所以叫范式
-
-
-### 第一范式
-{要有主键，列不可分}
-最基本的范式
-数据库表每一列都是不可分割的基本数据项，同一列中不能有多个值
-简单说就是要确保每列保持原子性
-
-### 第二范式 (多对多)
-{不能够存在部分依赖}
-即在一个数据库表中只能保存一种数据，不可以把多种数据保存在同一张数据库表中。
-
-### 第三范式 (一对多)
-{每一个非主键字段都依赖主键}
-确保数据表中的每一列数据都和主键直接相关，而不能间接相关
-属性不依赖于其他非主属性
-
-## 范式总结
-使用范式可以减少冗余，但是会降低性能
 
 ## PL/SQL重点--游标
 
