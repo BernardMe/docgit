@@ -136,6 +136,16 @@ INTEGER是NUMBER的子类型，它等同于NUMBER(38,0)，用来存储整数。
 
 # Oracle基础
 
+## Between子句
+
+当使用BETWEEN运算符为SELECT语句返回的行形成搜索条件时，值返回其值在指定范围内的行.
+`expression [ NOT ] BETWEEN low AND high`
+
+low 和high - low和hight指定要测试的范围的下限值和上限值。low和hight值可以是文字或表达式。
+expression - 是low和hight定义的范围内测试的表达式。 为了能够比较，expression，low和hight的数据类型必须是相同的。
+AND - AND运算符充当占位符来分隔low和hight的值。
+
+
 ## SQL中group by的用法
 
 ### 概述
@@ -290,8 +300,60 @@ END;
 3数据库正常连接断开，事务会自动提交
 4非正常断开连接时，自动回滚事务
 
+## 锁表
+
+--查看被锁的表(管理员权限)
+select b.owner,b.object_name,a.session_id,a.locked_mode from v$locked_object a,dba_objects b where b.object_id = a.object_id;
+
+--解锁方法：(管理员权限)
+alter system kill session '5'; -- 5是session_id
+
 
 # Oracle函数
+
+## decode函数用法
+
+decode(条件,值1,返回值1,值2,返回值2,...值n,返回值n,缺省值)
+
+该函数的含义如下：
+```
+IF 条件=值1 THEN
+　　　　RETURN(翻译值1)
+ELSIF 条件=值2 THEN
+　　　　RETURN(翻译值2)
+　　　　......
+ELSIF 条件=值n THEN
+　　　　RETURN(翻译值n)
+ELSE
+　　　　RETURN(缺省值)
+END IF
+```
+
+使用：
+1、比较大小
+
+2、此函数用在SQL语句中
+
+Decode 函数与一系列嵌套的 IF-THEN-ELSE语句相似。
+
+```
+-- 查询走读生请假(今天)
+select
+   a.MS_START_LEAVE "msStartLe",
+   a.MS_CLASS_LEAVE "msClassLe",
+   a.AS_START_LEAVE "asStartLe",
+   a.AS_START_LEAVE "asClassLe",
+   a.NS_START_LEAVE "nsStartLe",
+   a.NS_CLASS_LEAVE "nsClassLe",
+   a.NS_AFTER_LEAVE "nsAfterLe"
+FROM t_qyl_leave_statistics_today a
+WHERE a.SCHOOL_ID = 152
+  --AND a.GRADE_ID = 13760 -- #{gradeId}
+  --AND a.CLASS_ID = 1459 -- #{classId}
+  AND a.PERSON_TYPE = 0
+```
+
+
 
 ## oracle取上下行分析函数
 
