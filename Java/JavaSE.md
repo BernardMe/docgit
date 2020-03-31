@@ -3471,11 +3471,23 @@ limit
 sorted
 distinct
 
+#### filter
+filter 方法用于通过设置的条件过滤出元素。
+``` 
+List<AttendRulePo> levelOneRules = schoolsAttendRule.stream().filter(AttendRulePo ->
+    (Objects.equals(schoolId, AttendRulePo.getSchoolId()) && 1 == AttendRulePo.getAttentanceLevel())
+).collect(Collectors.toList());
+```
+
 #### map/flatMap
 
 我们先来看 map。如果你熟悉 scala 这类函数式语言，对这个方法应该很了解，它的作用就是把 input Stream 的每一个元素，映射成 output Stream 的另外一个元素。
 
-`List<Long> list2 = userGoodsIds.stream().map(Long::valueOf).collect(Collectors.toList());`
+```
+   //先验证是否已经上传，只允许家长上传一次
+        List<Long> stuIds = list.stream().map(StuPhotoVo::getStudentId).collect(Collectors.toList());
+        List<Map<String, Object>> stuImgurlList = studentService.getStuImgurlByIds(stuIds);
+```
 
 最终操作
 forEach

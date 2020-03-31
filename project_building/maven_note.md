@@ -532,6 +532,8 @@ settins.xml并不支持直接配置repositories和pluginRepositories。但是Mav
 
 ```
 
+## Maven配置
+
 ### 华为云AS公司的maven私服
 
 如果有搭建自己公司的maven私服，公司内部会把自己的公司的公共jar包上传到maven私服中。
@@ -557,7 +559,6 @@ settins.xml并不支持直接配置repositories和pluginRepositories。但是Mav
 </proxies>
 
 <servers>
-
   <server>  
     <id>releases</id>  
     <username>admin</username>  
@@ -568,7 +569,6 @@ settins.xml并不支持直接配置repositories和pluginRepositories。但是Mav
     <username>admin</username>  
     <password>admin123</password>  
   </server>  
-
   <server>
     <id>central</id>
       <username>783dba0535e34e4ea97eac3eb1317b44_9da841bc24654b27aa855e44c933db8f</username>
@@ -578,7 +578,6 @@ settins.xml并不支持直接配置repositories和pluginRepositories。但是Mav
 
 
 <mirrors>
-
   <!-- JYSD [HUAWEI YUN private] repository -->
   <mirror>
     <id>central</id>
@@ -586,7 +585,6 @@ settins.xml并不支持直接配置repositories和pluginRepositories。但是Mav
     <name>JYSD_HUAWEIYUN_private</name>
     <url>https://devrepo.devcloud.huaweicloud.com/03/nexus/content/repositories/783dba0535e34e4ea97eac3eb1317b44_1_0/</url>
   </mirror>
-
   <mirror>     
     <id>nexus-releases</id>     
     <mirrorOf>*</mirrorOf>     
@@ -597,12 +595,10 @@ settins.xml并不支持直接配置repositories和pluginRepositories。但是Mav
     <mirrorOf>*</mirrorOf>     
      <url>http://localhost:8091/nexus/content/repositories/apache-snapshots/</url>     
    </mirror> 
-
 </mirrors>
 
 
 <profiles>
-
   <profile>
     <id>UFindNexus</id>
     <repositories>
@@ -663,7 +659,138 @@ settins.xml并不支持直接配置repositories和pluginRepositories。但是Mav
 
 ```
 
+### 多个华为云仓库AS公司的maven私服(和上一种情况区别)
 
+如果有搭建自己公司的maven私服，公司内部会把自己的公司的公共jar包上传到maven私服中。
+如果私服配置了上传权限，servers标签需要给出授权信息。
+(注：这里增加了repo_zwtfb_release和repo_zwtfb_snapshots两个仓库)
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+<localRepository>D:/maven/myRepo</localRepository>
+
+<pluginGroups>
+</pluginGroups>
+
+<proxies>
+</proxies>
+
+<servers>
+  <server>
+    <id>releases</id>
+    <username>783dba0535e34e4ea97eac3eb1317b44_c9a8c16e01574c9db86e15da7830af15</username>
+    <password>^2IxQ4e[1x</password>
+  </server>
+  <server>
+    <id>snapshots</id>
+    <username>783dba0535e34e4ea97eac3eb1317b44_c9a8c16e01574c9db86e15da7830af15</username>
+    <password>^2IxQ4e[1x</password>
+  </server>
+  <server>
+    <id>repo_zwtfb_release</id>
+    <username>06e05a71720025cf0f3dc00013a6e680_07c07aa72e8026ff1f87c00063f1d3dc</username>
+    <password>-3Hds2]GiG</password>
+  </server>
+  <server>
+    <id>repo_zwtfb_snapshots</id>
+    <username>06e05a71720025cf0f3dc00013a6e680_07c07aa72e8026ff1f87c00063f1d3dc</username>
+    <password>-3Hds2]GiG</password>
+  </server>
+  <server>
+    <id>z_mirrors</id>
+  </server>
+</servers>
+
+
+<mirrors>
+  <mirror>     
+    <id>z_mirrors</id>
+    <mirrorOf>*,!releases,!snapshots,!repo_zwtfb_release,!repo_zwtfb_snapshots</mirrorOf>   
+    <!-- LOCALHOST [MYSELF private] repository -->  
+    <url>http://127.0.0.1:9091/nexus/content/groups/public/</url>
+  </mirror> 
+</mirrors>
+
+
+
+<profiles>
+  <profile>
+    <id>UFindNexus</id>
+    <repositories>
+    <!-- JYSD [HUAWEI YUN private] repository -->
+    <repository>
+      <id>releases</id>
+      <url>
+        https://devrepo.devcloud.huaweicloud.com/03/nexus/content/repositories/783dba0535e34e4ea97eac3eb1317b44_1_0/
+      </url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>snapshots</id>
+      <url>
+        https://devrepo.devcloud.huaweicloud.com/03/nexus/content/repositories/783dba0535e34e4ea97eac3eb1317b44_2_0/
+      </url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>repo_zwtfb_release</id>
+      <url>https://devrepo.devcloud.cn-north-4.huaweicloud.com/07/nexus/content/repositories/06e05a71720025cf0f3dc00013a6e680_1_0/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>repo_zwtfb_snapshots</id>
+      <url>https://devrepo.devcloud.cn-north-4.huaweicloud.com/07/nexus/content/repositories/06e05a71720025cf0f3dc00013a6e680_2_0/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    </repositories>
+  </profile>
+
+  <profile>
+    <id>jdk-1.8</id>
+    <activation>
+      <activeByDefault>true</activeByDefault>
+      <jdk>1.8</jdk>
+    </activation>
+    <properties>
+      <maven.compiler.source>1.8</maven.compiler.source>
+      <maven.compiler.target>1.8</maven.compiler.target>
+      <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
+    </properties>
+  </profile>
+</profiles>
+
+
+<!--激活id为UFindNexus的profile-->
+<activeProfiles>
+    <activeProfile>UFindNexus</activeProfile>
+</activeProfiles>
+
+</settings>
+```
 
 ### Maven3中ojdbc驱动问题
 由于Oracle授权问题，Maven3不提供Oracle JDBC driver，为了在Maven项目中应用Oracle JDBC driver,必须手动添加到本地仓库。
