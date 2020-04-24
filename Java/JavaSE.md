@@ -1048,6 +1048,46 @@ Java 编译枚举类型时，自动加上两个静态方法 values 和 valueOf�
 
 values 方法的作用是返回所有枚举值，实现很简单，就是 clone 一下 $VALUES 的值。valueOf 方法的作用是根据枚举值的名称返回枚举值，实现方法是调用 Enum.valueOf 方法，后文会在 Enum 类型中介绍这个方法。
 
+### 巧用枚举类型自定义逻辑
+
+```java
+public enum IpaySchoolCateringPayType {
+
+	IPAY_SCHOOLPAY_CATERING("开通包餐", 2);
+
+	private final String typeName;
+	private final int typeVal;
+
+	IpaySchoolCateringPayType(String typeName, int typeVal) {
+		this.typeName = typeName;
+		this.typeVal = typeVal;
+	}
+
+	/**
+	 * 通过 typeVal 的数值获取枚举实例
+	 * @author wangzhuo
+	 * @param val
+	 * @return
+	 */
+	public static boolean isContains (int val) {
+		for (IpaySchoolCateringPayType type : IpaySchoolCateringPayType.values()) {
+			if (type.getTypeVal() == val) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public String getTypeName() {
+		return typeName;
+	}
+
+	public int getTypeVal() {
+		return typeVal;
+	}
+}
+```
+
 
 
 ## 对象和类的关系
