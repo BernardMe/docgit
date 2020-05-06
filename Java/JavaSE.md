@@ -1088,6 +1088,9 @@ public enum IpaySchoolCateringPayType {
 }
 ```
 
+### 枚举顺口溜
+枚举甭继承别人，只赖虚机已占用
+别人甭继承枚举，虚机生产已final
 
 
 ## 对象和类的关系

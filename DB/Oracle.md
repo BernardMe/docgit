@@ -663,7 +663,7 @@ create sequence seq_student_sno;
 
 ## 创建序列指定详细信息
 ```
-create sequence SEQ_QYL_LEAVE_STATIS_TODAY
+create sequence SEQ_T_REST_NOMEAL
 nomaxvalue
 start with 1   --从1开始
 increment by 1 --增量为1
