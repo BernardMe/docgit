@@ -128,6 +128,45 @@ P 是Precison的英文缩写，即精度缩写，表示有效数字的位数，�
 
 S是Scale的英文缩写，
 
+Precison表示有效位数(有效数位：从左边第一个不为0的数算起，小数点和负号不计入有效位数(含小数点右边的数字))
+Scale表示精确到多少位(即，精确到小数点左边或邮编多少位(+-决定))
+
+Number值类型举例：
+
+实际值:-:	数据类型 -	存储值:
+
+1234567.89	Number		1234567.89
+
+1234567.89	Number(8)	1234567
+
+1234567.89	Number(6)	出错
+
+1234567.89	Number(9,1)	1234567.9
+
+1234567.89	Number(9,3)	出错
+
+1234567.89	Number(7,2)	出错
+
+1234567.89	Number(5,-2)	1234600
+
+1234511.89	Number(5,-2)	1234500
+
+1234567.89	Number(5,-4)	1230000
+
+1234567.89	Number(\*,1)	1234567.9
+
+0.012		Number(2,3)	0.012
+
+0.23		Number(2,3)	出错
+
+
+如果要存储的数据是定点数，则定点数的精度(p)和刻度(s)遵循以下规则：
+1) 当一个定点数的整数部分的长度 > p-s 时，Oracle就报错
+2) 当一个定点数的小数部分的长度 > s 时，Oracle就会舍入
+3) 当s(scale)为负数时，Oracle就对小数点左边的s个数字进行舍入
+4) 当s > p 时，p表示小数点后第s位(含)向左最多可以有多少位"有效数字"(如果"有效位数"大于p则Oracle报错)，小数点后s位向右的数字被舍入
+
+
 ### INTEGER类型
 
 INTEGER是NUMBER的子类型，它等同于NUMBER(38,0)，用来存储整数。
@@ -609,6 +648,17 @@ CREATE TABLE student(
 
 表级别 定义 唯一约束
 `CONSTRAINT uk_student_email UNIQUE(email)`
+
+表级别 创建唯一索引(联合字段)
+```
+create unique index T_QYL_LEAVE_STATIS_TODAY_UNI
+	on T_QYL_LEAVE_STATISTICS_TODAY (SCHOOL_ID, GRADE_ID, CLASS_ID, PERSON_TYPE)
+/
+
+create unique index T_QYL_LEAVE_STATIS_HIS_UNI
+	on T_QYL_LEAVE_STATISTICS_HISTORY (SCHOOL_ID, GRADE_ID, CLASS_ID, PERSON_TYPE, STATISTICS_DATE)
+/
+```
 
 
 ### 非空约束 not null
