@@ -400,7 +400,7 @@ SELECT * FROM emp, dept WHERE emp.deptno=dept.deptno;
 ```
 
 ## SQL99和SQL92对比
-```
+```sql
 --92emp表和dept表做笛卡尔乘积
 SELECT * FROM emp, dept;
 
@@ -442,7 +442,9 @@ FROM emp a RIGHT JOIN dept b ON (a.deptno=b.deptno);
 
 ## sql连接查询中on筛选与where筛选的区别
 
-sql中的连接查询分为3种， cross join，inner join，和outer join ，  在 cross join和inner join中，筛选条件放在on后面还是where后面是没区别的，极端一点，在编写这两种连接查询的时候，只用on不使用where也没有什么问题。因此，on筛选和where筛选的差别只是针对outer join，也就是平时最常使用的left join和right join。
+sql中的连接查询分为3种， cross join，inner join，和outer join ，  在 cross join和inner join中，筛选条件放在on后面还是where后面是没区别的，极端一点，在编写这两种连接查询的时候，只用on不使用where也没有什么问题。
+
+因此，on筛选和where筛选的差别只是针对outer join，也就是平时最常使用的left join和right join。
 
 来看一个示例，有两张数据表，结构和数据如图所示
 
@@ -611,8 +613,6 @@ id: name: area
 
 
 
-
-
 ## 表约束
 
 ### 主键约束 primary key
@@ -755,7 +755,7 @@ l 对表有关列的取值进行检查。
       空值不能被索引
       只有唯一索引才真正提高速度,一般的索引只能提高30%左右。
 
-## 	修改/删除 索引
+## 修改/删除 索引
 ALTER/DROP INDEX
 修改
 不可用: UNUSABLE
@@ -814,6 +814,7 @@ rownum>2，没有查询到任何记录。
 
 `因为检索和操作rownum的时候游标的指向必须从1开始，不能跳过`
 另外还要注意：rownum不能以任何基表的名称作为前缀
+
 
 ## 分页
 ```sql
@@ -928,7 +929,6 @@ conn.commit();
 
 ## CallableStatement
 调用存储过程
-
 
 
 
