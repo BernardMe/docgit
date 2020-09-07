@@ -743,6 +743,12 @@ Oracle支持以下几种索引结构:
 - 函数索引
 - 域索引
 
+```sql
+-- 在MOBILE表的TEL_NUM字段创建ASC索引
+-- 并且唯一索引
+create unique index IDX_T_MOBILE_TEL_NUM on T_MOBILE (TEL_NUM)
+```
+
 ## 建立索引
 1. CREATE INDEX命令语法:
 ```

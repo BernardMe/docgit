@@ -27,6 +27,13 @@ K8s就是操作系统！
 
 ## Docker基础操作
 
+查看容器名
+docker ps -a
+
+
+构建镜像
+docker build -t 镜像+tag .
+
 
 启动交互式容器
 docker run -i -t IMAGE /bin/bash
