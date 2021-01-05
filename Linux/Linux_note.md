@@ -521,6 +521,26 @@ CMD 所下达的指令为何
 列出目前所有的正在内存当中的程序
 `ps aux`
 
+### netstat
+默认情况下，netstat 会列出打开的套接字。如果不指定任何地址族，则会显示所有已配置地址族的活动套接字。但 netstat 已经过时了，一般会使用 ss 来替代。
+
+```shell
+# netstat -tnlp | grep ssh
+tcp 0 0 0.0.0.0:22 0.0.0.0:* LISTEN 997/sshd
+tcp6 0 0 :::22 :::* LISTEN 997/sshd
+# netstat -tnlp | grep ssh
+tcp 0 0 0.0.0.0:22 0.0.0.0:* LISTEN 997/sshd
+tcp6 0 0 :::22 :::* LISTEN 997/sshd
+```
+
+也可以使用端口号来检查。
+
+```shell
+# netstat -tnlp | grep ":22"
+tcp 0 0 0.0.0.0:22 0.0.0.0:* LISTEN 1208/sshd
+tcp6 0 0 :::22 :::* LISTEN 1208/sshd
+```
+
 ### 管道命令
 管道是一席类将标准输入输出链接起来的进程，其中每一个进程的输出被直接作为下一个进程的输入。
 
