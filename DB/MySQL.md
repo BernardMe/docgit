@@ -171,9 +171,11 @@ MySQL 服务已经启动成功。（说明服务启动成功了）
 
 
 ### 授权指定用户通过用户名密码远程连接数据库
-`grant all on *.* to root@'%' identified by '123456';`
+```
+grant all on *.* to root@'%' identified by '123456';
 
-`grant all on eface0420.* to smartlink@'%' identified by 'slink'`
+grant all on eface0420.* to smartlink@'%' identified by 'slink'`
+```
 本質上會在mysql實例中db表中插入相應的授权记录
 
 ## MySQL创建用户
@@ -190,9 +192,46 @@ FLOAT：4个字节
 DOUBLE：8个字节
 
 ## MySQL字符串(字符)类型
-CHAR：固定长度字符串 sex char(2)
-VARCHAR: 可变长度字符串 name varchar(20)
+CHAR：固定长度字符串 sex char(2) CHAR善于存储经常变化，但是长度相对固定的值，例如type，ip地址和md5之类的数据，不容易产生碎片
+VARCHAR: 可变长度字符串 name varchar(20) VARCHAR善于存储值的长短不一的列，也是用的最多的一种类型，节省存储空间
 VARCHARA使用起来较为灵活，CHAR处理速度更快
+
+
+### MySQL中varchar最大长度是多少？
+这不是一个固定的数字。下面说明一下限制规则：
+1、限制规则，字段的限制在字段定义的时候有以下规则：
+
+  a)存储限制
+  varchar 字段是将实际内容单独存储在聚簇索引之外，实际存储从第二个字节开始，接着要用1到2个字节表示实际长度（长度超过255时需要2个字节），因此最大长度不能超过65535。
+  
+  b)编码长度限制
+  字符类型若为gbk，每个字符最多占2个字节
+  字符类型若为utf8，每个字符最多占3个字节
+  若定义的时候超过上述限制，则varchar字段会被强行转为text类型，并产生warning。
+  
+  c)行长度限制
+  导致实际应用中varchar长度限制的是{一个行定义的长度}。 MySQL要求一个行的定义长度不能超过65535。
+  若定义的表长度超过这个值，则提示ERROR 1118 (42000): Row size too large.
+
+2、计算例子,举两个例说明一下实际长度的计算:
+
+  a) 若一个表只有一个varchar类型，如定义为
+  create table t4(c varchar(N)) charset=gbk;
+  则此处N的最大值为 (65535-1-2)/2 = 32766
+  减1是因为第一个字节Null标识位，实际行存储从第二个字节开始
+  减2是因为头部2个字节标识长度
+  除2是因为gbk编码2个字节标识一个字符
+  
+  b) 若一个表定义为
+  create table t4(c int, c2 char(30), c3 varchar(N)) charset=utf8;
+  则此处N的最大值为 (65535-1-2-4-90)/3 = 21812
+  减1是因为第一个字节Null标识位，实际行存储从第二个字节开始
+  减2是因为头部2个字节标识长度
+  减4是因为int类型字段占4个字节
+  减90是因为char(30)占90个字节，编码是utf8
+  除3是因为utf8编码3个字节标识一个字符
+
+
 
 TEXT：非二进制大对象(字符)
 BLOB：二进制大对象(非字符)
