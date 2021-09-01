@@ -136,12 +136,15 @@ default-character-set=utf8
 ```
 
  
-### 5.7安装
+### MySQL5.7安装
 以管理员身份运行开始－运行－输入cmd，进入DOS窗口后，首先切换到MYSQL的程序目录：
 
 `mysqld  install mysql_5_7`（mysqld -remove 表示删除mysql）
 
 Service successfully installed.(说明安装成功了)
+
+
+### 用户设置管理
  
 #### 初始化创建用户
 在初始化时 `mysqld --initialize-insecure --user=root`，则会创建空密码的 root@localhost 账号,
@@ -159,6 +162,30 @@ MySQL 服务已经启动成功。（说明服务启动成功了）
 登录后,
 `SET PASSWORD FOR 'root'@'localhost' = PASSWORD('root');`
 
+#### 授权指定用户通过用户名密码远程连接数据库
+```
+grant all on *.* to root@'%' identified by '123456';
+
+grant all on eface0420.* to smartlink@'%' identified by 'slink'`
+```
+本質上會在mysql實例中db表中插入相應的授权记录
+
+
+查看当前登录用户: select user();
+
+查看用户权限
+```sql
+
+show grants for 你的用户;
+
+show grants for root@'localhost';
+
+show grants for webgametest@10.3.18.158;
+
+show create database dbname;  这个可以看到创建数据库时用到的一些参数。
+
+show create table tickets;    可以看到创建表时用到的一些参数
+```
 
 ### Linux下服务未启动问题Unit mysqld.service not loaded
 检查mysql服务状态
@@ -170,15 +197,6 @@ MySQL 服务已经启动成功。（说明服务启动成功了）
 返回`Starting MySQL SUCCESS! `服务启动了
 
 
-### 授权指定用户通过用户名密码远程连接数据库
-```
-grant all on *.* to root@'%' identified by '123456';
-
-grant all on eface0420.* to smartlink@'%' identified by 'slink'`
-```
-本質上會在mysql實例中db表中插入相應的授权记录
-
-## MySQL创建用户
 
 
 ## MySQL数值类型
