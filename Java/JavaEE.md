@@ -1,4 +1,5 @@
 
+
 # Tomcat
 
 ## 【Tomcat】JVM，Tomcat，Servlet，Tomcat中的应用。彻底弄懂这些概念之间的联系
@@ -471,7 +472,7 @@ ServletContext
 Jsp也是Servlet
 
 ### JSP的执行过程
-xxx.jspweb.xmlJspServletxxx_jsp.javaxxx_jsp.class_jspService()浏览器显示
+xxx.jsp?web.xml?JspServlet?xxx_jsp.java?xxx_jsp.class?_jspService()?浏览器显示
 
 ### JSP中声明变量
 `<% int a= 5; %>` 局部变量

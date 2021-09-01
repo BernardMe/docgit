@@ -32,8 +32,8 @@ private static final Logger logger = LoggerFactory.getLogger(Abc.class);
 1.1 配置文件
 Log4j可以通过java程序动态设置，该方式明显缺点是：如果需要修改日志输出级别等信息，则必须修改java文件，然后重新编译，很是麻烦；
 log4j也可以通过配置文件的方式进行设置，目前支持两种格式的配置文件：
-•xml文件
-•properties文件（推荐）
+?xml文件
+?properties文件（推荐）
 下面是一个log4j配置文件的完整内容：
 复制代码 代码如下:
 ```shell
