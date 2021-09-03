@@ -269,8 +269,8 @@ tomcat jdbc pool 是 tomcat 的一个模块
 1.1 配置文件
 Log4j可以通过java程序动态设置，该方式明显缺点是：如果需要修改日志输出级别等信息，则必须修改java文件，然后重新编译，很是麻烦；
 log4j也可以通过配置文件的方式进行设置，目前支持两种格式的配置文件：
-•xml文件
-•properties文件（推荐）
+?xml文件
+?properties文件（推荐）
 下面是一个log4j配置文件的完整内容：
 复制代码 代码如下:
 ```PROPERTIES
@@ -309,11 +309,11 @@ log4j.appender.appenderName.optionN = valueN
 ```
 
 Log4j提供的appender有以下几种：
-•org.apache.log4j.ConsoleAppender（控制台）， 
-•org.apache.log4j.FileAppender（文件）， 
-•org.apache.log4j.DailyRollingFileAppender（每天产生一个日志文件），
-•org.apache.log4j.RollingFileAppender（文件大小到达指定尺寸的时候产生一个新的文件） 
-•org.apache.log4j.WriterAppender（将日志信息以流格式发送到任意指定的地方）
+?org.apache.log4j.ConsoleAppender（控制台）， 
+?org.apache.log4j.FileAppender（文件）， 
+?org.apache.log4j.DailyRollingFileAppender（每天产生一个日志文件），
+?org.apache.log4j.RollingFileAppender（文件大小到达指定尺寸的时候产生一个新的文件） 
+?org.apache.log4j.WriterAppender（将日志信息以流格式发送到任意指定的地方）
 
 ### 使用步骤:
 - 导入log4j-xxx.jar
@@ -1669,6 +1669,30 @@ ZooKeeper 就是上述多进程协作基础服务的一种。
 ### Dubbo中管理界面
 
 ### Dubbo中consumer搭建过程
+
+
+### Sprin集成Dubbo
+
+统一模块中
+以前在同一模块中Spring依赖注入，可以通过@Service和@Autowired
+![统一模块调用](./Dubbo_同一模块调用)
+
+
+跨模块调用
+Dubbo是远程服务调用，消费方需要注入提供方定义的接口实例，可以通过xml配置
+![远程服务调用](./Dubbo_远程服务调用.png)
+
+<dubbo:service interface="fei.CustomerService" ref="customerService"/>
+ref是提供方接口实例bean的id
+<dubbo:reference interface="fei.CustomerService" id="customerService"/>
+消费方可以直接通过该id注入接口实例
+
+
+通过Dubbo提供的注解方式
+第一步定义Dubbo注解扫描的包(消费方和服务方需要同时打开注解扫描)
+<dubbo:annotation package="fei.controller"/>
+![注解方式](./Dubbo_注解方式.png)
+
 
 #### menu项目架构
 
