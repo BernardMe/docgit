@@ -257,6 +257,9 @@ BLOB：二进制大对象(非字符)
 ## 创建数据库
 ```sql
 CREATE DATABASE  IF NOT EXISTS `db_library` DEFAULT CHARACTER SET utf8 ;
+
+-- 创建独立数据库
+CREATE DATABASE IF NOT EXISTS db_general DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_unicode_ci;
 ```
 
 ## mysql中int、bigint、smallint 和 tinyint的区别与长度
@@ -328,6 +331,9 @@ VARCHARA使用起来较为灵活，CHAR处理速度更快
 
 TEXT：非二进制大对象(字符)
 BLOB：二进制大对象(非字符)
+
+## 查看最大连接数
+show variables like '%max_connections%';
 
 ## 查询MySQL字符集相关参数
 show variables like '%character%';
