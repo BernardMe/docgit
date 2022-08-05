@@ -626,6 +626,20 @@ select sum(sal), avg(sal), count(empno) from emp;
 `select deptno, sum(sal), count(*), avg(sal) from emp where deptno<>10 group by deptno order by deptno;`
 
 
+### CASE WHEN 在语句中不同位置的用法
+
+#### SELECT CASE WHEN 用法
+```
+SELECT grade, 
+	COUNT(CASE WHEN sex = 1 THEN 1  /*sex 1为男生, 2为女生*/
+	ELSE NULL
+	END) 男生数
+	COUNT(CASE WHEN sex = 2 THEN 1
+	ELSE NULL
+	END) 女生数
+FROM students GROUP BY grade;
+```
+
 ## 表约束
 
 ### 主键约束 primary key
