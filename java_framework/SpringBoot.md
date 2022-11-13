@@ -37,6 +37,33 @@ servlet3.0 首先提供了 @WebServlet，@WebFilter 等注解，这样便有了�
 
 注册方式二：RegistrationBean
 
+### @SpringBoot注解
+
+```java
+
+@Tatget
+@Runtime
+@Document
+@Inherited
+@SpringBootConfigration
+@EnableAutoConfigration
+@ConponentScan(excludedFilters = {
+	@Filter(type=FilterType.CUSTOM, classes=TypeExcludeFilter.class)
+	@Filter(type=FilterType.CUSTOM, classes=AutoConfigrationExcludedFilter.class)})
+
+public @interface SpringBootApplication
+
+```
+其中@SpringBootApplication注解主要组合了 @Configuration、@EnableAutoConfiguration、 @ComponentScan 。
+
+如果不使用@SpringBootApplication注解,则可以使用在入口类上直接使用@Configuration、@EnableAutoConfiguration、@ComponentScan也能达到相同效果。
+
+
+其中几个注解的作用大致说一下:
+
+@Configuration:是做类似于spring xml 工作的注解 标注在类上,类似与以前的`**.xml`配置文件。
+
+@EnableAutoConfiguration:spring boot自动配置时需要的注解,会让Spring Boot根据类路径中的jar包依赖为当前项目进行自动配置。同时,它也是一个组合注解
 
 
 
@@ -54,7 +81,7 @@ ServletContext 初始化参数
 java:comp/env 中的 JNDI 属性
 Java 系统属性：System.getProperties()
 操作系统环境变量
-随机值（RandomValuePropertySource）：random.*属性
+随机值（RandomValuePropertySource）：`random.*属性`
 jar 包外的指定 profile 配置文件：application-{profile}.properties
 jar 包内的指定 profile 配置文件：application-{profile}.properties
 jar 包外的默认配置文件：application.properties
