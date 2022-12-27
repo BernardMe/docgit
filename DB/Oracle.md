@@ -175,6 +175,209 @@ INTEGER是NUMBER的子类型，它等同于NUMBER(38,0)，用来存储整数。
 
 # Oracle基础
 
+## 用户与权限
+创建用户
+```
+--创建用户
+CREATE USER USER_NAME IDENTIFIED BY PASSWD; 
+```
+修改密码
+```
+--修改新密码
+ALTER USER USER_NAME IDENTIFIED BY NEW_PASSWD; 
+
+--修改用户密码
+PASSWD USER_NAME;
+```
+删除用户
+```SQL
+--可选参数 CASCADE
+DROP USER USER_NAME [CASCADE];
+
+--注意：
+/*
+在进行删除用户操作时，如果此用户已创建表，删除时需要加参数“CASCADE”，它具有级联的作用
+*/
+```
+给用户赋权限
+```
+GRANT 权限/角色 TO USER_NAME;
+```
+收回用户权限
+```
+REVOKE 权限/角色 FROM USER_NAME;
+```
+系统权限
+```
+-- “系统权限是数据库管理相关的权限”
+CREATE SESSION							--登录权限
+CREATE TABLE							--建表权限
+CREATE INDEX							--创建索引权限
+CREATE VIEW							--创建视图权限
+CREATE SEQUENCE							--创建序列权限
+CREATE TRRIGER							--创建触发器权限
+```
+连接角色
+```
+--“是授予用户的最基本的权利，能够连接到Oracle数据中，能够访问其他用户的表权限时”
+CREATE SESSION		--创建会话
+CREATE VIEW		--创建视图
+CREATE SEQUENCE		--创建序列
+```
+资源角色
+```
+--“具有创建表、序列、视图的权限”
+CREATE TABLE		--创建表
+CREATE TRIGGER		--创建触发器
+CREATE PROCEDURE	--创建过程
+CREATE SEQUENCE		--创建序列
+CREATE TYPE		--创建类型
+```
+DBA角色
+```
+--“是授予系统管理员的，拥有该角色的用户即系统管理员，拥有系统的所有权限”
+```
+
+## 表空间
+```
+--创建表空间
+CREATE TABLESPACE SPACE_NAME
+
+--DATAFILE '/' 指向数据文件路径
+--SIZE N(M) 表示初始化表空间为N(M)
+--AUTOEXTEND ON NEXT 2M 自动扩展，每次扩展2M
+--MAXSIZE UNLIMITED UNLIMITED最大扩展没有限制，N(M)最大扩展到N(M)
+```
+创建用户指定默认表空间
+```
+CREATE USER USER_NAME IDENTIFIED BY PASSWD DEFAULT TABLESPACE SPACE_NAME
+```
+修改用户默认表空间
+```
+ALTER USER USER_NAME IDENTIDIED BY PASSWD DEFAULT TABLESPACE SPACE_NAME
+```
+查看表表空间
+```
+SELECT * FROM v$TABLESPACE
+```
+查看用户默认表空间
+```
+SELECT USERNAME, DEFAULT_TABLESPACE FROM DBA_USERS WHERE USERNAME = 'SCOTT';
+--用户名SCOTT必须为大写
+```
+
+## 表结构操作
+```SQL
+--创建表1
+CREATE TABLE TABLE_NAME(
+	COLUMN_1 DATA_TYPE,
+    COLUMN_2 DATA_TYPE
+);
+
+--创建表2
+CREATE TABLE TABLE_NAME AS SELECT COLUMN_1, COLUMN_2 ...FROM TABLE_NAME;
+
+--修改表
+ALTER TABLE 语句添加、修改或删除列的语法
+
+--添加列
+ALTER TABLE TABLE_NAME ADD(
+	COLUMN_1 DATA_TYPE,
+    COLUMN_2 DATA_TYPE
+);
+
+ALTER TABLE TABLE_NAME ADD COLUMN_1 DATA_TYPE;
+
+--修改列
+ALTER TABLE TABLE_NAME MODIFY(
+	COLUMN_1 DATA_TYPE
+);
+
+--删除列
+ALTER TABLE TABLE_NAME DROP(
+	COLUMN_1,
+    COLUMN_2
+);
+
+--修改表名称
+RENAME TABLE TO NEW_TABLE_NAME
+
+--修改列名
+ALTER TABLE TABLE_NAME RENAME COLUMN OLD_COLUMN TO NEW COLUMN;
+
+--查看表结构
+DESC 表名;
+```
+
+## 表约束
+
+### 主键约束(primary key)
+要求主键列数据唯一，并且不允许为空。主键可以包含表的一列或多列，如果包含表的多列，则需要在表级定义
+```
+--创建学生表
+CREATE TABLE student(
+`--sno NUMBER(3) CONSTRAINT pk_student PRIMARY KEY, --在列级别定义主键约束` 
+--在表级别定义主键约束
+--定义主键约束
+`--CONSTRAINT pk_student PRIMARY KEY (sno)`
+--PRIMARY KEY (sno) --简化版
+);
+```
+
+### 唯一约束(unique)
+要求该列唯一，允许为空
+
+邮箱地址使用 唯一约束
+
+表级别 定义 唯一约束
+`CONSTRAINT uk_student_email UNIQUE(email)`
+
+表级别 创建唯一索引(联合字段)
+```
+create unique index T_QYL_LEAVE_STATIS_TODAY_UNI
+	on T_QYL_LEAVE_STATISTICS_TODAY (SCHOOL_ID, GRADE_ID, CLASS_ID, PERSON_TYPE)
+/
+
+create unique index T_QYL_LEAVE_STATIS_HIS_UNI
+	on T_QYL_LEAVE_STATISTICS_HISTORY (SCHOOL_ID, GRADE_ID, CLASS_ID, PERSON_TYPE, STATISTICS_DATE)
+/
+```
+
+
+### 非空约束(not null)
+
+`sname VARCHAR2(15) CONSTRAINT nn_student_sname NOT NULL,--非空约束只能在字段级别添加`
+
+
+
+### 检查约束(check)
+
+--表级别 定义 检查约束
+`CONSTRAINT ck_student_age CHECK(age BETWEEN 18 AND 30)`
+
+
+### 外键约束(foreign key)
+```
+--创建学生表
+CREATE TABLE student(
+      
+   --表级别 定义 外键约束
+   CONSTRAINT fk_student_cno FOREIGN KEY(cno) REFERENCES clazz(cno)
+);
+```
+
+对于主表的删除和修改主键值的操作，会对依赖关系产生影响，以删除为例：当要删除主表的某个记录（即删除一个主键值，那么对依赖的影响可采取下列3种做法：
+RESTRICT方式：只有当依赖表中没有一个外键值与要删除的主表中主键值相对应时，才可执行删除操作。
+CASCADE方式：将依赖表中所有外键值与主表中要删除的主键值相对应的记录一起删除
+SET NULL方式：将依赖表中所有与主表中被删除的主键值相对应的外键值设为空值
+
+```
+--撤销FOREIGN KEY约束
+ALTER TABLE prders
+DROP FOREIGN KEY fk_perOrders
+```
+
+
 ## Between子句
 
 当使用BETWEEN运算符为SELECT语句返回的行形成搜索条件时，值返回其值在指定范围内的行.
@@ -640,73 +843,6 @@ SELECT grade,
 FROM students GROUP BY grade;
 ```
 
-## 表约束
-
-### 主键约束 primary key
-要求主键列数据唯一，并且不允许为空。主键可以包含表的一列或多列，如果包含表的多列，则需要在表级定义
-```
---创建学生表
-CREATE TABLE student(
-`--sno NUMBER(3) CONSTRAINT pk_student PRIMARY KEY, --在列级别定义主键约束` 
---在表级别定义主键约束
---定义主键约束
-`--CONSTRAINT pk_student PRIMARY KEY (sno)`
---PRIMARY KEY (sno) --简化版
-);
-```
-
-### 唯一约束 unique key
-要求该列唯一，允许为空
-
-邮箱地址使用 唯一约束
-
-表级别 定义 唯一约束
-`CONSTRAINT uk_student_email UNIQUE(email)`
-
-表级别 创建唯一索引(联合字段)
-```
-create unique index T_QYL_LEAVE_STATIS_TODAY_UNI
-	on T_QYL_LEAVE_STATISTICS_TODAY (SCHOOL_ID, GRADE_ID, CLASS_ID, PERSON_TYPE)
-/
-
-create unique index T_QYL_LEAVE_STATIS_HIS_UNI
-	on T_QYL_LEAVE_STATISTICS_HISTORY (SCHOOL_ID, GRADE_ID, CLASS_ID, PERSON_TYPE, STATISTICS_DATE)
-/
-```
-
-
-### 非空约束 not null
-
-`sname VARCHAR2(15) CONSTRAINT nn_student_sname NOT NULL,--非空约束只能在字段级别添加`
-
-
-
-### 检查约束
-
---表级别 定义 检查约束
-`CONSTRAINT ck_student_age CHECK(age BETWEEN 18 AND 30)`
-
-
-### 外键约束
-```
---创建学生表
-CREATE TABLE student(
-      
-   --表级别 定义 外键约束
-   CONSTRAINT fk_student_cno FOREIGN KEY(cno) REFERENCES clazz(cno)
-);
-```
-
-对于主表的删除和修改主键值的操作，会对依赖关系产生影响，以删除为例：当要删除主表的某个记录（即删除一个主键值，那么对依赖的影响可采取下列3种做法：
-RESTRICT方式：只有当依赖表中没有一个外键值与要删除的主表中主键值相对应时，才可执行删除操作。
-CASCADE方式：将依赖表中所有外键值与主表中要删除的主键值相对应的记录一起删除
-SET NULL方式：将依赖表中所有与主表中被删除的主键值相对应的外键值设为空值
-
-```
---撤销FOREIGN KEY约束
-ALTER TABLE prders
-DROP FOREIGN KEY fk_perOrders
-```
 
 ## 注释
 ```
