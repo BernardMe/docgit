@@ -217,14 +217,17 @@ CREATE VIEW							--创建视图权限
 CREATE SEQUENCE							--创建序列权限
 CREATE TRRIGER							--创建触发器权限
 ```
-连接角色
+常用的角色
+一个角色包含多个权限
+三种标准角色:
+连接角色(connect role)
 ```
 --“是授予用户的最基本的权利，能够连接到Oracle数据中，能够访问其他用户的表权限时”
 CREATE SESSION		--创建会话
 CREATE VIEW		--创建视图
 CREATE SEQUENCE		--创建序列
 ```
-资源角色
+资源角色(resource role)
 ```
 --“具有创建表、序列、视图的权限”
 CREATE TABLE		--创建表
@@ -233,10 +236,26 @@ CREATE PROCEDURE	--创建过程
 CREATE SEQUENCE		--创建序列
 CREATE TYPE		--创建类型
 ```
-DBA角色
+DBA角色(dba role)
 ```
 --“是授予系统管理员的，拥有该角色的用户即系统管理员，拥有系统的所有权限”
+--“包括无限制的空间限额和给其他用户授予各种权限的能力。system由dba用户拥有”
 ```
+创建/授权/删除角色
+除了前面讲到的三种系统角色----connect、resource和dba，用户还可以在oracle创建自己的role。用户创建的role可以由表或系统权限或两者的组合构成。为了创建role，用户必须具有create role系统权限
+1》创建角色
+　　语法： create role 角色名;
+　　例子： create role testRole;
+
+2》授权角色
+　　语法： grant select on class to 角色名;
+　　列子： grant select on class to testRole;
+　　注：现在，拥有testRole角色的所有用户都具有对class表的select查询权限
+
+3》删除角色
+　　语法： drop role 角色名;
+　　例子： drop role testRole;
+　　注：与testRole角色相关的权限将从数据库全部删除
 
 ## 表空间
 ```
