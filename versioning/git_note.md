@@ -108,6 +108,8 @@ git重命令remote
 例:
 `$ git remote rename origin ori_devToolsRepo`
 
+git仓库地址Http转SSH
+`git remote set-url origin ssh仓库url`
 
 ## branches分支
 
