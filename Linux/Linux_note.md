@@ -241,6 +241,16 @@ linux下的文件结构，看看每个文件夹都是干吗用的
 
 ## Linux常用命令
 
+xxx.log
+
+根据关键字查看后10行日志
+`cat xxx.log` |grep '关键字' -A 10
+
+注意：
+-A 表示关键字之后，After
+-B 表示关键字之前，Before
+-C 表示关键字前后，Context
+
 命令 [选项] [参数]
 
 ### clear
