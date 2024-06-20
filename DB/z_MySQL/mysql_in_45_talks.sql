@@ -69,4 +69,9 @@ from #bla
 results 7 3 2
 
 
+## 35|join语句怎么优化
+select * from dept inner join emp on (emp.deptno=dept.deptno);
+
+select * from dept left join emp on (emp.deptno=dept.deptno)
+
 

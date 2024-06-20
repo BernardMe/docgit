@@ -1,0 +1,1 @@
+explain select * from emp t where t.ename in (select ename from emp group by ename having count(ename) > 1)
