@@ -2423,7 +2423,7 @@ boolean retainAll(Collection c);//双集操作取交集
 Object[] toArray();
 ```
 
-###接口List<E> 
+### 接口List<E> 
 有序并且元素可重复的Collection集合
 
 `List容器中的元素都对应一个整数型的序号记载其在容器中的位置，可以根据序号存取容器中的元素`
@@ -2454,6 +2454,11 @@ LinkedList
 采用链表存储方式
 优点：插入，删除元素效率非常高
 缺点：根据元素值查找元素效率低下
+
+### 接口ListIterator<E>
+方法
+boolean	hasNext()
+如果此列表迭代器在反向遍历列表时拥有更多元素，则返回true。
 
 ###接口Set<E>
 无序并且元素不可重复的collection集合
