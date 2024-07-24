@@ -464,6 +464,12 @@ INSERT INTO employee VALUES (currval('seq_employee_num1'), '李四', 24, 1200.00
 alter table users AUTO_INCREMENT=123456;
 ```
 
+### sql插入自增主键值
+```sql
+INSERT INTO zzjplat.plat_system_result_info (result_id, result, result_code, result_message, param_desc, model_code, project_code, edit_tag, result_desc, use_tag, delete_tag)
+ VALUES (@@identity, 'F', 10301, '该配置key已存在！', '', 'PLANTATION', 'ADMIN', 'F', '', 'T', 'F');
+```
+
 
 ## MySQL原生函数
 
