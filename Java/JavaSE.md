@@ -2553,7 +2553,57 @@ Map集合的定义
 Key唯一无序 
 Value不唯一无序
 >Map集合元素的遍历方式：
-for-each配合EntrySet进行遍历
+方式甲 通过 Map.keySet 遍历
+```
+@Test
+public void testHashMap3() {
+    Map<Integer, String> map = new HashMap<>();
+    map.put(001, "Java");
+    map.put(002, "数据库");
+    map.put(003, "Vue");
+    System.out.println(map);
+
+    
+    for (Integer key : map.keySet()) {
+        System.out.println("key = " + key + ", value = " + map.get(key));
+    }
+}
+```
+结果:
+```
+{1=Java, 2=数据库, 3=Vue}
+key = 1, value = Java
+key = 2, value = 数据库
+key = 3, value = Vue
+```
+方法乙for-each配合EntrySet进行遍历
+```java
+@Test
+public void testHashMap4() {
+    Map<Integer, String> map = new HashMap<>();
+    map.put(001, "Java");
+    map.put(002, "数据库");
+    map.put(003, "Vue");
+    System.out.println(map);
+
+    
+    for (Map.Entry<Integer, String> entry : map.entrySet()) {
+        System.out.println("key = " + entry.getKey() + ", value = " + entry.getValue());
+    }
+}
+```
+结果:
+```
+{1=Java, 2=数据库, 3=Vue}
+key = 1, value = Java
+key = 2, value = 数据库
+key = 3, value = Vue
+```
+方法甲与方法乙总结：
+1 推荐使用 entrySet 遍历 Map 类集合 KV （文章中的第四种方式），而不是 keySet 方式进行遍历。
+2 keySet 其实是遍历了 2 次，第一次是转为 Iterator 对象，第二次是从 hashMap 中取出 key 所对应的 value 值。而 entrySet 只是遍历了一次，就把 key 和 value 都放到了 entry 中，效率更高。
+3 values() 返回的是 V 值集合，是一个 list 集合对象；keySet() 返回的是 K 值集合，是一个 Set 集合对象；entrySet() 返回的是 K-V 值组合集合。
+
 
 ### 类HashMap<K, V>
 
