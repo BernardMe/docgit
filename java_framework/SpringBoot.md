@@ -67,6 +67,165 @@ public @interface SpringBootApplication
 
 
 
+## SpringBoot之MVC配置（WebMvcConfigurer详解）
+1：提示说明
+　　其实在Spring Boot 1.5版本都是靠重写`WebMvcConfigurerAdapter`的方法来添加自定义拦截器，消息转换器等。但是到了SpringBoot2.0之后，WebMvcConfigurerAdapter被标记为@Deprecated（弃用）。官方推荐直接实现WebMvcConfigurer或者直接继承WebMvcConfigurationSupport，
+
+2：MVC配置简要
+说MVC配置，其实就是说在WebMvcConfigurer接口提供了很多种自定义配置，需要我们自定义配置，其常用配置如下：
+    1：addInterceptors（拦截器配置）
+        这个方法可用于配置拦截器。
+    2：addCorsMappings（全局跨域处理）
+        这个方法用来配置跨域访问的规则。
+    3：addViewControllers（注册视图控制器）
+        这个方法可以注册一个或多个视图控制器，让我们写的地址可以对应一个资源文件，如html文件
+    4：addResourceHandlers（配置静态资源处理）
+        方法可用于配置静态资源处理器。可以在客户端直接访问静态资源信息
+
+2.1 拦截器配置
+在SpringBoot中，我们可以使用拦截器进行统一的前置和后置处理。
+拦截器可以用于日志记录、权限检查、性能监控、事务控制等方面，是一个非常重要的组件。
+要在SpringBoot中实现拦截器，则首先要创建一个实现HandlerInterceptor接口的拦截器类。
+该接口定义了三个方法，分别是preHandle、postHandle和afterCompletion，用于在请求处理前、请求处理后和请求完成后进行处理。
+HandlerInterceptor接口方法详解：
+    ①：preHandler
+        在请求处理之前被调用。该方法在Interceptor类中最先执行，用来进行一些前置初始化操作或是对当前请求做预处理，
+        也可以进行一些判断来决定请求是否要继续进行下去。该方法的返回值是Boolean类型，当它返回false时，表示请求结束，
+        后续的Interceptor和Controller都不会再执行；当它返回为true时会继续调用下一个Interceptor的preHandle方法，
+        如果已经是最后一个Interceptor的时候就会调用当前请求的Controller方法。
+    ②：postHandler
+        在请求处理完成之后调用。也就是Controller方法调用之后执行，但是它会在DispatcherServlet进行视图返回渲染之前被调用，
+        所以我们可以在这个方法中对Controller处理之后的ModelAndView对象进行操作。
+    ③：afterCompletion
+        在整个请求结束后调用。就是对应的Interceptor类的postHandler方法返回true时才执行。就是说该方法将在整个请求结束之后，
+        也就是在DispatcherServlet渲染了对应的视图之后执行。此方法主要用来进行资源清理。
+注：官方其实不建议我们非要把3个方法都重写，我们只要对需要的方法重写接口，就比如大部分项目只需要重写preHandler方法
+
+示例代码 实现拦截器接口（用于配置拦截器）
+```JAVA
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * 这里我自定义了一个拦截器的拦截规范，后面需要配置到WebMvcConfigurer
+ * 我们可以配置多个拦截器，到时候全部配置到WebMvcConfigurer里
+ * 注：这里我定义的拦截器就当权限权限路径拦截（具体项目里我们可以起一个见名知意的拦截器 如：PermissionInterceptor）
+ *
+ * @author Anhui OuYang
+ * @version 1.0
+ **/
+@Component  // 加载Bean容器里
+public class MyInterceptor implements HandlerInterceptor {
+
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+
+    /***
+     * 在请求处理前进行调用（Controller方法调用之前）
+     * 可以在这一阶段进行全局权限校验等操作
+     */
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+            throws Exception {
+        log.info("【preHandle】在请求处理前进行调用，自定义拦截器被执行。。。。");
+        // 这下面我们可以进行权限校验，校验token操作.....
+        // .....
+        //上面的代码执行完，若可以放行本次请求则一定要返回true，这样才会到达Controller
+        return true;
+    }
+
+    /***
+     * 请求处理之后进行调用，但是在视图被渲染之前（Controller方法调用之后）
+     * 可以在这个阶段来操作 ModelAndView
+     */
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+                           ModelAndView modelAndView) throws Exception {
+        log.info("【postHandle】请求处理之后进行调用，自定义拦截器被执行。。。。");
+    }
+
+    /***
+     * 在整个请求结束之后被调用，也就是在DispatcherServlet渲染了对应的视图之后执行，主要用于资源清理工作。
+     */
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response,
+                                Object handler, Exception ex) throws Exception {
+        log.info("【afterCompletion】在整个请求结束之后被调用，自定义拦截器被执行。。。。");
+    }
+}
+```
+
+我们配置完拦截器之后，这时拦截器只是一个未被注册的普通类，这时需要把一个或者多个拦截器注册到WebMvcConfigurer
+
+InterceptorRegistry类方法介绍：
+    ①：addInterceptor
+        该方法用于向拦截器链中添加一个拦截器。interceptor参数为待添加的拦截器对象，可以是自定义的拦截器类或Spring提供的预置
+        拦截器。返回值为InterceptorRegistration对象，用于进一步配置该拦截器的属性。
+    ②：addWebRequestInterceptor
+        该方法用于向WebRequest拦截器链中添加一个拦截器。interceptor参数为待添加的拦截器对象，
+        可以是自定义的WebRequestInterceptor类或者Spring提供的预置拦截器。
+        也是返回值为InterceptorRegistration对象，用于进一步配置该拦截器的属性。
+    ③：getInterceptors
+        用于获取当前已经添加到拦截器链中的所有拦截器，返回值为List<HandlerInterceptor>对象，表示拦截器列表。
+InterceptorRegistration类方法介绍：
+    ①：order
+        该方法用于设置拦截器的执行顺序，即在拦截器链中的位置。order参数为一个整数，值越小表示越先执行。
+    ②：addPathPatterns
+        该方法用于设置需要拦截的请求路径模式，即满足哪些请求路径时才会触发该拦截器。若"/**"则拦截全部；
+        传入的参数是一个字符串数组，包含多个Ant风格的路径模式，例如 "/api/**"、"/user/*"等。
+    ③：excludePathPatterns
+        该方法用于设置不需要拦截的请求路径模式，即满足哪些请求路径时不会触发该拦截器。一般不拦截，如登录或者Swagger等
+        传入的参数是一个字符串数组，包含多个Ant风格的路径模式，例如 "/api/login"、"/user/login"等。
+    ④：pathMatcher
+        该方法用于设置该拦截器所使用的PathMatcher实例，从而可以自定义路径匹配逻辑。
+
+```JAVA
+@Configuration  // 一定要配置为配置类
+@RequiredArgsConstructor
+public class WebMvcConfig implements WebMvcConfigurer {
+
+    // 属性注入（使用构造器注入，通过@RequiredArgsConstructor注解生成必要的构造器）
+    private final MyInterceptor myInterceptor;
+
+    /***
+     * 配置拦截器信息
+     * @param registry 拦截器注册表
+     */
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+
+        // 配置myInterceptor的拦截规范（如拦截的路径等等）
+        InterceptorRegistration interceptorA = registry.addInterceptor(myInterceptor);
+
+        // 设置拦截器的配置规则
+        interceptorA
+                // 指定拦截器的执行顺序。值越小，越先执行拦截器(但是得整型)。
+                .order(1)
+                // 设置需要拦截的路径（这里拦截所有的路径）
+                .addPathPatterns("/api/**", "/user/*", "/**")
+                // 设置拦截器的放行资源（代表不拦截）
+                // 设置登录放行
+                .excludePathPatterns("/login")
+                // 设置Swagger访问放行
+                .excludePathPatterns("/swagger-ui.html/**", "/swagger-ui.html", "/swagger-ui.html#/**")
+                // 如资源文件放行
+                .excludePathPatterns("/doc.html", "classpath:/META-INF/resources/");
+        // 谨慎使用放行"/**"，这代表全部放行了，那么拦截器就相当于无效配置
+        //.excludePathPatterns("/**");
+
+        // 若有多个拦截器则在下面需要配置多个(如下面interceptorB，我们需要对这个进行路径拦截的配置)
+        // InterceptorRegistration interceptorB = registry.addInterceptor(自定义的拦截器对象);
+    }
+}
+```
+注：拦截的路径或者放行的路径是以Controller开始的，如我们在application.yml配置的地址前缀则不包含
+
+
 ## 外部化配置
 
 ### 外部化配置的优先级顺序如下：
