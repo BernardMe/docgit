@@ -355,6 +355,14 @@ find的基本语法格式：
 查找名称为"zookee"开头的文件
 `find / -name "zookee*"`
 
+查找并移动压缩批量图片文件
+```
+find /home/images/library/sjzx -maxdepth 1 -type f -newermt "2025-09-01 00:00:00"  ! -newermt "2025-09-10 00:00:00" -exec mv -t /home/images/library/sjzx/BAK_TeacherDayPic {} +
+
+
+tar -czf /home/images/library/sjzx/BAK_TeacherDayPic.tar.gz -C /home/images/library/sjzx BAK_TeacherDayPic
+```
+
 
 ### mv命令
 
