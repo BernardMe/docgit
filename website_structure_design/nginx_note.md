@@ -12,26 +12,54 @@
 
 ## Nginx怎么处理请求的？
 ```xml
-worker_processes	1;		# woker进程的数量
-events {				# 事件区块开始
-	worker_connections 1024;	# 每个worker支持的最多连接数
-}					# 事件区块结束
-http {					# HTTP区块开始
-    include	    mime.types;		# NGINX支持的媒体文件库类型
-    default_type    application/octet-stream;	# 默认的媒体类型
-    sendfile	    on;			# 开启高效传输模式
-    keepalive_timeout	65;		# 连接超时
-    server {				# 第一个Server区块开始，表示一个独立的虚拟主机站点
-	listen		80;		# 提供服务的端口，默认80
-	server_name	localhost;	# 提供服务的域名主机名
-	location / {			# 第一个location区块开始
-		root	html;		# 站点的根目录，相当于Nginx的安装目录
-		index	index.html;	# 默认的首页文件，多个用空格分开
-	}				# 第一个location区块结束
-	error_page 500502503504 /50x.html;	# 出现对应的状态码时，使用50x.html回应客户
-	location = /50x.html {		# location区块开始，访问50x.html
-		root	html;		# 指定对应的站点目录为html
-	}
+# 工作进程个数(1个cup内核对应1个worker进程)
+worker_processes	1;
+
+events {
+    # 每个worker支持的最多连接数
+	worker_connections 1024;
+}
+
+http {
+
+    # mime.types 由服务器定义(当前传输文件的什么类型去解析)
+    include	    mime.types;
+    # 默认的媒体类型
+    default_type    application/octet-stream;
+
+    # sendfile 开启高效传输模式,数据零拷贝
+    sendfile	    on;
+
+    # keepalive_timeout 保持连接，超时的时间
+    keepalive_timeout	65;
+
+    # server 代表一个主机，每个主机代表1个独立的站点，有自己独立的根目录，互不干扰
+    # 开启多个server主机的方式(虚拟主机，简称Vhost)
+    server {
+        # listen 当前主机监听的端口号=80		
+    	listen		80;
+        # server_name 当前主机的主机名, 域名
+    	server_name	localhost;
+
+        # location "/" 是域名后面跟的URI
+        # "http://atguigu.com/xxoo/index.html" 中 URI="/xxoo/index.html"
+    	location / {			
+            # root 用户请求接进来后，从哪个目录下帮它找相应的网页或资源
+            # html是相对路径，相对在%NGINX_HOME%/html下
+    		root	html;
+            # index 当前访问请求这个接进来后，如果没有默认页的话，如果在%NGINX_HOME%/html下有index.html index.htm这两个文件，就给他展示出来
+    		index	index.html;
+    	}				
+
+        # error_page 发生服务器内部错误时，对于这些500 502 503 504错误码，就转向访问"http://atguigu.com/50x.html" 
+    	error_page   500 502 503 504  /50x.html;
+        # 如果我们自定项目下没有50x.html，就重定向访问在%NGINX_HOME%/html下50x.html，这样就可以访问ngxin自带的50x.html
+    	location = /50x.html {
+    		root	html;
+    	}
+
+    }
+
 }
 ```
 首先，Nginx在启动时，会解析配置文件，得到需要监听的端口与IP地址，然后在Nginx的master进程中先初始化好这个监控的Socket(创建Socket，设置addr，reuse等选项，绑定到指定的IP，端口上，再listen监听)
