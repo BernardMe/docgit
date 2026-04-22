@@ -170,6 +170,27 @@ grant all on eface0420.* to smartlink@'%' identified by 'slink'`
 ```
 本質上會在mysql實例中db表中插入相應的授权记录
 
+#### MySQL8.0之后版本的一项重大语法变更：不再支持在 GRANT 语句中直接使用 IDENTIFIED BY 来修改密码或创建用户
+1. 创建用户或修改允许连接的主机
+如果你已经有了 root@'%' 这个用户，只是想改密码或修复权限，可以跳过这步或直接用 ALTER。如果还没有创建，请执行：
+
+SQL
+CREATE USER 'root'@'%' IDENTIFIED BY '123456';
+2. 授予权限
+使用 GRANT 语句，只负责权限分配：
+
+SQL
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;
+3. 刷新权限
+最后，刷新内存中的权限表：
+
+SQL
+FLUSH PRIVILEGES;
+💡 为什么会报错？（深度解析）
+语法解耦： MySQL 8.0 强制要求将**身份验证（Authentication）和授权（Authorization）**分开。这样可以更清晰地管理用户账号。
+
+默认加密插件变更： MySQL 8.0 默认使用 caching_sha2_password。如果你发现某些旧版数据库连接工具（如旧版 Navicat）无法连接，可以考虑将加密方式降级为 mysql_native_password：
+
 
 查看当前登录用户: select user();
 
