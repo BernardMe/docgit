@@ -105,6 +105,92 @@ YAML 路径：k8s-resources/workspace-frontend-cfg-configmap.yaml 定义了 Conf
 
 ## 技术细节
 
+### 部署YAML编写
+例如：
+
+梯控后端部署YAML
+```
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: K8S_DEPLOYMENT_BACKEND_NAME
+  namespace: K8S_NAMESPACE
+  labels:
+    app: K8S_DEPLOYMENT_BACKEND_NAME
+spec:
+  replicas: K8S_REPLICA_BUSINESS
+  selector:
+    matchLabels:
+      app: K8S_DEPLOYMENT_BACKEND_NAME
+  template:
+    metadata:
+      labels:
+        app: K8S_DEPLOYMENT_BACKEND_NAME
+    spec:
+      volumes:
+        - name: host-time
+          hostPath:
+            path: /etc/localtime
+            type: ''
+      containers:
+        - name: shanghai-tikong
+          image: "HARBOR_URL/K8S_NAMESPACE/K8S_DEPLOYMENT_BACKEND_NAME:K8S_TAG_BUSINESS_BACKEND"
+          command:
+            - java
+          args:
+            - '-Djasypt.encryptor.algorithm=PBEWithMD5AndDES'
+            - '-Djasypt.encryptor.password=ZDdIGkW0JAWiZfH'
+            - '-Dspring.cloud.nacos.config.server-addr=CMD_NACOS_SERVER_URL'
+            - '-Dspring.cloud.nacos.discovery.server-addr=CMD_NACOS_SERVER_URL'
+            - >-
+              -Dspring.cloud.nacos.discovery.namespace=CMD_NACOS_NAMESPACE_ID
+            - >-
+              -Dspring.cloud.nacos.config.namespace=CMD_NACOS_NAMESPACE_ID
+            - '-Dspring.cloud.nacos.username=CMD_NACOS_USER'
+            - '-Dspring.cloud.nacos.password=CMD_NACOS_PWD'
+            - '-Dspring.cloud.nacos.prefix=business-service'
+            - '-Dspring.cloud.nacos.config.file-extension=yaml'
+            - '-jar'
+            - /app/video-platform/ability-service/business-service.jar
+            - '-Xmx2688M'
+            - '-Xms2688M'
+            - '-Xmn960M'
+            - '-XX:MaxMetaspaceSize=512M'
+            - '-XX:MetaspaceSize=512M'
+            - '-XX:+UseSerialGC'
+            - '-XX:+PrintGCDetails'
+            - '-XX:+PrintGCDateStamps'
+            - '-Djasypt.encryptor.password=jasypt@tower'
+            - '-Djasypt.encryptor.algorithm=PBEWithMD5AndDES'
+          env:
+            - name: config.nacos.password
+              value: CMD_NACOS_PWD
+          ports:
+            - name: server-port
+              containerPort: NACOS_DATA_SERVER_PORT
+              protocol: TCP
+          resources: # 按需调整
+            requests:
+              memory: "1Gi"
+              cpu: "2"
+            limits:
+              memory: "2Gi"
+              cpu: "4"
+          volumeMounts:
+            - name: host-time
+              readOnly: true
+              mountPath: /etc/localtime
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+```
+
 ### 镜像引用digest是个啥?
 解释：digest是内容可寻址的哈希(通常是SHA256)，确保镜像唯一性和不可变性，用于固定版本，避免标签漂移。
 
@@ -122,12 +208,11 @@ YAML 路径：k8s-resources/workspace-frontend-cfg-configmap.yaml 定义了 Conf
 固定引用：myapp@sha256:e3b0c44298fc1c...（永远指向同一个镜像）
 
 
-### 部署YAML编写
-例如：
-
-```
 
 
-```
+
+
+
+
 
 
