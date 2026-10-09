@@ -3,6 +3,7 @@
 # 本地docker运行mongodb及yapi
 
 ## 本地Docker客户端（Docker CLI）的核心配置文件(config.json)
+在D:\DOCKER_DATA\yapi目录下创建config.json
 ```
 {
    "port": "3000",
@@ -30,6 +31,7 @@
 ```
 
 ## 本地docker-compose(yaml文件)
+在D:\DOCKER_DATA\yapi目录下创建docker-compose.yml
 ```
 version: '3.8'
 
@@ -91,4 +93,16 @@ services:
     depends_on:
       mongodb:
         condition: service_healthy
+```
+
+## docker 客户端pShell命令
+```
+## 先cd到目标目录
+cd D:\DOCKER_DATA\yapi
+## 在后台（守护进程模式）创建并启动 compose.yaml（或 docker-compose.yml）文件中定义的所有容器服务
+docker compose up -d
+## 停止并删除由 docker compose up 启动的所有容器、网络、卷以及镜像（默认只删除容器和网络）
+docker compose down 
+## 查看名为 yapi 的 Docker 容器在后台运行期间产生的所有控制台输出日志（包括标准输出 stdout 和标准错误 stderr）
+docker logs yapi
 ```
